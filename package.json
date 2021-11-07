@@ -1,0 +1,29 @@
+{
+  "name": "sparql2graphql",
+  "version": "0.0.1",
+  "description": "Connecting SPARQL and GraphQL!",
+  "main": "src/experiments/sparql_query_demo.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yawnston/sparql2graphql.git"
+  },
+  "keywords": [
+    "graphql",
+    "sparql",
+    "rdf",
+    "linked-data"
+  ],
+  "author": "Daniel Crha",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yawnston/sparql2graphql/issues"
+  },
+  "homepage": "https://github.com/yawnston/sparql2graphql#readme",
+  "devDependencies": {
+    "eslint": "^8.2.0",
+    "typescript": "^4.4.4"
+  }
+}
