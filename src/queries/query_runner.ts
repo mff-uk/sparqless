@@ -2,23 +2,25 @@ import { Quad, Stream } from 'rdf-js';
 import StreamClient from 'sparql-http-client';
 
 /**
- * A collection of test SPARQL queries.
+ * A class which can execute SPARQL queries against endpoints and measure their execution.
  */
-export class Queries {
+export class QueryRunner {
+    constructor(private endpointUrl: string) {}
+
     /**
-     * Run test query.
+     * Execute given SELECT query and return the elapsed time.
+     *
+     * @param {string} query The SELECT query to execute.
      *
      * @return {Promise<number>} Time elapsed in milliseconds.
      */
-    async runTestQuery(): Promise<number> {
+    async runTestQuery(query: string): Promise<number> {
         const client = new StreamClient({
-            endpointUrl: 'https://query.wikidata.org/sparql',
+            endpointUrl: this.endpointUrl,
         });
         const startTime = performance.now();
 
-        const stream = await client.query.construct(
-            'DESCRIBE <http://www.wikidata.org/entity/Q54872>',
-        );
+        const stream = await client.query.select(query);
         const endTime = await this.measureQueryEnd(stream);
 
         return endTime - startTime;

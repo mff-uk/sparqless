@@ -1,0 +1,6 @@
+SELECT ?entity
+WHERE {
+    ?entity rdf:type/rdfs:subClassOf* ?object
+}
+LIMIT 1000
+OFFSET 0

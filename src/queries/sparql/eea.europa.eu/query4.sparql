@@ -1,0 +1,9 @@
+SELECT DISTINCT ?pred
+WHERE {
+    ?x ?pred ?y .
+    {?pred rdf:equivalentProperty ?other}
+    UNION
+    {?other rdf:equivalentProperty ?pred}
+}
+LIMIT 100
+OFFSET 0
