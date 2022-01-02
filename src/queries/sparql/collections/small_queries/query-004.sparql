@@ -5,5 +5,3 @@ WHERE {
     UNION
     {?other rdf:equivalentProperty ?pred}
 }
-LIMIT 100
-OFFSET 0

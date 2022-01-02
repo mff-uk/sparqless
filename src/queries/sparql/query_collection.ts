@@ -1,71 +1,96 @@
-export type SparqlEndpointUrl = string;
-
 import * as fs from 'fs';
 import * as path from 'path';
 import { sync } from 'glob';
+import { QueryLoader } from './query_loader';
+import { EndpointDetails, Endpoints, SparqlEndpointUrl } from './endpoints';
+import { QueryExecutionConfig } from './query_config';
+import { QueryCollectionConfig } from './collection_config';
 
 /**
  * A collection of various queries tested during research.
  *
  * Queries are grouped by SPARQL endpoint.
  */
-export class QueryCollection {
-    private endpointMapping: Record<string, SparqlEndpointUrl> = {
-        'data.gov.cz': 'https://data.gov.cz/sparql',
-        'eea.europa.eu': 'https://semantic.eea.europa.eu/sparql',
-    };
-
-    getQueries(endpointName?: string): EndpointQueryCollection[] {
-        const returnedQueries = [];
-        for (const currentEndpointName in this.endpointMapping) {
-            if (endpointName && endpointName !== currentEndpointName) {
+export class QueryCollectionLoader {
+    /**
+     * Return the set of all configured query collections, optionally filtering by name.
+     * Query collections must be present in {QueryCollectionConfig} in order to be processed.
+     * Simply creating the folder without specifying a configuration will cause the collection
+     * to be ignored.
+     *
+     * @param {string} collectionName If defined, only the specified collection will be present in the results.
+     * @return {QueryCollection[]} The loaded query collections.
+     */
+    getQueries(collectionName?: string): QueryCollection[] {
+        const returnedCollections = [];
+        for (const currentCollectionName in QueryCollectionConfig.config) {
+            if (collectionName && collectionName !== currentCollectionName) {
                 continue;
             }
 
-            returnedQueries.push(
-                this.getQueriesForEndpoint(currentEndpointName),
+            returnedCollections.push(
+                this.getQueriesForCollection(currentCollectionName),
             );
         }
 
-        return returnedQueries;
+        return returnedCollections;
     }
 
-    private getQueriesForEndpoint(
-        endpointName: string,
-    ): EndpointQueryCollection {
-        const endpointPath = path.join(__dirname, endpointName);
-        if (!fs.existsSync(endpointPath)) {
-            return new EndpointQueryCollection(
-                endpointName,
-                this.endpointMapping[endpointName],
+    private getQueriesForCollection(collectionName: string): QueryCollection {
+        const collectionpath = path.join(
+            __dirname,
+            'collections',
+            collectionName,
+        );
+        if (!fs.existsSync(collectionpath)) {
+            return new QueryCollection(
+                collectionName,
+                this.getEndpointDetailsForCollection(collectionName),
                 {},
+                QueryCollectionConfig.config[
+                    collectionName
+                ].config.executionConfig,
             );
         }
-        const fileNames = sync(path.join(endpointPath, '*.sparql'));
+        const fileNames = sync(path.join(collectionpath, '*.sparql'));
+        const loader = new QueryLoader(
+            QueryCollectionConfig.config[collectionName].config,
+        );
         const queries: Record<string, SparqlEndpointUrl> = {};
         fileNames.forEach(
             (fileName) =>
-                (queries[path.basename(fileName)] = fs
-                    .readFileSync(fileName)
-                    .toString()),
+                (queries[path.basename(fileName)] =
+                    loader.load_query(fileName)),
         );
 
-        return new EndpointQueryCollection(
-            endpointName,
-            this.endpointMapping[endpointName],
+        return new QueryCollection(
+            collectionName,
+            this.getEndpointDetailsForCollection(collectionName),
             queries,
+            QueryCollectionConfig.config[collectionName].config.executionConfig,
+        );
+    }
+
+    private getEndpointDetailsForCollection(
+        collectionName: string,
+    ): EndpointDetails[] {
+        const collection = QueryCollectionConfig.config[collectionName];
+        return collection.endpointNames.map(
+            (name) =>
+                new EndpointDetails(name, Endpoints.endpointMapping[name]),
         );
     }
 }
 
 /**
- * Data class containing the list of queries for a particular SPARQL endpoint.
+ * Data class containing the list of queries for a particular set of SPARQL endpoints.
  */
-export class EndpointQueryCollection {
+export class QueryCollection {
     constructor(
-        readonly endpointName: string,
-        readonly endpointUrl: SparqlEndpointUrl,
+        readonly collectionName: string,
+        readonly endpoints: EndpointDetails[],
         /** Map of query names to actual SPARQL query strings. */
         readonly queries: Record<string, string>,
+        readonly executionConfig?: QueryExecutionConfig,
     ) {}
 }

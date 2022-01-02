@@ -1,32 +1,38 @@
 import { QueryRunner } from './query_runner';
-import { QueryCollection } from './sparql/query_collection';
+import { QueryCollectionLoader } from './sparql/query_collection';
 
-const collection = new QueryCollection();
+const collection = new QueryCollectionLoader();
 const queries = collection.getQueries();
 
-// TODO: consider making a way to run queries against multiple endpoints
-const testData = queries.flatMap((query) =>
-    Object.keys(query.queries).map((queryName) => ({
-        endpointName: query.endpointName,
-        endpointUrl: query.endpointUrl,
-        queryName: queryName,
-        queryString: query.queries[queryName],
-    })),
+const testData = queries.flatMap((collection) =>
+    collection.endpoints.flatMap((endpoint) =>
+        Object.keys(collection.queries).map((queryName) => ({
+            collectionName: collection.collectionName,
+            endpointName: endpoint.endpointName,
+            endpointUrl: endpoint.endpointUrl,
+            queryName: queryName,
+            queryString: collection.queries[queryName],
+            executionConfig: collection.executionConfig,
+        })),
+    ),
 );
 
 test.each(testData)(
     // TODO: the variable interpolation from jest gets escaped by the VSCode jest extension,
     //       meaning that the test will get skipped when you debug from VSCode.
-    //       If you need to debug, commend the test name and uncomment the one without variables.
+    //       If you need to debug, comment the test name and uncomment the one without variables.
     // `run test query and check its duration`,
-    `run test query $queryName against $endpointName and check its duration`,
-    ({ endpointUrl, queryString }) => {
+    `run test query [$collectionName] $queryName against $endpointName and check its duration`,
+    ({ endpointUrl, queryString, executionConfig }) => {
         expect.assertions(1);
 
         const runner = new QueryRunner(endpointUrl);
         const elapsedTimeMs = runner.runTestQuery(queryString);
 
-        // TODO: support different expected run times per query
-        return expect(elapsedTimeMs).resolves.toBeLessThan(2000);
+        // TODO: The timeout is currently not acting as a proper timeout.
+        //       The test will finish running regardless, it will just fail in case it took too long.
+        //       Is it worth canceling the requests if they would cause a timeout?
+        const maxElapsedTimeMs = executionConfig?.timeoutMs ?? 2000;
+        return expect(elapsedTimeMs).resolves.toBeLessThan(maxElapsedTimeMs);
     },
 );
