@@ -10,7 +10,7 @@ export class QueryCollectionConfig {
                     offset: 0,
                 },
                 executionConfig: {
-                    timeoutMs: 2000,
+                    timeoutMs: 5000,
                 },
             },
         },
@@ -22,7 +22,7 @@ export class QueryCollectionConfig {
                     offset: 0,
                 },
                 executionConfig: {
-                    timeoutMs: 3000,
+                    timeoutMs: 5000,
                 },
             },
         },
