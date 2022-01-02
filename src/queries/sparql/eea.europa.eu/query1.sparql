@@ -1,0 +1,30 @@
+SELECT *
+WHERE { 
+    {
+        SELECT DISTINCT ?x ?pDomain (if(( ?pRangeLiteral = "" ), ?ppRange, ?pRangeLiteral) AS ?pRange)
+        WHERE {{
+            SELECT DISTINCT  ?x ?pDomain ?ppRange (if(isLiteral(?o), <http://hypergraphql.org/schema/Literal>, "") AS ?pRangeLiteral)
+            WHERE{ 
+                ?s  ?x  ?o
+                OPTIONAL { ?o  a ?ppRange }
+                OPTIONAL { ?s  a ?pDomain }
+            }
+        }}
+    }
+
+    ?x
+    (
+        (
+            ((<http://www.w3.org/2000/01/rdf-schema#subPropertyOf>|<http://www.w3.org/2002/07/owl#equivalentProperty>)|<http://www.w3.org/2002/07/owl#sameAs>)
+            |
+            <http://www.w3.org/2002/07/owl#equivalentClass>
+        )
+        |
+        ^(
+            (<http://www.w3.org/2002/07/owl#equivalentProperty>|<http://www.w3.org/2002/07/owl#sameAs>)|<http://www.w3.org/2002/07/owl#equivalentClass>
+        )
+    )*
+    ?predicate .
+}
+LIMIT 100
+OFFSET 0

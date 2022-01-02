@@ -1,0 +1,6 @@
+SELECT DISTINCT ?s
+WHERE {
+    ?s rdf:type ?o
+}
+LIMIT 1000
+OFFSET 0

@@ -28,6 +28,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
+    "@types/glob": "^7.2.0",
     "@types/jest": "^27.0.2",
     "@typescript-eslint/eslint-plugin": "^5.3.0",
     "@typescript-eslint/parser": "^5.3.0",
@@ -43,6 +44,7 @@
   },
   "dependencies": {
     "@types/sparql-http-client": "^2.2.7",
+    "glob": "^7.2.0",
     "sparql-http-client": "^2.4.0"
   }
 }
