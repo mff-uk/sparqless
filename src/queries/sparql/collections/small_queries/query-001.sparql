@@ -1,3 +1,5 @@
+# TODO: document queries
+
 SELECT *
 WHERE { 
     {
@@ -26,5 +28,3 @@ WHERE {
     )*
     ?predicate .
 }
-LIMIT 100
-OFFSET 0
