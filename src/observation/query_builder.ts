@@ -1,3 +1,7 @@
+/**
+ * Use this builder's static functions to build SPARQL queries
+ * which can be used to carry out endpoint observations.
+ */
 export class QueryBuilder {
     static CLASSES_AND_INSTANCE_NUMBERS = () =>
         `PREFIX se: <http://skodapetr.eu/ontology/sparql-endpoint/>
@@ -29,7 +33,7 @@ export class QueryBuilder {
                 }
                 LIMIT 5
             }
-        }`
+        }`;
 
     static INSTANCE_ATTRIBUTES = (classIri: string, instanceIri: string) =>
         `PREFIX se: <http://skodapetr.eu/ontology/sparql-endpoint/>
@@ -48,7 +52,7 @@ export class QueryBuilder {
               FILTER isLiteral(?targetLiteral) 
             } LIMIT 5
           } 
-        }`
+        }`;
 
     static INSTANCE_ASSOCIATIONS = (classIri: string, instanceIri: string) =>
         `PREFIX se: <http://skodapetr.eu/ontology/sparql-endpoint/>
@@ -70,7 +74,7 @@ export class QueryBuilder {
             }
             GROUP BY ?class ?targetClass ?property
           } 
-        }`
+        }`;
 
     static NUMBER_OF_INSTANCE_PROPERTIES = (classIri: string) =>
         `PREFIX se: <http://skodapetr.eu/ontology/sparql-endpoint/>
@@ -94,5 +98,5 @@ export class QueryBuilder {
             }
             GROUP BY ?class ?targetClass ?property
           } 
-        }`
+        }`;
 }

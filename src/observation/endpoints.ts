@@ -3,6 +3,11 @@ export interface SPARQLEndpointDefinition {
     name: string;
 }
 
+/**
+ * List of pre-configured SPARQL endpoints for development.
+ *
+ * Can be extended at will.
+ */
 export const ENDPOINTS: SPARQLEndpointDefinition[] = [
     {
         url: 'https://dev.nkod.opendata.cz/sparql',
