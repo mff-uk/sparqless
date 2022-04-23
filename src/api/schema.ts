@@ -66,8 +66,13 @@ Original IRI is ${association.iri}.`,
                     });
                 }
 
-                t.string('_rdf_iri', { description: 'IRI representing this particular object.' })
-                t.string('_rdf_type', { description: 'IRI representing the RDF type of this object.' })
+                t.string('_rdf_iri', {
+                    description: 'IRI representing this particular object.',
+                });
+                t.string('_rdf_type', {
+                    description:
+                        'IRI representing the RDF type of this object.',
+                });
             },
             description: `Generated SPARQL class with ${classDescriptor.numberOfInstances} instances.\n
 Original IRI is ${classDescriptor.iri}.`,

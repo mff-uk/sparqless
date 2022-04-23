@@ -1,4 +1,4 @@
-import { deburr } from "lodash";
+import { deburr } from 'lodash';
 
 /**
  * Update the names for the given descriptors using their IRIs.
@@ -20,11 +20,9 @@ export function buildNamesFromIRIs(
     // are present in the IRI. It will replace them with the accentless version,
     // rather than an underscore.
     for (const descriptor of descriptors) {
-        const shortName = deburr(descriptor.iri
-            .split(/[/#]/)
-            .slice(-1)
-            .pop()!)
-            .replace(/[^_a-zA-Z0-9]/gi, '_');
+        const shortName = deburr(
+            descriptor.iri.split(/[/#]/).slice(-1).pop()!,
+        ).replace(/[^_a-zA-Z0-9]/gi, '_');
         if (nameDict[shortName]) {
             nameDict[shortName].push(descriptor);
         } else {
