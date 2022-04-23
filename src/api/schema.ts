@@ -43,7 +43,8 @@ function createEndpointTypes(
             definition(t) {
                 for (const attribute of classDescriptor.attributes) {
                     const fieldConfig = {
-                        description: `This attribute has ${attribute.count} occurences.`,
+                        description: `This attribute has ${attribute.count} occurences.\n
+Original IRI is ${attribute.iri}.`,
                     };
                     if (attribute.type.endsWith('string')) {
                         t.string(attribute.name, fieldConfig);
@@ -60,20 +61,13 @@ function createEndpointTypes(
                 for (const association of classDescriptor.associations) {
                     t.field(association.name, {
                         type: association.targetClass.name,
-                        description: `This association has ${association.count} occurences.`,
+                        description: `This association has ${association.count} occurences.\n
+Original IRI is ${association.iri}.`,
                     });
                 }
 
-                if (
-                    classDescriptor.attributes.length === 0 &&
-                    classDescriptor.associations.length === 0
-                ) {
-                    t.boolean('DUMMY', {
-                        description:
-                            'This field is a placeholder, generated simply because this class has\
-                    no attributes or associations which were observed.',
-                    });
-                }
+                t.string('_rdf_iri', { description: 'IRI representing this particular object.' })
+                t.string('_rdf_type', { description: 'IRI representing the RDF type of this object.' })
             },
             description: `Generated SPARQL class with ${classDescriptor.numberOfInstances} instances.\n
 Original IRI is ${classDescriptor.iri}.`,

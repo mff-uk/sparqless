@@ -18,6 +18,7 @@ export class QueryBuilder {
             }
         }`;
 
+    // TODO: make number of examined instances configurable
     static CLASS_INSTANCES = (classIri: string) =>
         `PREFIX se: <http://skodapetr.eu/ontology/sparql-endpoint/>
         CONSTRUCT {
@@ -31,7 +32,7 @@ export class QueryBuilder {
                     }
                     ?resource a ?class .
                 }
-                LIMIT 5
+                LIMIT 5 
             }
         }`;
 
@@ -50,7 +51,7 @@ export class QueryBuilder {
               }
               ?resource ?property ?targetLiteral .
               FILTER isLiteral(?targetLiteral) 
-            } LIMIT 5
+            }
           } 
         }`;
 

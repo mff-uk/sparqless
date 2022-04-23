@@ -1,3 +1,5 @@
+import { deburr } from "lodash";
+
 /**
  * Update the names for the given descriptors using their IRIs.
  *
@@ -12,12 +14,16 @@ export function buildNamesFromIRIs(
 ) {
     const nameDict: { [name: string]: { iri: string; name: string }[] } = {};
 
-    // Make a dictionary to detect conflicting short names
+    // Make a dictionary to detect conflicting short names.
+    // Also make sure to deburr the name to make the resulting
+    // short names as readable as possible when things like accented characters
+    // are present in the IRI. It will replace them with the accentless version,
+    // rather than an underscore.
     for (const descriptor of descriptors) {
-        const shortName = descriptor.iri
+        const shortName = deburr(descriptor.iri
             .split(/[/#]/)
             .slice(-1)
-            .pop()!
+            .pop()!)
             .replace(/[^_a-zA-Z0-9]/gi, '_');
         if (nameDict[shortName]) {
             nameDict[shortName].push(descriptor);
@@ -34,7 +40,7 @@ export function buildNamesFromIRIs(
             // long unique names. This could probably be improved to take only
             // as long of a name as necessary, not the whole IRI.
             for (const descriptor of descriptors) {
-                descriptor.name = descriptor.iri.replace(
+                descriptor.name = deburr(descriptor.iri).replace(
                     /[^_a-zA-Z0-9]/gi,
                     '_',
                 );

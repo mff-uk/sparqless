@@ -267,7 +267,9 @@ export class ObservationParser {
                                 (x) => x.iri === propertyQuad.object.value,
                             );
 
-                        // Interestingly, sometimes attributeDescriptor is not found. How is that possible?
+                        // When attributeDescriptor is not found, it means that the property was not on any
+                        // of the queried instances, i.e. the number of examined instances was too low.
+                        // TODO: what should happen in this case? Adding some kind of placeholder property?
                         if (attributeDescriptor) {
                             attributeDescriptor.count = parseInt(
                                 numInstancesQuad.object.value,
