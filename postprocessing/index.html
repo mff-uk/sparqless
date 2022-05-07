@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://yawnston.github.io/sparql2graphql/development/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://yawnston.github.io/sparql2graphql/postprocessing/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Development - SPARQL2GraphQL</title>
+    <title>Postprocessing - SPARQL2GraphQL</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Development";
-        var mkdocs_page_input_path = "development.md";
-        var mkdocs_page_url = "/sparql2graphql/development/";
+        var mkdocs_page_name = "Postprocessing";
+        var mkdocs_page_input_path = "postprocessing.md";
+        var mkdocs_page_url = "/sparql2graphql/postprocessing/";
       </script>
     
     <script src="../js/jquery-3.6.0.min.js" defer></script>
@@ -52,10 +52,8 @@
                 <li class="toctree-l1"><a class="reference internal" href="../how-it-works/">How it works</a>
                 </li>
               </ul>
-              <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="./">Development</a>
-    <ul class="current">
-    </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../development/">Development</a>
                 </li>
               </ul>
       </div>
@@ -71,9 +69,9 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li><li>Development</li>
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li><li>Postprocessing</li>
     <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/yawnston/sparql2graphql/edit/master/docs/development.md"
+        <a href="https://github.com/yawnston/sparql2graphql/edit/master/docs/postprocessing.md"
           class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
@@ -83,42 +81,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="development">Development</h2>
-<p>Build, lint and test are automatically run in GitHub Actions.
-They are required to pass for every PR and commit to <code>master</code>.</p>
-<p>Contributions should be in the form of PRs opened against <code>master</code>, containing a comprehensive
-description of what was changed and why. Bonus points if you include a video or screenshot
-showcasing the functionality. Tests should also be included with contributions.</p>
-<p>Development should follow <a href="https://githubflow.github.io/">GitHub Flow</a> and commit messages
-should follow the <a href="https://www.conventionalcommits.org/en/v1.0.0/">Conventional Commits</a> spec.</p>
-<h2 id="useful-commands">Useful commands</h2>
-<p>The following commands will likely be useful to you during development.</p>
-<h3 id="install-dependencies">Install dependencies</h3>
-<p><code>npm ci</code> or <code>npm install</code> - both will install the dependencies,
-but <code>npm ci</code> will make sure that they match <code>package-lock.json</code> exactly,
-and may take longer to run.</p>
-<h3 id="compile-everything">Compile everything</h3>
-<p><code>npm run build</code> will compile the TypeScript files.</p>
-<h3 id="linting">Linting</h3>
-<p><code>npm run lint</code> will list all linting issues without fixing them automatically.</p>
-<h3 id="formatting-lint-w-autofix">Formatting (lint w/ autofix)</h3>
-<p><code>npm run format</code> will run linting and auto-fix all possible issues.</p>
-<h3 id="running">Running</h3>
-<p><code>npm start</code> will start the app.</p>
-<p>Alternatively, if you use VSCode for development, a <code>Debug API</code> debug config
-is included in the repository. Running this debugging config will automatically
-compile the required files and run the app in debug mode.</p>
-<h3 id="testing">Testing</h3>
-<p><code>npm test</code> will run tests with Jest and generate a testing + coverage report.</p>
-<h2 id="editing-documentation">Editing documentation</h2>
-<p>The documentation is generated using <a href="https://www.mkdocs.org/">mkdocs</a> from the Markdown files
-in the <code>docs</code> directory, and manually deployed to GitHub Pages with <code>mkdocs gh-deploy</code>.</p>
+                
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../how-it-works/" class="btn btn-neutral float-left" title="How it works"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-    </div>
 
   <hr/>
 
@@ -143,8 +109,6 @@ in the <code>docs</code> directory, and manually deployed to GitHub Pages with <
           <a href="https://github.com/yawnston/sparql2graphql" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
         </span>
     
-    
-      <span><a href="../how-it-works/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
   </span>
