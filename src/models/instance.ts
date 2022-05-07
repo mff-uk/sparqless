@@ -1,3 +1,3 @@
-export interface InstanceDescriptor {
-    iri: string;
-}
+import { EntityDescriptor } from './entity';
+
+export type InstanceDescriptor = EntityDescriptor;

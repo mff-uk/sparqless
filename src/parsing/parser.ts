@@ -1,7 +1,6 @@
 import { groupBy } from 'lodash';
 import { ClassDescriptor } from '../models/class';
 import { QueryResult } from '../observation/client';
-import { buildNamesFromIRIs } from './names';
 
 const OBS_PREFIX = 'http://skodapetr.eu/ontology/sparql-endpoint/';
 const OBS_CLASS = OBS_PREFIX + 'class';
@@ -34,17 +33,6 @@ export class ObservationParser {
         this.createAssociationDescriptors(observations, classDescriptors);
 
         this.createPropertyCountDescriptors(observations, classDescriptors);
-
-        // Convert IRIs into names and make them as short as possible
-        buildNamesFromIRIs(classDescriptors);
-        for (const classDescriptor of classDescriptors) {
-            // It's not a problem if these identifiers clash across classes.
-            // We do have to make sure that attributes and associations don't clash though.
-            buildNamesFromIRIs([
-                ...classDescriptor.attributes,
-                ...classDescriptor.associations,
-            ]);
-        }
 
         return classDescriptors;
     }

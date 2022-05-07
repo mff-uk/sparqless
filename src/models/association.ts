@@ -1,8 +1,6 @@
 import { ClassDescriptor } from './class';
+import { PropertyDescriptor } from './property';
 
-export interface AssociationDescriptor {
-    iri: string;
-    name: string; // GraphQL friendly name - only contains [_a-zA-Z0-9]
+export interface AssociationDescriptor extends PropertyDescriptor {
     targetClass: ClassDescriptor;
-    count: number;
 }
