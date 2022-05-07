@@ -47,6 +47,12 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Usage</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installing-dependencies">Installing dependencies</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#edit-configuration">Edit configuration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#run-it">Run it</a>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -83,9 +89,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="dependencies">Dependencies</h2>
-<p>Node 16.13.0 (Gallium LTS) - easily managed with <a href="https://github.com/nvm-sh/nvm">nvm</a></p>
-<p>npm</p>
+                <h1 id="usage-guide">Usage guide</h1>
+<p>This page will explain how to set up SPARQL2GraphQL for a given SPARQL endpoint, step-by-step.</p>
+<h2 id="installing-dependencies">Installing dependencies</h2>
+<p>The project is written in Typescript and uses Node.js as its runtime.</p>
+<p>You will need to have the following installed before you proceed with usage:</p>
+<ul>
+<li>Node 16.13.0 (Gallium LTS) - easily managed with <a href="https://github.com/nvm-sh/nvm">nvm</a></li>
+<li>npm</li>
+</ul>
+<p>Once you have installed them, run <code>npm install</code> in the project root directory to install
+all required dependencies with npm.</p>
+<h2 id="edit-configuration">Edit configuration</h2>
+<p>There is one required configuration step before you run the project - configuring
+the SPARQL endpoint you want to run. In <a href="../src/api/config.ts">config.ts</a>, set the value
+<code>ENDPOINT_TO_RUN</code> to refer to your endpoint. There is a pre-defined list of endpoints
+in <a href="../src/observation/endpoints.ts">endpoints.ts</a> in case you just want to try the project
+without having a specific SPARQL endpoint in mind, but you can easily define your own like so:</p>
+<pre><code class="language-ts">export const ENDPOINT_TO_RUN = {
+    url: 'https://data.europa.eu/sparql',
+    name: 'European Data',
+};
+</code></pre>
+<p>The <code>name</code> can be whatever you want, it's just an easily readable identifier used in logs.</p>
+<p>There are other configuration values which you are free to modify, but they have sensible defaults
+in case you just want to get started.</p>
+<h2 id="run-it">Run it</h2>
+<p>After everything is configured, run <code>npm start</code> to start SPARQL2GraphQL.</p>
+<p>In the logs, you will see that it will first run some observations on the target
+endpoint to collect information about its schema and the data contained within.
+This may take a while, especially for large datasets, depending on the configuration parameters used.</p>
+<p>After observation is finished, you will see that a fully functional GraphQL interface is
+available for you to explore at the configured port (http://localhost:4000 by default).</p>
               
             </div>
           </div><footer>
