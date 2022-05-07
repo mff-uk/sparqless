@@ -1,0 +1,18 @@
+site_name: SPARQL2GraphQL
+site_url: https://yawnston.github.io/sparql2graphql/
+repo_url: https://github.com/yawnston/sparql2graphql
+
+nav:
+  - Home: 'index.md'
+  - 'User Guide':
+    - Usage: 'usage.md'
+  - 'How it works':
+    - Overview: 'overview.md'
+    - Postprocessing: 'postprocessing.md'
+  - 'Developer Guide':
+    - Development: 'development.md'
+
+theme:
+  name: readthedocs
+  locale: en
+  titles_only: True

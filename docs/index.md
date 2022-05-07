@@ -8,7 +8,9 @@ friendly interface which they likely already know how to use - GraphQL.
 Simply configure SPARQL2GraphQL with the URL of a SPARQL endpoint which has some data which interests you, and
 let it do its magic. Soon, you will have a GraphQL instance which you can use to painlessly explore and query the data.
 
-## Documentation
+If you want to get started right away, check out the [usage guide](usage.md).
 
-The documentation located [here](https://yawnston.github.io/sparql2graphql/)
-includes installation instructions, programmer and user guides, and much more.
+If you want to find out how it works, find that out [here](overview.md).
+
+If you wish to tinker with the project's code, or even contribute to it, [here](development.md) is a development
+handbook.
