@@ -53,7 +53,15 @@
               <ul class="current">
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">Overview</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../observation/">Observation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../parsing/">Parsing</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../postprocessing/">Postprocessing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../schema/">Schema Creation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../querying/">Querying</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Developer Guide</span></p>
@@ -88,13 +96,27 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="overview-of-how-it-all-works">Overview of how it all works</h1>
+<p>This page will explain the process used by SPARQL2GraphQL when creating
+a GraphQL endpoint from the SPARQL endpoint.</p>
+<h2 id="general-flow">General flow</h2>
+<p>First of all, the user should configure the application. The most basic configuration step
+is to configure the SPARQL endpoint to observe. However, besides other configuration
+values, the user may also write custom postprocessing hooks for parts of the
+extracted data model. You can read more about those <a href="../postprocessing/">here</a>.</p>
+<p>When the user configures and runs the application, the setup flow looks
+like this:</p>
 <p><img alt="Observation sequence diagram" src="../img/observation.png" /></p>
+<p>As the diagram shows, at the end of the setup, there is a fully functional
+GraphQL endpoint active, in which the user can explore and query the endpoint.</p>
+<p><strong>TODO:</strong> ADD QUERY RESOLVERS INFORMATION HERE WHEN THAT FEATURE IS FINISHED
+(INCLUDING A GRAPH SHOWING HOW THE GraphQL QUERY IS EXECUTED)</p>
+<h2 id="components">Components</h2>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../usage/" class="btn btn-neutral float-left" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../postprocessing/" class="btn btn-neutral float-right" title="Postprocessing">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../observation/" class="btn btn-neutral float-right" title="Observation">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -124,7 +146,7 @@
       <span><a href="../usage/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../postprocessing/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../observation/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://yawnston.github.io/sparql2graphql/usage/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://yawnston.github.io/sparql2graphql/parsing/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Usage - SPARQL2GraphQL</title>
+    <title>Parsing - SPARQL2GraphQL</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Usage";
-        var mkdocs_page_input_path = "usage.md";
-        var mkdocs_page_url = "/sparql2graphql/usage/";
+        var mkdocs_page_name = "Parsing";
+        var mkdocs_page_input_path = "parsing.md";
+        var mkdocs_page_url = "/sparql2graphql/parsing/";
       </script>
     
     <script src="../js/jquery-3.6.0.min.js" defer></script>
@@ -45,17 +45,17 @@
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">User Guide</span></p>
-              <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Usage</a>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../usage/">Usage</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">How it works</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../observation/">Observation</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../parsing/">Parsing</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Parsing</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../postprocessing/">Postprocessing</a>
                   </li>
@@ -83,9 +83,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-          <li>User Guide &raquo;</li><li>Usage</li>
+          <li>How it works &raquo;</li><li>Parsing</li>
     <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/yawnston/sparql2graphql/edit/master/docs/usage.md"
+        <a href="https://github.com/yawnston/sparql2graphql/edit/master/docs/parsing.md"
           class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
@@ -95,56 +95,45 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="usage-guide">Usage guide</h1>
-<p>This page will explain how to set up SPARQL2GraphQL for a given SPARQL endpoint, step-by-step.</p>
-<h2 id="installing-dependencies">Installing dependencies</h2>
-<p>The project is written in TypeScript and uses Node.js as its runtime.</p>
-<p>You will need to have the following installed before you proceed with usage:</p>
+                <h1 id="parsing">Parsing</h1>
+<p>Observations made about a SPARQL endpoint are then parsed by
+the <code>ObservationParser</code>. Its method <code>buildEndpointModel</code> receives
+a list of observations as a parameter (in the form of <code>QueryResult[]</code>),
+and it parses those observations into an object model describing
+the data.</p>
+<h2 id="descriptors">Descriptors</h2>
+<p>The model is expressed in the form of <strong>descriptors</strong>, which are objects
+storing metadata about various entities present in the dataset.
+The descriptors are located in the <code>src/models/</code> folder.</p>
+<p>These are the descriptors currently used:</p>
 <ul>
-<li>Node 16.13.0 (Gallium LTS) - easily managed with <a href="https://github.com/nvm-sh/nvm">nvm</a></li>
-<li>npm</li>
+<li><code>EntityDescriptor</code>: Describes any entity with an IRI, which is basically
+everything in the RDF world. Other descriptors inherit from this descriptor.</li>
+<li><code>NamedEntityDescriptor</code>: Describes any entity which should also have
+a human-readable and short name. It can be a bit cumbersome for humans
+to constantly use IRIs to refer to things, so SPARQL2GraphQL makes this
+easier by providing simplified names to display in the user interface.</li>
+<li><code>ClassDescriptor</code>: Describes a single class present in the dataset.</li>
+<li><code>InstanceDescriptor</code>: Describes a single instance of a class.</li>
+<li><code>PropertyDescriptor</code>: Describes a property of a class (association
+or attribute),</li>
+<li><code>AssociationDescriptor</code>: Describes an association of a class, i.e.
+a property whose range is another class.</li>
+<li><code>AttributeDescriptor</code>: Describes an attribute of a class, i.e.
+a property whose range is a primitive type.</li>
 </ul>
-<p>Once you have installed them, run <code>npm install</code> in the project root directory to install
-all required dependencies with npm.</p>
-<h2 id="edit-configuration">Edit configuration</h2>
-<p>There is one required configuration step before you run the project - configuring
-the SPARQL endpoint you want to run. In <code>src/api/config.ts</code>, set the value
-<code>ENDPOINT_TO_RUN</code> to refer to your endpoint. There is a pre-defined list of endpoints
-in <code>src/observation/endpoints.ts</code> in case you just want to try the project
-without having a specific SPARQL endpoint in mind, but you can easily define your own like so:</p>
-<pre><code class="language-ts">export const ENDPOINT_TO_RUN = {
-    url: 'https://data.europa.eu/sparql',
-    name: 'European Data',
-};
-</code></pre>
-<p>The <code>name</code> can be whatever you want, it's just an easily readable identifier used in logs.</p>
-<p>There are other configuration values which you are free to modify, but they have
-sensible defaults in case you just want to get started. If you want to find out
-more about additional configuration options, variables are documented in the
-configuration files itself. More advanced configuration options like postprocessing
-hooks are also available, you can read more about them <a href="../postprocessing/">here</a>.</p>
-<h2 id="run-it">Run it</h2>
-<p>After everything is configured, run <code>npm start</code> to start SPARQL2GraphQL.</p>
-<p>In the logs, you will see that it will first run some observations on the target
-endpoint to collect information about its schema and the data contained within.
-This may take a while, especially for large datasets, depending on the configuration
-parameters used.</p>
-<p>After observation is finished, you will see that a fully functional GraphQL interface is
-available for you to explore at the configured port (<a href="http://localhost:4000">localhost:4000</a>
-by default).</p>
-<h2 id="explore-the-schema">Explore the schema</h2>
-<p>When you open the GraphQL interface in your browser, you will see an interface
-provided by Apollo Server. It allows you to explore the schema including all of the available
-classes, as well as their properties, relations, how many times they occur in the dataset
-and other metadata.</p>
-<p><img alt="GraphQL interface" src="../img/interface.png" /></p>
-<p>The interface also allows you to interactively build and execute queries against the endpoint.</p>
+<h2 id="parsing-algorithm">Parsing algorithm</h2>
+<p>For each type of observation, there is a method in the <code>ObservationParser</code>
+which parses this observation into a descriptor object.</p>
+<p>Therefore the parsing algorithm essentially consists of iterating
+over the collected observations, choosing the correct parsing
+function for each observation, and then executing the function.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../overview/" class="btn btn-neutral float-right" title="Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../observation/" class="btn btn-neutral float-left" title="Observation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../postprocessing/" class="btn btn-neutral float-right" title="Postprocessing">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -171,10 +160,10 @@ and other metadata.</p>
         </span>
     
     
-      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../observation/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../overview/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../postprocessing/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
