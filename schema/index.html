@@ -109,7 +109,7 @@ to fit that schema. Unfortunately, generating a schema description
 like this would be very tedious when the schema is machine-generated,
 which is our case.</p>
 <p>Therefore SPARQL2GraphQL uses <a href="https://nexusjs.org/">GraphQL Nexus</a>
-as a way to define the GraphQL schema. GraphQP Nexus is a library which
+as a way to define the GraphQL schema. GraphQL Nexus is a library which
 facilitates code-first, declarative schema declarations. This means that
 defining the GraphQL schema is a matter of converting each <code>ClassDescriptor</code>
 into a type definition in the GraphQL schema, and using
