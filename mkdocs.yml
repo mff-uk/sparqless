@@ -8,7 +8,11 @@ nav:
     - Usage: 'usage.md'
   - 'How it works':
     - Overview: 'overview.md'
+    - Observation: 'observation.md'
+    - Parsing: 'parsing.md'
     - Postprocessing: 'postprocessing.md'
+    - 'Schema Creation': 'schema.md'
+    - Querying: 'querying.md'
   - 'Developer Guide':
     - Development: 'development.md'
 
