@@ -6,14 +6,15 @@ descriptors.
 
 This creation is the purpose of the `createSchema` function in
 `src/api/schema.ts`. It uses the descriptors to produce a complete
-GraphQL schema in the form of a `NexusGraphQLSchema`.
+GraphQL schema in the form of a `NexusGraphQLSchema` (from the
+[GraphQL Nexus](https://nexusjs.org/) library).
 
 Normally, a schema-first approach is used for modeling GraphQL APIs,
 meaning developers would first write the GraphQL schema using a schema
 declaration language, and they would then build their data model
-to fit that schema. Unfortunately, generating a schema description
-like this would be very tedious when the schema is machine-generated,
-which is our case.
+to fit that schema. However, automatically generating a schema
+in the GraphQL schema language is quite cumbersome and involves
+a lot of string manipulation.
 
 Therefore SPARQL2GraphQL uses [GraphQL Nexus](https://nexusjs.org/)
 as a way to define the GraphQL schema. GraphQL Nexus is a library which

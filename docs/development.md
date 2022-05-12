@@ -1,4 +1,4 @@
-## Development
+# Development
 
 Build, lint and test are automatically run in GitHub Actions.
 They are required to pass for every PR and commit to `master`.
@@ -43,8 +43,3 @@ compile the required files and run the app in debug mode.
 ### Testing
 
 `npm test` will run tests with Jest and generate a testing + coverage report.
-
-## Editing documentation
-
-This documentation is generated using [mkdocs](https://www.mkdocs.org/) from the Markdown files
-in the `docs` directory, and manually deployed to GitHub Pages with `mkdocs gh-deploy`.

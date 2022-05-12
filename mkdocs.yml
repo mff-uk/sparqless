@@ -15,8 +15,16 @@ nav:
     - Querying: 'querying.md'
   - 'Developer Guide':
     - Development: 'development.md'
+    - 'Editing documentation': 'editing_documentation.md'
 
 theme:
   name: readthedocs
   locale: en
   titles_only: True
+
+plugins:
+  - with-pdf:
+      author: Daniel Crha
+      copyright: Charles University
+      cover_subtitle: Bringing RDF datasets to all developers
+      output_path: pdf/documentation.pdf

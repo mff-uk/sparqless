@@ -1,6 +1,7 @@
 # Postprocessing
 
-The postprocessing phase occurs after the model has been built based on
+The postprocessing phase occurs after the model
+(i.e. a set of descriptors) has been built based on
 observations of the SPARQL endpoint, but before the GraphQL schema
 is built.
 

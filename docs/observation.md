@@ -6,12 +6,15 @@ of RDF quads (stored in the `QueryResult` type). These quads are generally
 constructed to have a blank node subject representing a single observation,
 and its properties then describe that observation. The following is an
 example of quads describing the existence of a class in the dataset
-(`[]` denotes a blank node):
+(`_:observation` denotes a blank node):
 
 ```rdf
-[] se:class foaf:Agent;
+_:observation
+   se:class foaf:Agent;
    se:numberOfInstances 42.
 ```
+
+**TODO: make this more ontology-oriented**
 
 This particular observation says that the dataset contains a class called
 `foaf:Agent` which has 42 instances.
