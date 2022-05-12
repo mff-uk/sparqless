@@ -1,5 +1,6 @@
 import { Quad } from 'rdf-js';
 import StreamClient from 'sparql-http-client';
+import ParsingClient from 'sparql-http-client/ParsingClient';
 import { DETAILED_LOG } from '../api/config';
 import { SPARQLEndpointDefinition } from './endpoints';
 
@@ -19,7 +20,7 @@ export class EndpointClient {
      * @param query SPARQL query to execute
      * @return `Promise` with results of the query
      */
-    async runQuery(query: string): Promise<QueryResult> {
+    async runConstructQuery(query: string): Promise<QueryResult> {
         const client = new StreamClient({
             endpointUrl: this.endpoint.url,
         });
@@ -58,6 +59,14 @@ export class EndpointClient {
 
             return queryResult;
         });
+    }
+
+    async runSelectQuery(query: string): Promise<any[]> {
+        const client = new ParsingClient({
+            endpointUrl: this.endpoint.url,
+        });
+        const results = await client.query.construct(query);
+        return results;
     }
 
     private getElapsedTime(startTimeMs: number): number {

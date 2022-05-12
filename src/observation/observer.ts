@@ -51,7 +51,7 @@ export class EndpointObserver {
         const client = new EndpointClient(endpoint);
 
         const query = QueryBuilder.CLASSES_AND_INSTANCE_NUMBERS();
-        const result = await client.runQuery(query);
+        const result = await client.runConstructQuery(query);
         endpointResults.push(result);
 
         let classIriList = result.quads
@@ -75,11 +75,13 @@ export class EndpointObserver {
             );
             const propQuery =
                 QueryBuilder.NUMBER_OF_INSTANCE_PROPERTIES(classIri);
-            const propResult = await client.runQuery(propQuery);
+            const propResult = await client.runConstructQuery(propQuery);
             endpointResults.push(propResult);
 
             const instanceQuery = QueryBuilder.CLASS_INSTANCES(classIri);
-            const instanceResult = await client.runQuery(instanceQuery);
+            const instanceResult = await client.runConstructQuery(
+                instanceQuery,
+            );
             endpointResults.push(instanceResult);
 
             const instanceIriList = instanceResult.quads
@@ -94,14 +96,16 @@ export class EndpointObserver {
                     classIri,
                     instanceIri,
                 );
-                const attributeResult = await client.runQuery(attributeQuery);
+                const attributeResult = await client.runConstructQuery(
+                    attributeQuery,
+                );
                 endpointResults.push(attributeResult);
 
                 const associationQuery = QueryBuilder.INSTANCE_ASSOCIATIONS(
                     classIri,
                     instanceIri,
                 );
-                const associationResult = await client.runQuery(
+                const associationResult = await client.runConstructQuery(
                     associationQuery,
                 );
                 endpointResults.push(associationResult);
