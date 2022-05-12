@@ -4,17 +4,17 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://yawnston.github.io/sparql2graphql/overview/" rel="canonical"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://yawnston.github.io/sparql2graphql/editing_documentation/" rel="canonical"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>Overview - SPARQL2GraphQL</title>
+<title>Editing documentation - SPARQL2GraphQL</title>
 <link href="../css/theme.css" rel="stylesheet"/>
 <link href="../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
 <script>
         // Current page data
-        var mkdocs_page_name = "Overview";
-        var mkdocs_page_input_path = "overview.md";
-        var mkdocs_page_url = "/sparql2graphql/overview/";
+        var mkdocs_page_name = "Editing documentation";
+        var mkdocs_page_input_path = "editing_documentation.md";
+        var mkdocs_page_url = "/sparql2graphql/editing_documentation/";
       </script>
 <script defer="" src="../js/jquery-3.6.0.min.js"></script>
 <!--[if lt IE 9]>
@@ -42,8 +42,8 @@
 </li>
 </ul>
 <p class="caption"><span class="caption-text">How it works</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal current" href="./">Overview</a>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../observation/">Observation</a>
 </li>
@@ -57,10 +57,10 @@
 </li>
 </ul>
 <p class="caption"><span class="caption-text">Developer Guide</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../development/">Development</a>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../editing_documentation/">Editing documentation</a>
+<li class="toctree-l1 current"><a class="reference internal current" href="./">Editing documentation</a>
 </li>
 </ul>
 </div>
@@ -75,45 +75,62 @@
 <div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
 <ul class="wy-breadcrumbs">
 <li><a alt="Docs" class="icon icon-home" href=".."></a> »</li>
-<li>How it works »</li><li>Overview</li>
+<li>Developer Guide »</li><li>Editing documentation</li>
 <li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/yawnston/sparql2graphql/edit/master/docs/overview.md"> Edit on GitHub</a>
+<a class="icon icon-github" href="https://github.com/yawnston/sparql2graphql/edit/master/docs/editing_documentation.md"> Edit on GitHub</a>
 </li>
 </ul>
 <hr/>
 </div>
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
-<h1 id="overview-of-how-it-all-works">Overview of how it all works</h1>
-<p>This page will explain the process used by SPARQL2GraphQL when creating
-a GraphQL endpoint from the SPARQL endpoint.</p>
-<h2 id="general-flow">General flow</h2>
-<p>First of all, the user should configure the application. The most basic configuration step
-is to configure the SPARQL endpoint to observe. However, besides other configuration
-values, the user may also write custom postprocessing hooks for parts of the
-extracted data model. You can read more about those <a href="../postprocessing/">here</a>.</p>
-<p>When the user configures and runs the application, the setup flow looks
-like this:</p>
-<p><img alt="Observation sequence diagram" src="../img/observation.png"/></p>
-<p>As the diagram shows, at the end of the setup, there is a fully functional
-GraphQL endpoint active, in which the user can explore and query the endpoint.</p>
-<p><strong>TODO:</strong> ADD QUERY RESOLVERS INFORMATION HERE WHEN THAT FEATURE IS FINISHED
-(INCLUDING A GRAPH SHOWING HOW THE GraphQL QUERY IS EXECUTED)</p>
-<h2 id="components">Components</h2>
-<p>The following is a list of components you can see in the diagrams above,
-with more detailed descriptions of what they do and how they do it:</p>
-<ul>
-<li><a href="../observation/">Observation</a></li>
-<li><a href="../parsing/">Parsing</a></li>
-<li><a href="../postprocessing/">Postprocessing</a></li>
-<li><a href="../schema/">Schema Creation</a></li>
-<li><a href="../querying/">Querying</a></li>
-</ul>
+<h1 id="editing-documentation">Editing documentation</h1>
+<p>This documentation is generated using <a href="https://www.mkdocs.org/">mkdocs</a> from the Markdown files
+in the <code>docs</code> directory, and manually deployed to GitHub Pages with <code>mkdocs gh-deploy</code>.
+The URL for the deployed documentation is
+<a href="https://yawnston.github.io/sparql2graphql/">https://yawnston.github.io/sparql2graphql/</a>.</p>
+<p>If you want to modify the documentation, simply modify the Markdown source
+of whichever documentation you wish. If you create a new documentation page,
+you will need to add it to the <code>nav</code> in <code>mkdocs.yml</code>:</p>
+<pre><code class="language-yaml">nav:
+  - Home: 'index.md'
+  - 'User Guide':
+    - Usage: 'usage.md'
+  - 'How it works':
+    - Overview: 'overview.md'
+    - Observation: 'observation.md'
+    - Parsing: 'parsing.md'
+    - Postprocessing: 'postprocessing.md'
+    - 'Schema Creation': 'schema.md'
+    - Querying: 'querying.md'
+  - 'Developer Guide':
+    - Development: 'development.md'
+</code></pre>
+<h2 id="installing-requirements">Installing requirements</h2>
+<p>In order to build, serve or deploy the documentation, you will
+need to have Python 3 installed, since it is required to run <a href="https://www.mkdocs.org/">mkdocs</a>.</p>
+<p>To install mkdocs and other required plugins, run <code>pip install -r requirements.txt</code>.</p>
+<h2 id="viewing-documentation-locally">Viewing documentation locally</h2>
+<p>Run <code>mkdocs serve</code> to build the documentation and serve it on localhost.
+In the terminal, you will see a link to open this documentation
+in your web browser.</p>
+<h2 id="generating-pdf-documentation">Generating PDF documentation</h2>
+<p>If for any reason you want to have a PDF version of the documentation,
+run <code>mkdocs build</code>. This will generate a PDF containing the documentation
+in <code>site/pdf/documentation.pdf</code>.</p>
+<p>Note that you may see an error about a missing theme during build - this is unavoidable
+when using the same <code>mkdocs.yaml</code> for both the website and the PDF documentation, and you
+may safely ignore this error.</p>
+<h2 id="deploying-documentation">Deploying documentation</h2>
+<p>If you want to deploy the documentation to GitHub Pages, run <code>mkdocs gh-deploy</code>,
+and the updated documentation should be available at
+<a href="https://yawnston.github.io/sparql2graphql/">https://yawnston.github.io/sparql2graphql/</a>
+within a few minutes. Note that you may need to refresh the page without caching in order
+to see the changes (<code>Ctrl</code> + <code>F5</code> or <code>Shift</code> + <code>F5</code> in Google Chrome).</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
-<a class="btn btn-neutral float-left" href="../usage/" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-<a class="btn btn-neutral float-right" href="../observation/" title="Observation">Next <span class="icon icon-circle-arrow-right"></span></a>
+<a class="btn btn-neutral float-left" href="../development/" title="Development"><span class="icon icon-circle-arrow-left"></span> Previous</a>
 </div>
 <hr/>
 <div role="contentinfo">
@@ -131,8 +148,7 @@ with more detailed descriptions of what they do and how they do it:</p>
 <span>
 <a class="fa fa-github" href="https://github.com/yawnston/sparql2graphql" style="color: #fcfcfc"> GitHub</a>
 </span>
-<span><a href="../usage/" style="color: #fcfcfc">« Previous</a></span>
-<span><a href="../observation/" style="color: #fcfcfc">Next »</a></span>
+<span><a href="../development/" style="color: #fcfcfc">« Previous</a></span>
 </span>
 </div>
 <script>var base_url = '..';</script>
