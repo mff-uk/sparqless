@@ -29,6 +29,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
+    "@types/arrayify-stream": "^1.0.1",
     "@types/glob": "^7.2.0",
     "@types/graphql": "^14.5.0",
     "@types/jest": "^27.0.2",
@@ -51,6 +52,8 @@
   "dependencies": {
     "@graphql-tools/utils": "^8.6.5",
     "apollo-server": "^3.6.7",
+    "arrayify-stream": "^2.0.0",
+    "fetch-sparql-endpoint": "^2.4.0",
     "glob": "^7.2.0",
     "graphql": "^16.3.0",
     "lodash": "^4.17.21",

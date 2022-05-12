@@ -1,7 +1,9 @@
 import { makeSchema, queryType } from 'nexus';
 import {
+    intArg,
     NexusGraphQLSchema,
     NexusObjectTypeDef,
+    nonNull,
     objectType,
 } from 'nexus/dist/core';
 import { ClassDescriptor } from '../models/class';
@@ -24,46 +26,16 @@ export function createSchema(
 ): NexusGraphQLSchema {
     const endpointTypes = createEndpointTypes(classes);
 
-    // TODO: add resolvers functionality (big feature)
     const query = queryType({
         definition(t) {
             for (const classDescriptor of classes) {
                 t.nonNull.list.field(classDescriptor.name, {
                     type: classDescriptor.name,
+                    args: {
+                        limit: intArg(),
+                        offset: intArg(),
+                    },
                     resolve: createClassResolver(classDescriptor, true),
-                    // resolve: async (_root, _args, _context, _info) => {
-                    //     const requestedFieldNames = _info.fieldNodes[0].selectionSet?.selections.map(x => (x as FieldNode).name.value)!
-                    //         .filter(x => !['_rdf_type', '_rdf_iri'].includes(x))!;
-                    //     const classProperties = [...classDescriptor.attributes, ...classDescriptor.associations];
-                    //     const requestedFieldIRIs = requestedFieldNames.map(x => classProperties.find(y => y.name === x)!.iri)
-                    //     const query = `PREFIX se: <http://skodapetr.eu/ontology/sparql-endpoint/>
-                    //     SELECT ?instance ?property ?propertyValue
-                    //     WHERE {
-                    //         VALUES ( ?property ) {
-                    //             ${requestedFieldIRIs.map(x => `(<${x}>)`).join(' ')}
-                    //         }
-                    //         ?instance
-                    //             a <${classDescriptor.iri}> ;
-                    //             ?property ?propertyValue .
-                    //     }`;
-
-                    //     const results = await new EndpointClient(ENDPOINT_TO_RUN).runSelectQuery(query);
-                    //     const groupedResults = groupBy(results, x => x.instance.value);
-
-                    //     const resultObjects = Object.entries(groupedResults).map(([instanceIRI, instanceProperties]) => {
-                    //         const parsedInstance: any = {
-                    //             _rdf_type: classDescriptor.iri,
-                    //             _rdf_iri: instanceIRI,
-                    //         };
-                    //         for (const instanceProperty of instanceProperties) {
-                    //             const descriptor = classProperties.find(x => x.iri === instanceProperty.property.value)!;
-                    //             parsedInstance[descriptor.name] = instanceProperty.propertyValue.value;
-                    //         }
-                    //         return parsedInstance;
-                    //     });
-
-                    //     return resultObjects;
-                    // }
                 });
             }
         },
@@ -96,6 +68,7 @@ Original IRI is ${attribute.iri}.`,
                     } else if (attribute.type.endsWith('integer')) {
                         t.int(attribute.name, fieldConfig);
                     } else if (attribute.type.endsWith('boolean')) {
+                        // TODO: adding simple resolvers for booleans? and potentially integers too
                         t.boolean(attribute.name, fieldConfig);
                     } else {
                         // TODO: what should we do about other attribute types? Like dates or custom ones

@@ -8,8 +8,9 @@ import { EndpointClient } from '../observation/client';
 export function createClassResolver(
     classDescriptor: ClassDescriptor,
     isArrayType: boolean,
+    instanceIRI?: string,
 ): FieldResolver<string, string> {
-    return async (_root, _args, _context, info) => {
+    return async (_parent, args, _context, info) => {
         const requestedFieldNames = info.fieldNodes[0].selectionSet?.selections
             .map((x) => (x as FieldNode).name.value)!
             .filter((x) => !['_rdf_type', '_rdf_iri'].includes(x))!;
@@ -20,38 +21,43 @@ export function createClassResolver(
         const requestedFieldIRIs = requestedFieldNames.map(
             (x) => classProperties.find((y) => y.name === x)!.iri,
         );
-        const query = `PREFIX se: <http://skodapetr.eu/ontology/sparql-endpoint/>
-        SELECT ?instance ?property ?propertyValue
+
+        const queryVars = requestedFieldIRIs.map((iri, index) => {
+            return {
+                propertyIri: iri,
+                propertyName: requestedFieldNames[index],
+                variableName: `?p${index}`,
+                variableKey: `p${index}`,
+            };
+        });
+        const query = `
+        SELECT ?instance ${queryVars.map((x) => x.variableName).join(' ')}
         WHERE {
-            VALUES ( ?property ) {
-                ${requestedFieldIRIs.map((x) => `(<${x}>)`).join(' ')}
-            }
             ?instance
-                a <${classDescriptor.iri}> ;
-                ?property ?propertyValue .
-        }`;
+                ${queryVars
+                    .map((x) => `<${x.propertyIri}> ${x.variableName} ;`)
+                    .join(' ')} 
+                a <${classDescriptor.iri}> .
+            ${instanceIRI ? `FILTER (?instance=<${instanceIRI}>)` : ''}
+        }
+        ${args.limit ? `LIMIT ${args.limit}` : ''}
+        ${args.offset ? `OFFSET ${args.offset}` : ''}`;
 
         const results = await new EndpointClient(
             ENDPOINT_TO_RUN,
         ).runSelectQuery(query);
-        const groupedResults = groupBy(results, (x) => x.instance.value);
 
-        const resultObjects = Object.entries(groupedResults).map(
-            ([instanceIRI, instanceProperties]) => {
-                const parsedInstance: any = {
-                    _rdf_type: classDescriptor.iri,
-                    _rdf_iri: instanceIRI,
-                };
-                for (const instanceProperty of instanceProperties) {
-                    const descriptor = classProperties.find(
-                        (x) => x.iri === instanceProperty.property.value,
-                    )!;
-                    parsedInstance[descriptor.name] =
-                        instanceProperty.propertyValue.value;
-                }
-                return parsedInstance;
-            },
-        );
+        const resultObjects = results.map((bindings) => {
+            const parsedInstance: any = {
+                _rdf_type: classDescriptor.iri,
+                _rdf_iri: bindings.instance.value,
+            };
+            for (const instanceProperty of queryVars) {
+                parsedInstance[instanceProperty.propertyName] =
+                    bindings[instanceProperty.variableKey].value;
+            }
+            return parsedInstance;
+        });
 
         if (!isArrayType) {
             if (resultObjects.length === 0) {

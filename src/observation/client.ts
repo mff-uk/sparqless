@@ -1,7 +1,8 @@
+import arrayifyStream from 'arrayify-stream';
+import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { Quad } from 'rdf-js';
 import StreamClient from 'sparql-http-client';
-import ParsingClient from 'sparql-http-client/ParsingClient';
-import { DETAILED_LOG } from '../api/config';
+import { DETAILED_LOG, ENDPOINT_TO_RUN } from '../api/config';
 import { SPARQLEndpointDefinition } from './endpoints';
 
 /**
@@ -62,10 +63,14 @@ export class EndpointClient {
     }
 
     async runSelectQuery(query: string): Promise<any[]> {
-        const client = new ParsingClient({
-            endpointUrl: this.endpoint.url,
-        });
-        const results = await client.query.construct(query);
+        // Using the fetch-sparql-endpoint library for this
+        // seems to give much more reliable results than sparql-http-client,
+        // which would throw errors on many endpoints.
+        const fetcher = new SparqlEndpointFetcher();
+        const stream = await fetcher.fetchBindings(ENDPOINT_TO_RUN.url, query);
+        const results = await arrayifyStream(stream);
+
+        const x = 1;
         return results;
     }
 
