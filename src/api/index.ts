@@ -1,6 +1,9 @@
 import { ApolloServer } from 'apollo-server';
+import path from 'path';
 import { EndpointObserver } from '../observation/observer';
 import { ObservationParser } from '../parsing/parser';
+import { DescriptorPostprocessor } from '../postprocessing/postprocessor';
+import { getRegisteredPostprocessingHooks } from '../postprocessing/registered_hooks';
 import { ENDPOINT_TO_RUN, EXAMINE_N_CLASSES, PORT } from './config';
 import { createSchema } from './schema';
 
@@ -12,8 +15,16 @@ observer.observeEndpoint(ENDPOINT_TO_RUN, EXAMINE_N_CLASSES).then((results) => {
     console.log('Building object model...');
     const classes = parser.buildEndpointModel(results);
 
+    console.log('Running postprocessing hooks...');
+    const postprocessor = new DescriptorPostprocessor();
+    const hooks = getRegisteredPostprocessingHooks();
+    postprocessor.postprocess(classes, hooks);
+
     console.log('Creating GraphQL schema...');
-    const schema = createSchema(classes);
+    const schema = createSchema(
+        classes,
+        path.join(__dirname, '../../generated-schema.graphql'),
+    );
 
     console.log('Starting GraphQL server...');
     const server = new ApolloServer({ schema });

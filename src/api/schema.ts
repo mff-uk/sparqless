@@ -11,9 +11,15 @@ import { ClassDescriptor } from '../models/class';
  * This schema may then be used by a GraphQL server.
  *
  * @param classes Class descriptors describing the SPARQL endpoint.
+ * @param schemaOutputPath The path where the GraphQL schema should be
+ * generated. Set to `undefined` if you don't want to output
+ * the generated GraphQL schema to disk.
  * @return Generated GraphQL schema.
  */
-export function createSchema(classes: ClassDescriptor[]): NexusGraphQLSchema {
+export function createSchema(
+    classes: ClassDescriptor[],
+    schemaOutputPath: string | undefined,
+): NexusGraphQLSchema {
     const endpointTypes = createEndpointTypes(classes);
 
     // TODO: add resolvers functionality (big feature)
@@ -29,6 +35,9 @@ export function createSchema(classes: ClassDescriptor[]): NexusGraphQLSchema {
 
     const schema = makeSchema({
         types: [query, ...endpointTypes],
+        outputs: {
+            schema: schemaOutputPath,
+        },
     });
 
     return schema;

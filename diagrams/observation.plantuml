@@ -1,0 +1,48 @@
+@startuml
+actor User
+collections Config as config.ts
+participant EndpointObserver
+participant ObservationParser
+participant DescriptorPostprocessor
+participant createSchema
+participant ApolloServer
+
+User --> config.ts: Configure application
+User --> DescriptorPostprocessor: Register postprocessings (optional)
+
+config.ts -> EndpointObserver: Configuration
+
+rnote over EndpointObserver
+  Collect observations
+  about SPARQL endpoint
+endrnote
+
+EndpointObserver -> ObservationParser: QueryResult[]
+
+rnote over ObservationParser
+  Build model
+  from observations
+endrnote
+
+ObservationParser -> DescriptorPostprocessor: ClassDescriptor[]
+
+rnote over DescriptorPostprocessor
+  Run postprocessing hooks
+  on descriptors
+endrnote
+
+DescriptorPostprocessor -> createSchema: ClassDescriptor[]
+
+rnote over createSchema
+  Generate GraphQL schema
+endrnote
+
+createSchema -> ApolloServer: NexusGraphQLSchema
+
+rnote over ApolloServer
+  Run GraphQL server
+endrnote
+
+User -> ApolloServer: Browse schema and build queries
+
+@enduml

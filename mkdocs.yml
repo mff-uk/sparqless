@@ -1,0 +1,30 @@
+site_name: SPARQL2GraphQL
+site_url: https://yawnston.github.io/sparql2graphql/
+repo_url: https://github.com/yawnston/sparql2graphql
+
+nav:
+  - Home: 'index.md'
+  - 'User Guide':
+    - Usage: 'usage.md'
+  - 'How it works':
+    - Overview: 'overview.md'
+    - Observation: 'observation.md'
+    - Parsing: 'parsing.md'
+    - Postprocessing: 'postprocessing.md'
+    - 'Schema Creation': 'schema.md'
+    - Querying: 'querying.md'
+  - 'Developer Guide':
+    - Development: 'development.md'
+    - 'Editing documentation': 'editing_documentation.md'
+
+theme:
+  name: readthedocs
+  locale: en
+  titles_only: True
+
+plugins:
+  - with-pdf:
+      author: Daniel Crha
+      copyright: Charles University
+      cover_subtitle: Bringing RDF datasets to all developers
+      output_path: pdf/documentation.pdf

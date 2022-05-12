@@ -1,6 +1,5 @@
-export interface AttributeDescriptor {
-    iri: string;
-    name: string; // GraphQL friendly name - only contains [_a-zA-Z0-9]
+import { PropertyDescriptor } from './property';
+
+export interface AttributeDescriptor extends PropertyDescriptor {
     type: string;
-    count: number;
 }

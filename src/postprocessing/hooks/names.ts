@@ -1,4 +1,5 @@
 import { deburr } from 'lodash';
+import { NamedEntityDescriptor } from '../../models/named_entity';
 
 /**
  * Update the names for the given descriptors using their IRIs.
@@ -9,10 +10,8 @@ import { deburr } from 'lodash';
  *
  * @param descriptors Descriptors for which the names will be updated.
  */
-export function buildNamesFromIRIs(
-    descriptors: { iri: string; name: string }[],
-) {
-    const nameDict: { [name: string]: { iri: string; name: string }[] } = {};
+export function buildNamesFromIRIs(descriptors: NamedEntityDescriptor[]) {
+    const nameDict: { [name: string]: NamedEntityDescriptor[] } = {};
 
     // Make a dictionary to detect conflicting short names.
     // Also make sure to deburr the name to make the resulting
