@@ -1,5 +1,4 @@
-import { FieldNode, GraphQLResolveInfo } from 'graphql';
-import { groupBy } from 'lodash';
+import { FieldNode } from 'graphql';
 import { FieldResolver } from 'nexus';
 import { ENDPOINT_TO_RUN } from '../api/config';
 import { ClassDescriptor } from '../models/class';
@@ -8,12 +7,13 @@ import { EndpointClient } from '../observation/client';
 export function createClassResolver(
     classDescriptor: ClassDescriptor,
     isArrayType: boolean,
+    areFieldsOptional: boolean,
     instanceIRI?: string,
 ): FieldResolver<string, string> {
     return async (_parent, args, _context, info) => {
-        const requestedFieldNames = info.fieldNodes[0].selectionSet?.selections
-            .map((x) => (x as FieldNode).name.value)!
-            .filter((x) => !['_rdf_type', '_rdf_iri'].includes(x))!;
+        const requestedFieldNames = info.fieldNodes[0]
+            .selectionSet!.selections.map((x) => (x as FieldNode).name.value)
+            .filter((x) => !['_rdf_type', '_rdf_iri'].includes(x));
         const classProperties = [
             ...classDescriptor.attributes,
             ...classDescriptor.associations,
@@ -33,11 +33,13 @@ export function createClassResolver(
         const query = `
         SELECT ?instance ${queryVars.map((x) => x.variableName).join(' ')}
         WHERE {
-            ?instance
-                ${queryVars
-                    .map((x) => `<${x.propertyIri}> ${x.variableName} ;`)
-                    .join(' ')} 
-                a <${classDescriptor.iri}> .
+            ?instance a <${classDescriptor.iri}> .
+
+            ${queryVars
+                .map((x) => `?instance <${x.propertyIri}> ${x.variableName} .`)
+                .map((x) => (areFieldsOptional ? `OPTIONAL { ${x} }` : x))
+                .join('\n')}
+
             ${instanceIRI ? `FILTER (?instance=<${instanceIRI}>)` : ''}
         }
         ${args.limit ? `LIMIT ${args.limit}` : ''}
@@ -53,8 +55,10 @@ export function createClassResolver(
                 _rdf_iri: bindings.instance.value,
             };
             for (const instanceProperty of queryVars) {
-                parsedInstance[instanceProperty.propertyName] =
-                    bindings[instanceProperty.variableKey].value;
+                if (bindings.hasOwnProperty(instanceProperty.variableKey)) {
+                    parsedInstance[instanceProperty.propertyName] =
+                        bindings[instanceProperty.variableKey].value;
+                }
             }
             return parsedInstance;
         });

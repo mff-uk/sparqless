@@ -70,7 +70,6 @@ export class EndpointClient {
         const stream = await fetcher.fetchBindings(ENDPOINT_TO_RUN.url, query);
         const results = await arrayifyStream(stream);
 
-        const x = 1;
         return results;
     }
 

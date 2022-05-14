@@ -6,11 +6,8 @@ import { ObservationParser } from '../parsing/parser';
 
 const obs = new EndpointObserver();
 const parser = new ObservationParser();
-obs.observeEndpoint(ENDPOINTS[6], 10).then((results) => {
-    const model = parser.buildEndpointModel(results);
+obs.observeEndpoint(ENDPOINTS[6], 10).then((observations) => {
+    const model = parser.buildEndpointModel(observations);
 
     console.log(`Done! Model has ${model.length} class descriptors.`);
 });
-// obs.observeAllEndpoints().then((results) => {
-//     console.log('Really done!');
-// });

@@ -1,103 +1,199 @@
+import { ONTOLOGY_PREFIX_IRI } from '../api/config';
+
 /**
  * Use this builder's static functions to build SPARQL queries
  * which can be used to carry out endpoint observations.
  */
 export class QueryBuilder {
     static CLASSES_AND_INSTANCE_NUMBERS = () =>
-        `PREFIX se: <http://skodapetr.eu/ontology/sparql-endpoint/>
+        `PREFIX se: <${ONTOLOGY_PREFIX_IRI}>
         CONSTRUCT {
-            [] se:class ?Class ;
-                se:numberOfInstances ?numberOfInstances .
+            []
+              a se:ClassObservation ;
+              se:describedClass ?class ;
+              se:numberOfInstances ?numberOfInstances .
         } WHERE {
             {
-                SELECT ?Class (COUNT(?resource) AS ?numberOfInstances)
+                SELECT ?class (COUNT(?resource) AS ?numberOfInstances)
                 WHERE {
-                    ?resource a ?Class.
+                    ?resource a ?class.
                 }
-                GROUP BY ?Class
+                GROUP BY ?class
             }
         }`;
 
     // TODO: make number of examined instances configurable
     static CLASS_INSTANCES = (classIri: string) =>
-        `PREFIX se: <http://skodapetr.eu/ontology/sparql-endpoint/>
+        `PREFIX se: <${ONTOLOGY_PREFIX_IRI}>
         CONSTRUCT {
-            [] se:resource ?resource ;
-                se:class ?class .
+            []
+              a se:InstanceObservation ;
+              se:classInstance ?resource ;
+              se:parentClass <${classIri}> .
         } WHERE {
             {
-                SELECT ?resource ?class WHERE {
-                    VALUES ( ?class ) {
-                        ( <${classIri}> )
-                    }
-                    ?resource a ?class .
-                }
-                LIMIT 5 
+              SELECT ?resource WHERE {
+                  ?resource a <${classIri}> .
+              }
+              LIMIT 5 
             }
         }`;
 
     static INSTANCE_ATTRIBUTES = (classIri: string, instanceIri: string) =>
-        `PREFIX se: <http://skodapetr.eu/ontology/sparql-endpoint/>
+        `PREFIX se: <${ONTOLOGY_PREFIX_IRI}>
         CONSTRUCT {
-          [] se:property ?property ;
-            se:sourceClass ?class ;
+          []
+            a se:AttributeObservation ;
+            se:describedAttribute ?property ;
+            se:attributeSourceClass <${classIri}> ;
             se:targetLiteral ?targetLiteral .
         } WHERE {
           {
-            SELECT ?class ?targetLiteral  ?property
+            SELECT ?targetLiteral  ?property
             WHERE {
-              VALUES ( ?class ?resource ) {
-                ( <${classIri}> <${instanceIri}> )
-              }
-              ?resource ?property ?targetLiteral .
+              <${instanceIri}> ?property ?targetLiteral .
               FILTER isLiteral(?targetLiteral) 
             }
           } 
         }`;
 
     static INSTANCE_ASSOCIATIONS = (classIri: string, instanceIri: string) =>
-        `PREFIX se: <http://skodapetr.eu/ontology/sparql-endpoint/>
+        `PREFIX se: <${ONTOLOGY_PREFIX_IRI}>
         CONSTRUCT {
-          [] se:property ?property ;
-            se:sourceClass ?class ;
+          []
+            a se:AssociationObservation ;
+            se:describedAssociation ?property ;
+            se:associationSourceClass <${classIri}> ;
             se:targetClass ?targetClass .
         } WHERE {
           {
-            SELECT ?class ?targetClass ?property
+            SELECT ?targetClass ?property
             WHERE {
-              VALUES ( ?class ?resource ) {
-                ( <${classIri}> <${instanceIri}> )
-              }
-              ?resource ?property ?targetResource .
+              <${instanceIri}> ?property ?targetResource .
               OPTIONAL {
                 ?targetResource a ?targetClass .
               }
             }
-            GROUP BY ?class ?targetClass ?property
+            GROUP BY ?targetClass ?property
           } 
         }`;
 
+    // TODO: check if we can make this faster with LIMIT and therefore enable hot reload
     static NUMBER_OF_INSTANCE_PROPERTIES = (classIri: string) =>
-        `PREFIX se: <http://skodapetr.eu/ontology/sparql-endpoint/>
+        `PREFIX se: <${ONTOLOGY_PREFIX_IRI}>
         CONSTRUCT {
-          [] se:property ?property ;
-            se:sourceClass ?class ;
-            se:numberOfInstances ?numberOfInstances;
-            se:targetClass ?targetClass .
+          []
+            a se:PropertyCountObservation ;
+            se:countedProperty ?property ;
+            se:countedPropertySourceClass <${classIri}> ;
+            se:numberOfPropertyInstances ?numberOfInstances .
         } WHERE {
           {
-            SELECT ?class ?targetClass ?property (COUNT(*) AS ?numberOfInstances)
+            SELECT ?targetClass ?property (COUNT(*) AS ?numberOfInstances)
             WHERE {
-              VALUES ( ?class ) {
-                ( <${classIri}>  )
-              }
-              ?s a ?class ;
+              ?s
+                a <${classIri}> ;
                 ?property ?targetResource .
               OPTIONAL {
                 ?targetResource a ?targetClass .
               }
             }
-            GROUP BY ?class ?targetClass ?property
+            GROUP BY ?targetClass ?property
+          } 
+        }`;
+
+    static CLASS_PROPERTY_IRIS = (classIri: string) =>
+        `PREFIX se: <${ONTOLOGY_PREFIX_IRI}>
+        CONSTRUCT {
+          []
+            a se:PropertyExistenceObservation ;
+            se:propertyOf <${classIri}> ;
+            se:propertyIri ?property .
+        }
+        WHERE
+        {
+          {
+            SELECT DISTINCT ?property
+            WHERE {
+              ?instance
+                a <${classIri}> ;
+                ?property ?value .
+            }
+          }
+        }`;
+
+    static SINGLE_PROPERTY_COUNT = (
+        classIri: string,
+        propertyIri: string,
+        maxCount = 0,
+    ) =>
+        `PREFIX se: <${ONTOLOGY_PREFIX_IRI}>
+        CONSTRUCT {
+          []
+            a se:PropertyCountObservation ;
+            se:countedProperty <${propertyIri}> ;
+            se:countedPropertySourceClass <${classIri}> ;
+            se:numberOfPropertyInstances ?numberOfInstances .
+        }
+        WHERE
+        {
+          {
+            SELECT (COUNT(*) AS ?numberOfInstances)
+            WHERE {
+              {
+                SELECT ?value
+                WHERE
+                {
+                  ?instance
+                    a <${classIri}> ;
+                    <${propertyIri}> ?value .
+                }
+                ${maxCount > 0 ? `LIMIT ${maxCount}` : ''}
+              }
+            }
+          }
+        }`;
+
+    static SINGLE_ATTRIBUTE = (classIri: string, propertyIri: string) =>
+        `PREFIX se: <${ONTOLOGY_PREFIX_IRI}>
+        CONSTRUCT {
+          []
+            a se:AttributeObservation ;
+            se:describedAttribute <${propertyIri}> ;
+            se:attributeSourceClass <${classIri}> ;
+            se:targetLiteral ?targetLiteral .
+        } WHERE {
+          {
+            SELECT ?targetLiteral
+            WHERE {
+              ?instance
+                a <${classIri}> ;
+                <${propertyIri}> ?targetLiteral .
+              FILTER isLiteral(?targetLiteral) 
+            }
+            LIMIT 1
+          } 
+        }`;
+
+    static SINGLE_ASSOCIATION = (classIri: string, propertyIri: string) =>
+        `PREFIX se: <${ONTOLOGY_PREFIX_IRI}>
+        CONSTRUCT {
+          []
+            a se:AssociationObservation ;
+            se:describedAssociation <${propertyIri}> ;
+            se:associationSourceClass <${classIri}> ;
+            se:targetClass ?targetClass .
+        } WHERE {
+          {
+            SELECT ?targetClass
+            WHERE {
+              ?instance
+                a <${classIri}> ;
+                <${propertyIri}> ?targetResource .
+              
+              ?targetResource a ?targetClass .
+            }
+            LIMIT 1
           } 
         }`;
 }

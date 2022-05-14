@@ -3,12 +3,13 @@ import {
     intArg,
     NexusGraphQLSchema,
     NexusObjectTypeDef,
-    nonNull,
     objectType,
 } from 'nexus/dist/core';
 import { ClassDescriptor } from '../models/class';
 import { createClassResolver } from '../resolvers/class';
 import { createAssociationResolver } from '../resolvers/association';
+import { createBooleanResolver } from '../resolvers/boolean';
+import { getPropertyDescription } from './utils';
 
 /**
  * Generate a complete GraphQL schema from class descriptors.
@@ -35,7 +36,7 @@ export function createSchema(
                         limit: intArg(),
                         offset: intArg(),
                     },
-                    resolve: createClassResolver(classDescriptor, true),
+                    resolve: createClassResolver(classDescriptor, true, false),
                 });
             }
         },
@@ -60,16 +61,22 @@ function createEndpointTypes(
             definition(t) {
                 for (const attribute of classDescriptor.attributes) {
                     const fieldConfig = {
-                        description: `This attribute has ${attribute.count} occurences.\n
-Original IRI is ${attribute.iri}.`,
+                        description: getPropertyDescription(
+                            attribute,
+                            'attribute',
+                        ),
                     };
                     if (attribute.type.endsWith('string')) {
                         t.string(attribute.name, fieldConfig);
                     } else if (attribute.type.endsWith('integer')) {
+                        // Custom resolver is not necessary for ints, since the default
+                        // resolver is able to parse them from strings.
                         t.int(attribute.name, fieldConfig);
                     } else if (attribute.type.endsWith('boolean')) {
-                        // TODO: adding simple resolvers for booleans? and potentially integers too
-                        t.boolean(attribute.name, fieldConfig);
+                        t.boolean(attribute.name, {
+                            ...fieldConfig,
+                            resolve: createBooleanResolver(false),
+                        });
                     } else {
                         // TODO: what should we do about other attribute types? Like dates or custom ones
                         t.string(attribute.name, fieldConfig);
@@ -79,8 +86,10 @@ Original IRI is ${attribute.iri}.`,
                 for (const association of classDescriptor.associations) {
                     t.field(association.name, {
                         type: association.targetClass.name,
-                        description: `This association has ${association.count} occurences.\n
-Original IRI is ${association.iri}.`,
+                        description: getPropertyDescription(
+                            association,
+                            'association',
+                        ),
                         resolve: createAssociationResolver(
                             classDescriptor,
                             association,

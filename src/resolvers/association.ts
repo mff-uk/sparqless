@@ -12,6 +12,7 @@ export function createAssociationResolver(
         return await createClassResolver(
             associationDescriptor.targetClass,
             isArrayType,
+            true,
             parent[info.fieldName],
         )(parent, args, context, info);
     };

@@ -1,0 +1,112 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema> .
+@prefix se: <http://skodapetr.eu/ontology/sparql-endpoint/> .
+
+se:Observation
+    a rdfs:Class .
+
+
+se:ClassObservation
+    a rdfs:Class ;
+    rdfs:subClassOf se:Observation .
+
+se:describedClass
+    a rdfs:Property ;
+    rdfs:domain se:ClassObservation ;
+    rdfs:range rdfs:Class .
+
+se:numberOfInstances
+    a rdfs:Property ;
+    rdfs:domain se:ClassObservation ;
+    rdfs:range xsd:integer .
+
+
+se:InstanceObservation
+    a rdfs:Class ;
+    rdfs:subClassOf se:Observation .
+
+se:classInstance
+    a rdfs:Property ;
+    rdfs:domain se:InstanceObservation ;
+    rdfs:range rdfs:Class .
+
+se:parentClass
+    a rdfs:Property ;
+    rdfs:domain se:InstanceObservation ;
+    rdfs:range rdfs:Class .
+
+
+se:PropertyExistenceObservation
+    a rdfs:Class ;
+    rdfs:subClassOf se:Observation .
+
+se:propertyOf
+    a rdfs:Property ;
+    rdfs:domain se:PropertyExistenceObservation ;
+    rdfs:range rdfs:Class .
+
+se:propertyIri
+    a rdfs:Property ;
+    rdfs:domain se:PropertyExistenceObservation ;
+    rdfs:range rdfs:Property .
+
+
+se:PropertyCountObservation
+    a rdfs:Class ;
+    rdfs:subClassOf se:Observation .
+
+se:countedProperty
+    a rdfs:Property ;
+    rdfs:domain se:PropertyCountObservation ;
+    rdfs:range rdfs:Property .
+
+se:countedPropertySourceClass
+    a rdfs:Property ;
+    rdfs:domain se:PropertyCountObservation ;
+    rdfs:range rdfs:Class .
+
+se:numberOfPropertyInstances
+    a rdfs:Property ;
+    rdfs:domain se:PropertyCountObservation ;
+    rdfs:range xsd:integer .
+
+
+se:AttributeObservation
+    a rdfs:Class ;
+    rdfs:subClassOf se:Observation .
+
+se:describedAttribute
+    a rdfs:Property ;
+    rdfs:domain se:AttributeObservation ;
+    rdfs:range rdfs:Property .
+
+se:attributeSourceClass
+    a rdfs:Property ;
+    rdfs:domain se:AttributeObservation ;
+    rdfs:range rdfs:Class .
+
+se:targetLiteral
+    a rdfs:Property ;
+    rdfs:domain se:AttributeObservation ;
+    rdfs:range rdfs:Literal .
+
+
+se:AssociationObservation
+    a rdfs:Class ;
+    rdfs:subClassOf se:Observation .
+
+se:describedAssociation
+    a rdfs:Property ;
+    rdfs:domain se:AssociationObservation ;
+    rdfs:range rdfs:Property .
+
+se:associationSourceClass
+    a rdfs:Property ;
+    rdfs:domain se:AssociationObservation ;
+    rdfs:range rdfs:Class .
+
+se:targetClass
+    a rdfs:Property ;
+    rdfs:domain se:AssociationObservation ;
+    rdfs:range rdfs:Class .

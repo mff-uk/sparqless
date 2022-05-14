@@ -11,25 +11,27 @@ import { createSchema } from './schema';
 const observer = new EndpointObserver();
 const parser = new ObservationParser();
 console.log('Observing endpoint, this may take a while...');
-observer.observeEndpoint(ENDPOINT_TO_RUN, EXAMINE_N_CLASSES).then((results) => {
-    console.log('Building object model...');
-    const classes = parser.buildEndpointModel(results);
+observer
+    .observeEndpoint(ENDPOINT_TO_RUN, EXAMINE_N_CLASSES)
+    .then((observations) => {
+        console.log('Building object model...');
+        const classes = parser.buildEndpointModel(observations);
 
-    console.log('Running postprocessing hooks...');
-    const postprocessor = new DescriptorPostprocessor();
-    const hooks = getRegisteredPostprocessingHooks();
-    postprocessor.postprocess(classes, hooks);
+        console.log('Running postprocessing hooks...');
+        const postprocessor = new DescriptorPostprocessor();
+        const hooks = getRegisteredPostprocessingHooks();
+        postprocessor.postprocess(classes, hooks);
 
-    console.log('Creating GraphQL schema...');
-    const schema = createSchema(
-        classes,
-        path.join(__dirname, '../../generated-schema.graphql'),
-    );
+        console.log('Creating GraphQL schema...');
+        const schema = createSchema(
+            classes,
+            path.join(__dirname, '../../generated-schema.graphql'),
+        );
 
-    console.log('Starting GraphQL server...');
-    const server = new ApolloServer({ schema });
+        console.log('Starting GraphQL server...');
+        const server = new ApolloServer({ schema });
 
-    server.listen({ port: PORT }).then(({ url }) => {
-        console.log(`🚀  Server ready at ${url}`);
+        server.listen({ port: PORT }).then(({ url }) => {
+            console.log(`🚀  Server ready at ${url}`);
+        });
     });
-});

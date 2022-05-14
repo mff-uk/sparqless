@@ -1,7 +1,14 @@
-import { EndpointClient, QueryResult } from './client';
+import { EndpointClient } from './client';
 import { ENDPOINTS, SPARQLEndpointDefinition } from './endpoints';
 import { QueryBuilder } from './query_builder';
 import { writeFileSync } from 'fs';
+import {
+    groupObservations,
+    Observations,
+    ontologyIri,
+    OntologyProperty,
+} from './utils';
+import { MAX_PROPERTY_COUNT } from '../api/config';
 
 /**
  * Class which carries out observations of SPARQL endpoint contents.
@@ -18,7 +25,7 @@ export class EndpointObserver {
      *
      * @returns Observations about all endpoints
      */
-    async observeAllEndpoints(): Promise<QueryResult[][]> {
+    async observeAllEndpoints(): Promise<Observations[]> {
         const allResults = [];
         for (const endpoint of ENDPOINTS) {
             const endpointResults = await this.observeEndpoint(endpoint);
@@ -46,7 +53,7 @@ export class EndpointObserver {
     async observeEndpoint(
         endpoint: SPARQLEndpointDefinition,
         classSearchLimit = 0,
-    ): Promise<QueryResult[]> {
+    ): Promise<Observations> {
         const endpointResults = [];
         const client = new EndpointClient(endpoint);
 
@@ -58,7 +65,7 @@ export class EndpointObserver {
             .filter(
                 (x) =>
                     x.predicate.value ===
-                    'http://skodapetr.eu/ontology/sparql-endpoint/class',
+                    ontologyIri(OntologyProperty.DescribedClass),
             )
             .map((x) => x.object.value);
 
@@ -73,8 +80,8 @@ export class EndpointObserver {
                     classIriList.length
                 } [${classIri}]`,
             );
-            const propQuery =
-                QueryBuilder.NUMBER_OF_INSTANCE_PROPERTIES(classIri);
+
+            const propQuery = QueryBuilder.CLASS_PROPERTY_IRIS(classIri);
             const propResult = await client.runConstructQuery(propQuery);
             endpointResults.push(propResult);
 
@@ -84,34 +91,43 @@ export class EndpointObserver {
             );
             endpointResults.push(instanceResult);
 
-            const instanceIriList = instanceResult.quads
+            const propertyIriList = propResult.quads
                 .filter(
                     (x) =>
                         x.predicate.value ===
-                        'http://skodapetr.eu/ontology/sparql-endpoint/resource',
+                        ontologyIri(OntologyProperty.PropertyIri),
                 )
                 .map((x) => x.object.value);
-            for (const instanceIri of instanceIriList) {
-                const attributeQuery = QueryBuilder.INSTANCE_ATTRIBUTES(
+
+            for (const propertyIri of propertyIriList) {
+                const attributeQuery = QueryBuilder.SINGLE_ATTRIBUTE(
                     classIri,
-                    instanceIri,
+                    propertyIri,
                 );
                 const attributeResult = await client.runConstructQuery(
                     attributeQuery,
                 );
                 endpointResults.push(attributeResult);
 
-                const associationQuery = QueryBuilder.INSTANCE_ASSOCIATIONS(
+                const associationQuery = QueryBuilder.SINGLE_ASSOCIATION(
                     classIri,
-                    instanceIri,
+                    propertyIri,
                 );
                 const associationResult = await client.runConstructQuery(
                     associationQuery,
                 );
                 endpointResults.push(associationResult);
+
+                const countQuery = QueryBuilder.SINGLE_PROPERTY_COUNT(
+                    classIri,
+                    propertyIri,
+                    MAX_PROPERTY_COUNT,
+                );
+                const countResult = await client.runConstructQuery(countQuery);
+                endpointResults.push(countResult);
             }
         }
 
-        return endpointResults;
+        return groupObservations(endpointResults.flatMap((x) => x.quads));
     }
 }
