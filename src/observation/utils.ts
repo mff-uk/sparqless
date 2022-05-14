@@ -1,48 +1,17 @@
-import { ONTOLOGY_PREFIX_IRI } from '../api/config';
 import { Quad } from 'rdf-js';
 import { groupBy } from 'lodash';
-
-export enum OntologyClass {
-    Observation = 'Observation',
-    ClassObservation = 'ClassObservation',
-    InstanceObservation = 'InstanceObservation',
-    AttributeObservation = 'AttributeObservation',
-    AssociationObservation = 'AssociationObservation',
-    PropertyCountObservation = 'PropertyCountObservation',
-    PropertyExistenceObservation = 'PropertyExistenceObservation',
-}
-
-export enum OntologyProperty {
-    DescribedClass = 'describedClass',
-    NumberOfInstances = 'numberOfInstances',
-    ClassInstance = 'classInstance',
-    ParentClass = 'parentClass',
-    CountedProperty = 'countedProperty',
-    CountedPropertySourceClass = 'countedPropertySourceClass',
-    NumberOfPropertyInstances = 'numberOfPropertyInstances',
-    DescribedAttribute = 'describedAttribute',
-    AttributeSourceClass = 'attributeSourceClass',
-    TargetLiteral = 'targetLiteral',
-    DescribedAssociation = 'describedAssociation',
-    AssociationSourceClass = 'associationSourceClass',
-    TargetClass = 'targetClass',
-    PropertyOf = 'propertyOf',
-    PropertyIri = 'propertyIri',
-}
-
-export function ontologyIri(
-    resource: OntologyClass | OntologyProperty,
-): string {
-    return `${ONTOLOGY_PREFIX_IRI}${resource}`;
-}
-
-export type ObservationQuads = Partial<Record<OntologyProperty, Quad>>;
-export type Observations = Partial<Record<OntologyClass, ObservationQuads[]>>;
+import {
+    ObservationQuads,
+    Observations,
+    OntologyObservation,
+    ontologyIri,
+    OntologyProperty,
+} from './ontology';
 
 export function groupObservations(quads: Quad[]): Observations {
     const observations: Observations = Object.assign(
         {},
-        ...Object.values(OntologyClass).map((clazz) => ({ [clazz]: [] })),
+        ...Object.values(OntologyObservation).map((clazz) => ({ [clazz]: [] })),
     );
     const groupedResults = groupBy(quads, (quad) => quad.subject.value);
 
@@ -64,10 +33,16 @@ export function groupObservations(quads: Quad[]): Observations {
         observations[ontologyClass]!.push(quadMap);
     }
 
+    Object.keys(observations).map((x) => {
+        if (observations[x as OntologyObservation]!.length === 0) {
+            delete observations[x as OntologyObservation];
+        }
+    });
+
     return observations;
 }
 
-function getOntologyClassForQuads(quads: Quad[]): OntologyClass {
+function getOntologyClassForQuads(quads: Quad[]): OntologyObservation {
     const observationClassQuad = quads.find(
         (quad) =>
             quad.predicate.value ===
@@ -87,7 +62,7 @@ function getOntologyClassForQuads(quads: Quad[]): OntologyClass {
         );
     }
 
-    return observationClass[0] as OntologyClass;
+    return observationClass[0] as OntologyObservation;
 }
 
 function getOntologyPropertyForQuad(quad: Quad): OntologyProperty {
@@ -103,10 +78,10 @@ function getOntologyPropertyForQuad(quad: Quad): OntologyProperty {
     return match[0] as OntologyProperty;
 }
 
-function classIris(): Record<OntologyClass, string> {
+function classIris(): Record<OntologyObservation, string> {
     return Object.assign(
         {},
-        ...Object.values(OntologyClass).map((clazz) => ({
+        ...Object.values(OntologyObservation).map((clazz) => ({
             [clazz]: ontologyIri(clazz),
         })),
     );

@@ -1,3 +1,4 @@
+import path from 'path';
 import { ENDPOINTS } from '../observation/endpoints';
 
 // This file hosts various application configuration values separated from code
@@ -9,13 +10,6 @@ import { ENDPOINTS } from '../observation/endpoints';
 //    name: 'European Data',
 // }
 export const ENDPOINT_TO_RUN = ENDPOINTS[0];
-
-// If set to a value greater than zero,
-// only that many classes will be thoroughly searched, i.e.
-// their instances, properties and associations.
-// Limiting this number will speed up observation greatly.
-// However, skipped classes will be missing properties and relations.
-export const EXAMINE_N_CLASSES = 0;
 
 // If set, this no more than MAX_PROPERTY_COUNT instances of properties
 // will be searched when counting properties. This can greatly speed up
@@ -32,3 +26,9 @@ export const DETAILED_LOG = false;
 // The IRI used as a prefix for the observation ontology
 export const ONTOLOGY_PREFIX_IRI =
     'http://skodapetr.eu/ontology/sparql-endpoint/';
+
+// If set, a generated GraphQL schema will be saved to the configured file.
+export const GRAHPQL_SCHEMA_OUTPUT_PATH: string | undefined = path.join(
+    __dirname,
+    '../../../generated-schema.graphql',
+);

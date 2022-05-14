@@ -119,3 +119,6 @@ dist
 
 # Generated mkdocs directory
 site/
+
+# Generated GraphQL schema
+generated-schema.graphql

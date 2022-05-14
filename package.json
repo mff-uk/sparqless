@@ -1,14 +1,18 @@
 {
   "name": "sparql2graphql",
   "version": "0.0.1",
-  "description": "Connecting SPARQL and GraphQL!",
-  "main": "src/experiments/sparql_query_demo.ts",
+  "description": "Seamlessly create a GraphQL endpoint facade for a SPARQL endpoint, no RDF knowledge required.",
+  "main": "src/api/index.js",
+  "files": ["out/**/*"],
   "scripts": {
     "start": "ts-node src/api/index.ts",
     "build": "tsc",
     "lint": "eslint \"src/**\"",
     "format": "eslint --fix \"src/**\"",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run build",
+    "preversion": "npm run lint"
   },
   "repository": {
     "type": "git",
@@ -18,14 +22,17 @@
     "graphql",
     "sparql",
     "rdf",
-    "linked-data"
+    "linked-data",
+    "open-data",
+    "linked-open-data",
+    "sparql2graphql"
   ],
   "author": "Daniel Crha",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/yawnston/sparql2graphql/issues"
   },
-  "homepage": "https://github.com/yawnston/sparql2graphql#readme",
+  "homepage": "https://yawnston.github.io/sparql2graphql/",
   "devDependencies": {
     "@babel/preset-env": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",

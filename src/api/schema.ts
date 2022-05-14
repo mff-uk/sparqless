@@ -9,7 +9,7 @@ import { ClassDescriptor } from '../models/class';
 import { createClassResolver } from '../resolvers/class';
 import { createAssociationResolver } from '../resolvers/association';
 import { createBooleanResolver } from '../resolvers/boolean';
-import { getPropertyDescription } from './utils';
+import { getClassDescription, getPropertyDescription } from './utils';
 
 /**
  * Generate a complete GraphQL schema from class descriptors.
@@ -106,8 +106,7 @@ function createEndpointTypes(
                         'IRI representing the RDF type of this object.',
                 });
             },
-            description: `Generated SPARQL class with ${classDescriptor.numberOfInstances} instances.\n
-Original IRI is ${classDescriptor.iri}.`,
+            description: getClassDescription(classDescriptor),
         }),
     );
 }

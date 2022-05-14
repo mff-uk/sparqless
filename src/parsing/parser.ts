@@ -1,9 +1,9 @@
 import { ClassDescriptor } from '../models/class';
 import {
     Observations,
-    OntologyClass,
+    OntologyObservation,
     OntologyProperty,
-} from '../observation/utils';
+} from '../observation/ontology';
 
 /**
  * Class handling the parsing of SPARQL endpoint observations into an object model.
@@ -37,7 +37,7 @@ export class ObservationParser {
         const descriptors: ClassDescriptor[] = [];
 
         for (const observation of observations[
-            OntologyClass.ClassObservation
+            OntologyObservation.ClassObservation
         ]!) {
             const classNameQuad = observation[OntologyProperty.DescribedClass]!;
             const numInstancesQuad =
@@ -62,7 +62,7 @@ export class ObservationParser {
         classes: ClassDescriptor[],
     ) {
         for (const observation of observations[
-            OntologyClass.InstanceObservation
+            OntologyObservation.InstanceObservation
         ]!) {
             const resourceQuad = observation[OntologyProperty.ClassInstance]!;
             const classNameQuad = observation[OntologyProperty.ParentClass]!;
@@ -79,7 +79,7 @@ export class ObservationParser {
         classes: ClassDescriptor[],
     ) {
         for (const observation of observations[
-            OntologyClass.AttributeObservation
+            OntologyObservation.AttributeObservation
         ]!) {
             const literalQuad = observation[OntologyProperty.TargetLiteral]!;
             const propertyQuad =
@@ -117,7 +117,7 @@ export class ObservationParser {
         classes: ClassDescriptor[],
     ) {
         for (const observation of observations[
-            OntologyClass.AssociationObservation
+            OntologyObservation.AssociationObservation
         ]!) {
             const targetClassQuad = observation[OntologyProperty.TargetClass]!;
             const propertyQuad =
@@ -158,7 +158,7 @@ export class ObservationParser {
         classes: ClassDescriptor[],
     ) {
         for (const observation of observations[
-            OntologyClass.PropertyCountObservation
+            OntologyObservation.PropertyCountObservation
         ]!) {
             const propertyQuad = observation[OntologyProperty.CountedProperty]!;
             const numInstancesQuad =
