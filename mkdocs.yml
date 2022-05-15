@@ -13,6 +13,7 @@ nav:
     - Postprocessing: 'postprocessing.md'
     - 'Schema Creation': 'schema.md'
     - Querying: 'querying.md'
+    - 'Hot Reloading': 'hot_reloading.md'
   - 'Developer Guide':
     - Development: 'development.md'
     - 'Editing documentation': 'editing_documentation.md'

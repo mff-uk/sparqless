@@ -13,16 +13,13 @@ const config: Config = {
     schema: {
         graphqlSchemaOutputPath: path.join(
             __dirname,
-            '../../../generated-schema.graphql',
+            '../../generated-schema.graphql',
         ),
-    },
-    server: {
-        port: 4000,
     },
 };
 
-const sparql2graphql = new SPARQL2GraphQL(config);
+const sparql2graphql = new SPARQL2GraphQL();
 
 // This method returns a Promise, so you should await it
 // if you want to do something after the server has started.
-sparql2graphql.buildSchemaAndRunEndpoint();
+sparql2graphql.buildSchemaAndRunEndpoint(config);

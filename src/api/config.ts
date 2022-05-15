@@ -1,28 +1,9 @@
-import path from 'path';
+import { cloneDeep } from 'lodash';
 import winston from 'winston';
+import { ClassDescriptor } from '../models/class';
 import { SPARQLEndpointDefinition } from '../observation/endpoints';
-
-// If set, this no more than MAX_PROPERTY_COUNT instances of properties
-// will be searched when counting properties. This can greatly speed up
-// observation on very large datasets.
-export const MAX_PROPERTY_COUNT: number | undefined = 1000;
-
-// The port which the application will run on
-export const PORT = 4000;
-
-// Show extra detailed logs, it's recommended to leave this disabled
-// unless you know you need it.
-export const DETAILED_LOG = false;
-
-// The IRI used as a prefix for the observation ontology
-export const ONTOLOGY_PREFIX_IRI =
-    'http://skodapetr.eu/ontology/sparql-endpoint/';
-
-// If set, a generated GraphQL schema will be saved to the configured file.
-export const GRAHPQL_SCHEMA_OUTPUT_PATH: string | undefined = path.join(
-    __dirname,
-    '../../../generated-schema.graphql',
-);
+import { buildNamesFromIRIs } from '../postprocessing/hooks/names';
+import { PostprocessingHookDict } from '../postprocessing/hook_types';
 
 /**
  * Configuration for SPARQL2GraphQL. Setting the `endpoint` property
@@ -58,6 +39,7 @@ export interface Config {
     logger?: winston.Logger;
 
     observation?: ObservationConfig;
+    postprocessing?: PostprocessingConfig;
     schema?: SchemaConfig;
     server?: ServerConfig;
 }
@@ -69,6 +51,9 @@ export interface ObservationConfig {
      * counting property instances is unlimited.
      *
      * Setting this value can greatly speed up observation on very large datasets.
+     * A good compromise is to set this value relatively low (~1000), and configure
+     * schema hot reload to iteratively increase this value to search a larger portion
+     * of the dataset while the GraphQL endpoint is already functional.
      */
     maxPropertyCount: number | undefined;
 
@@ -76,6 +61,10 @@ export interface ObservationConfig {
      * The IRI used as a prefix for the ontology created during observation.
      */
     ontologyPrefixIri: string;
+}
+
+export interface PostprocessingConfig {
+    hooks: PostprocessingHookDict;
 }
 
 export interface SchemaConfig {
@@ -93,6 +82,45 @@ export interface ServerConfig {
      * The port which the GraphQL server will run on.
      */
     port: number;
+
+    /**
+     * Configuration of hot reloading, which happen after the initial
+     * observation have been made, the GraphQL schema has been generated
+     * and the GraphQL endpoint is running.
+     *
+     * After the endpoint is live, a new `ObservationConfig` will be created
+     * using `configIterator`, and it will be used to make new observations.
+     * These observations will be used to create a new GraphQL schema,
+     * and the server schema will be updated in the background.
+     *
+     * Afterwards, the `shouldIterate` function is used to determine whether
+     * the hot reloading should continue in another iteration, or whether
+     * it should stop.
+     */
+    hotReload?: {
+        /**
+         * Funciton creating a new `ObservationConfig` for the next
+         * iteration of hot reloading. Note that it should return a new
+         * instance of `ObservationConfig`, the original one should
+         * not be modified.
+         */
+        configIterator: (
+            config: ObservationConfig,
+            oldModel: ClassDescriptor[],
+        ) => ObservationConfig;
+
+        /**
+         * After each hot reload iteration, this function is polled
+         * to decide whether hot reloading should continue.
+         * This function can compare the old and new data model
+         * to determine whether iterating again makes sense.
+         */
+        shouldIterate: (
+            config: ObservationConfig,
+            oldModel: ClassDescriptor[],
+            newModel: ClassDescriptor[],
+        ) => boolean;
+    };
 }
 
 export const SIMPLE_LOGGER = winston.createLogger({
@@ -112,4 +140,53 @@ export const SIMPLE_LOGGER = winston.createLogger({
 export const DEFAULT_OBSERVATION_CONFIG: ObservationConfig = {
     maxPropertyCount: 1000,
     ontologyPrefixIri: 'http://skodapetr.eu/ontology/sparql-endpoint/',
+};
+
+export const DEFAULT_POSTPROCESSING_CONFIG: PostprocessingConfig = {
+    hooks: {
+        entity: [],
+        namedEntity: [buildNamesFromIRIs],
+        class: [],
+        instance: [],
+        property: [],
+        association: [],
+        attribute: [],
+    },
+};
+
+export const DEFAULT_SERVER_CONFIG: ServerConfig = {
+    port: 4000,
+    hotReload: {
+        configIterator: (config, _oldModel) => {
+            // Examine 10 times more properties than in the last iteration.
+
+            const newConfig = cloneDeep(config);
+
+            if (newConfig.maxPropertyCount) {
+                newConfig.maxPropertyCount *= 10;
+            }
+            return newConfig;
+        },
+        shouldIterate: (_config, oldModel, newModel) => {
+            // Check if the maximum property count changed in the last iteration.
+            // If not, then there is no point in continuing to count them, since
+            // we already have everything counted.
+
+            const getMaxPropertyCount = (model: ClassDescriptor[]) =>
+                Math.max(
+                    ...model
+                        .flatMap((x) => [...x.attributes, ...x.associations])
+                        .map((x) => x.count),
+                );
+
+            const maxPropertyCountOld = getMaxPropertyCount(oldModel);
+            const maxPropertyCountNew = getMaxPropertyCount(newModel);
+
+            if (maxPropertyCountOld === maxPropertyCountNew) {
+                return false;
+            }
+
+            return true;
+        },
+    },
 };

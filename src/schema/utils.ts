@@ -1,18 +1,20 @@
 import { ClassDescriptor } from '../models/class';
 import { PropertyDescriptor } from '../models/property';
-import { MAX_PROPERTY_COUNT } from '../api/config';
 
 export function getPropertyDescription(
     property: PropertyDescriptor,
     propertyType: string,
+    maxPropertyCount: number | undefined,
 ): string {
     return `This ${propertyType} has ${property.count}${
-        property.count === MAX_PROPERTY_COUNT ? '+' : ''
-    } occurences.\n
+        property.count === maxPropertyCount ? '+' : ''
+    } occurence${property.count === 1 ? '' : 's'}.\n
 Original IRI is ${property.iri}.`;
 }
 
 export function getClassDescription(classDescriptor: ClassDescriptor): string {
-    return `Generated SPARQL class with ${classDescriptor.numberOfInstances} instances.\n
+    return `Generated SPARQL class with ${
+        classDescriptor.numberOfInstances
+    } instance${classDescriptor.numberOfInstances === 1 ? '' : 's'}.\n
 Original IRI is ${classDescriptor.iri}.`;
 }

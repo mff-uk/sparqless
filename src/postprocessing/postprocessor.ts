@@ -1,18 +1,32 @@
+import {
+    DEFAULT_POSTPROCESSING_CONFIG,
+    PostprocessingConfig,
+} from '../api/config';
 import { ClassDescriptor } from '../models/class';
 import { EntityDescriptor } from '../models/entity';
-import { PostprocessingHook, PostprocessingHookDict } from './hook_types';
+import { PostprocessingHook } from './hook_types';
 
+/**
+ * The postprocessing phase occurs after the object model has been
+ * built using the observations. The model has the form of descriptors,
+ * which describe various parts of the data model - classes, attributes,
+ * associations etc.
+ *
+ * The `DescriptorPostprocessor` is responsible for running postprocessing
+ * hooks - modular functions which modify parts of the object model.
+ */
 export class DescriptorPostprocessor {
     /**
      * Apply the postprocessing hooks to the given descriptors.
      *
      * @param descriptors Class descriptors containing the whole schema.
-     * @param hooks Postprocessing hooks to run.
+     * @param config Postprocessing configuration, including hooks to run.
      */
     postprocess(
         descriptors: ClassDescriptor[],
-        hooks: PostprocessingHookDict,
+        config?: PostprocessingConfig,
     ): void {
+        const hooks = config?.hooks ?? DEFAULT_POSTPROCESSING_CONFIG.hooks;
         this.runHooks(descriptors, hooks.entity);
         this.runHooks(descriptors, hooks.namedEntity);
         this.runHooks(descriptors, hooks.class);

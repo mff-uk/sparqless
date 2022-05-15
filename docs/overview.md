@@ -31,3 +31,4 @@ with more detailed descriptions of what they do and how they do it:
 - [Postprocessing](postprocessing.md)
 - [Schema Creation](schema.md)
 - [Querying](querying.md)
+- [Hot Reloading](hot_reloading.md)

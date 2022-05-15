@@ -68,6 +68,7 @@ function createEndpointTypes(
                         description: getPropertyDescription(
                             attribute,
                             'attribute',
+                            config.observation?.maxPropertyCount,
                         ),
                     };
                     if (attribute.type.endsWith('string')) {
@@ -93,6 +94,7 @@ function createEndpointTypes(
                         description: getPropertyDescription(
                             association,
                             'association',
+                            config.observation?.maxPropertyCount,
                         ),
                         resolve: createAssociationResolver(
                             classDescriptor,

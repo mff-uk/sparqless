@@ -1,0 +1,49 @@
+@startuml
+collections ObserverManager
+participant ClassObserver
+participant PropertyExistenceObserver
+participant AttributeObserver
+participant AssociationObserver
+participant PropertyCountObserver
+
+ObserverManager --> ClassObserver: Run init observer
+
+rnote over ClassObserver
+  Collect observations
+endrnote
+
+ObserverManager <- ClassObserver: ClassObservation
+
+ObserverManager -> PropertyExistenceObserver: ClassObservation
+
+rnote over PropertyExistenceObserver
+  Collect observations
+endrnote
+
+ObserverManager <- PropertyExistenceObserver: PropertyExistenceObservation
+
+ObserverManager -> AttributeObserver: PropertyExistenceObservation
+
+rnote over AttributeObserver
+  Collect observations
+endrnote
+
+ObserverManager <- AttributeObserver: AttributeObservation
+
+ObserverManager -> AssociationObserver: PropertyExistenceObservation
+
+rnote over AssociationObserver
+  Collect observations
+endrnote
+
+ObserverManager <- AssociationObserver: AssociationObservation
+
+ObserverManager -> PropertyCountObserver: PropertyExistenceObservation
+
+rnote over PropertyCountObserver
+  Collect observations
+endrnote
+
+ObserverManager <- PropertyCountObserver: PropertyCountObservation
+
+@enduml

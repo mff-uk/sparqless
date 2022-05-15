@@ -30,7 +30,7 @@ export class PropertyCountObserver implements EndpointObserver {
     ): Promise<Observations> {
         const resultQuads: Quad[] = [];
         logger?.info(
-            `Observing property counts of ${triggerObservations.length} properties...`,
+            `Observing property counts of ${triggerObservations.length} properties (limit ${config.maxPropertyCount})...`,
         );
         for (const observation of triggerObservations) {
             const classIri =
