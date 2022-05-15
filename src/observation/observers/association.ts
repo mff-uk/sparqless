@@ -1,5 +1,4 @@
 import { EndpointClient } from '../client';
-import { SPARQLEndpointDefinition } from '../endpoints';
 import { EndpointObserver } from '../observer';
 import {
     ObservationQuads,
@@ -9,8 +8,14 @@ import {
 } from '../ontology';
 import { groupObservations } from '../utils';
 import { Quad } from 'rdf-js';
-import { ONTOLOGY_PREFIX_IRI } from '../../api/config';
+import { ObservationConfig } from '../../api/config';
+import { SPARQLEndpointDefinition } from '../endpoints';
+import { Logger } from 'winston';
 
+/**
+ * Observer which makes observation about associations,
+ * i.e. properties whose range is another class.
+ */
 export class AssociationObserver implements EndpointObserver {
     triggers: OntologyObservation[] = [
         OntologyObservation.PropertyExistenceObservation,
@@ -18,12 +23,12 @@ export class AssociationObserver implements EndpointObserver {
 
     async observeEndpoint(
         triggerObservations: ObservationQuads[],
-        config: {
-            endpoint: SPARQLEndpointDefinition;
-        },
+        endpoint: SPARQLEndpointDefinition,
+        config: ObservationConfig,
+        logger?: Logger,
     ): Promise<Observations> {
         const resultQuads: Quad[] = [];
-        console.info(
+        logger?.info(
             `Observing ${triggerObservations.length} properties as associations...`,
         );
         for (const observation of triggerObservations) {
@@ -32,17 +37,25 @@ export class AssociationObserver implements EndpointObserver {
             const propertyIri =
                 observation[OntologyProperty.PropertyIri]!.object.value;
 
-            const client = new EndpointClient(config.endpoint);
-            const query = this.buildQuery(classIri, propertyIri);
+            const client = new EndpointClient(endpoint, logger);
+            const query = this.buildQuery(
+                config.ontologyPrefixIri,
+                classIri,
+                propertyIri,
+            );
             const result = await client.runConstructQuery(query);
             resultQuads.push(...result.quads);
         }
 
-        return groupObservations(resultQuads);
+        return groupObservations(resultQuads, config);
     }
 
-    private buildQuery = (classIri: string, propertyIri: string) =>
-        `PREFIX se: <${ONTOLOGY_PREFIX_IRI}>
+    private buildQuery = (
+        prefix: string,
+        classIri: string,
+        propertyIri: string,
+    ) =>
+        `PREFIX se: <${prefix}>
         CONSTRUCT {
         []
             a se:AssociationObservation ;

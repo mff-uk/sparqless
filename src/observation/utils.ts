@@ -7,8 +7,22 @@ import {
     ontologyIri,
     OntologyProperty,
 } from './ontology';
+import { ObservationConfig } from '../api/config';
 
-export function groupObservations(quads: Quad[]): Observations {
+/**
+ * Utility function which takes a potentially large number
+ * of quads which belong to different observations of different
+ * classes, and returns an `Observations` instance containing
+ * the quads grouped by subject and observation class.
+ *
+ * @param quads The quads to group.
+ * @param config Observation configuration.
+ * @returns `Observations` grouped by subject and observation class.
+ */
+export function groupObservations(
+    quads: Quad[],
+    config: ObservationConfig,
+): Observations {
     const observations: Observations = Object.assign(
         {},
         ...Object.values(OntologyObservation).map((clazz) => ({ [clazz]: [] })),
@@ -25,11 +39,11 @@ export function groupObservations(quads: Quad[]): Observations {
         );
 
         for (const quad of propertyQuads) {
-            const ontologyProperty = getOntologyPropertyForQuad(quad);
+            const ontologyProperty = getOntologyPropertyForQuad(quad, config);
             quadMap[ontologyProperty] = quad;
         }
 
-        const ontologyClass = getOntologyClassForQuads(subjectQuads);
+        const ontologyClass = getOntologyClassForQuads(subjectQuads, config);
         observations[ontologyClass]!.push(quadMap);
     }
 
@@ -42,7 +56,10 @@ export function groupObservations(quads: Quad[]): Observations {
     return observations;
 }
 
-function getOntologyClassForQuads(quads: Quad[]): OntologyObservation {
+function getOntologyClassForQuads(
+    quads: Quad[],
+    config: ObservationConfig,
+): OntologyObservation {
     const observationClassQuad = quads.find(
         (quad) =>
             quad.predicate.value ===
@@ -53,9 +70,9 @@ function getOntologyClassForQuads(quads: Quad[]): OntologyObservation {
             'Observation does not have a ontology type defined with rdf:type.',
         );
     }
-    const observationClass = Object.entries(classIris()).find(
-        ([_clazz, iri]) => observationClassQuad.object.value === iri,
-    );
+    const observationClass = Object.entries(
+        classIris(config.ontologyPrefixIri),
+    ).find(([_clazz, iri]) => observationClassQuad.object.value === iri);
     if (observationClass === undefined) {
         throw new Error(
             `Unknown observation property was found when parsing observations: ${observationClassQuad.object.value}`,
@@ -65,8 +82,11 @@ function getOntologyClassForQuads(quads: Quad[]): OntologyObservation {
     return observationClass[0] as OntologyObservation;
 }
 
-function getOntologyPropertyForQuad(quad: Quad): OntologyProperty {
-    const match = Object.entries(propertyIris()).find(
+function getOntologyPropertyForQuad(
+    quad: Quad,
+    config: ObservationConfig,
+): OntologyProperty {
+    const match = Object.entries(propertyIris(config.ontologyPrefixIri)).find(
         ([_property, iri]) => quad.predicate.value === iri,
     );
     if (match === undefined) {
@@ -78,20 +98,24 @@ function getOntologyPropertyForQuad(quad: Quad): OntologyProperty {
     return match[0] as OntologyProperty;
 }
 
-function classIris(): Record<OntologyObservation, string> {
+function classIris(
+    ontologyPrefix: string,
+): Record<OntologyObservation, string> {
     return Object.assign(
         {},
         ...Object.values(OntologyObservation).map((clazz) => ({
-            [clazz]: ontologyIri(clazz),
+            [clazz]: ontologyIri(ontologyPrefix, clazz),
         })),
     );
 }
 
-function propertyIris(): Record<OntologyProperty, string> {
+function propertyIris(
+    ontologyPrefix: string,
+): Record<OntologyProperty, string> {
     return Object.assign(
         {},
         ...Object.values(OntologyProperty).map((property) => ({
-            [property]: ontologyIri(property),
+            [property]: ontologyIri(ontologyPrefix, property),
         })),
     );
 }

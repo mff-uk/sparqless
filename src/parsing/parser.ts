@@ -1,3 +1,4 @@
+import { Config } from '../api/config';
 import { ClassDescriptor } from '../models/class';
 import {
     Observations,
@@ -9,6 +10,8 @@ import {
  * Class handling the parsing of SPARQL endpoint observations into an object model.
  */
 export class ObservationParser {
+    constructor(private config: Config) {}
+
     /**
      * Build our class model using the provided observations.
      *
@@ -177,7 +180,7 @@ export class ObservationParser {
             if (descriptor) {
                 descriptor.count = parseInt(numInstancesQuad.object.value);
             } else {
-                console.warn(
+                this.config.logger?.warn(
                     `Missing descriptor for ${classDescriptor.iri}: ${propertyQuad.object.value}.`,
                 );
             }

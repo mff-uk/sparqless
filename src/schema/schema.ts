@@ -6,26 +6,25 @@ import {
     objectType,
 } from 'nexus/dist/core';
 import { ClassDescriptor } from '../models/class';
-import { createClassResolver } from '../resolvers/class';
-import { createAssociationResolver } from '../resolvers/association';
-import { createBooleanResolver } from '../resolvers/boolean';
+import { createClassResolver } from './resolvers/class';
+import { createAssociationResolver } from './resolvers/association';
+import { createBooleanResolver } from './resolvers/boolean';
 import { getClassDescription, getPropertyDescription } from './utils';
+import { Config } from '../api/config';
 
 /**
  * Generate a complete GraphQL schema from class descriptors.
  * This schema may then be used by a GraphQL server.
  *
  * @param classes Class descriptors describing the SPARQL endpoint.
- * @param schemaOutputPath The path where the GraphQL schema should be
- * generated. Set to `undefined` if you don't want to output
- * the generated GraphQL schema to disk.
+ * @param config SPARQL2GraphQL configuration.
  * @return Generated GraphQL schema.
  */
 export function createSchema(
     classes: ClassDescriptor[],
-    schemaOutputPath: string | undefined,
+    config: Config,
 ): NexusGraphQLSchema {
-    const endpointTypes = createEndpointTypes(classes);
+    const endpointTypes = createEndpointTypes(classes, config);
 
     const query = queryType({
         definition(t) {
@@ -36,7 +35,11 @@ export function createSchema(
                         limit: intArg(),
                         offset: intArg(),
                     },
-                    resolve: createClassResolver(classDescriptor, true, false),
+                    resolve: createClassResolver(
+                        classDescriptor,
+                        { isArrayType: true, areFieldsOptional: false },
+                        config,
+                    ),
                 });
             }
         },
@@ -45,7 +48,7 @@ export function createSchema(
     const schema = makeSchema({
         types: [query, ...endpointTypes],
         outputs: {
-            schema: schemaOutputPath,
+            schema: config.schema?.graphqlSchemaOutputPath,
         },
     });
 
@@ -54,6 +57,7 @@ export function createSchema(
 
 function createEndpointTypes(
     classes: ClassDescriptor[],
+    config: Config,
 ): NexusObjectTypeDef<any>[] {
     return classes.map((classDescriptor) =>
         objectType({
@@ -92,8 +96,11 @@ function createEndpointTypes(
                         ),
                         resolve: createAssociationResolver(
                             classDescriptor,
-                            association,
-                            false,
+                            {
+                                associationDescriptor: association,
+                                isArrayType: false,
+                            },
+                            config,
                         ),
                     });
                 }

@@ -1,5 +1,4 @@
 import { EndpointClient } from '../client';
-import { SPARQLEndpointDefinition } from '../endpoints';
 import { EndpointObserver } from '../observer';
 import {
     ObservationQuads,
@@ -9,33 +8,42 @@ import {
 } from '../ontology';
 import { groupObservations } from '../utils';
 import { Quad } from 'rdf-js';
-import { ONTOLOGY_PREFIX_IRI } from '../../api/config';
+import { ObservationConfig } from '../../api/config';
+import { Logger } from 'winston';
+import { SPARQLEndpointDefinition } from '../endpoints';
 
+/**
+ * Observer which makes observations about the existence of properties
+ * on the classes in the SPARQL endpoint.
+ */
 export class PropertyObserver implements EndpointObserver {
     triggers: OntologyObservation[] = [OntologyObservation.ClassObservation];
 
     async observeEndpoint(
         triggerObservations: ObservationQuads[],
-        config: {
-            endpoint: SPARQLEndpointDefinition;
-        },
+        endpoint: SPARQLEndpointDefinition,
+        config: ObservationConfig,
+        logger?: Logger,
     ): Promise<Observations> {
         const resultQuads: Quad[] = [];
+        logger?.info(
+            `Observing property IRIs for ${triggerObservations.length} classes...`,
+        );
         for (const observation of triggerObservations) {
             const classIri =
                 observation[OntologyProperty.DescribedClass]!.object.value;
 
-            const client = new EndpointClient(config.endpoint);
-            const query = this.buildQuery(classIri);
+            const client = new EndpointClient(endpoint, logger);
+            const query = this.buildQuery(config.ontologyPrefixIri, classIri);
             const result = await client.runConstructQuery(query);
             resultQuads.push(...result.quads);
         }
 
-        return groupObservations(resultQuads);
+        return groupObservations(resultQuads, config);
     }
 
-    private buildQuery = (classIri: string) =>
-        `PREFIX se: <${ONTOLOGY_PREFIX_IRI}>
+    private buildQuery = (prefix: string, classIri: string) =>
+        `PREFIX se: <${prefix}>
         CONSTRUCT {
           []
             a se:PropertyExistenceObservation ;

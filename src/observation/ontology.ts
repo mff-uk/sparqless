@@ -1,6 +1,10 @@
-import { ONTOLOGY_PREFIX_IRI } from '../api/config';
 import { Quad } from 'rdf-js';
 
+/**
+ * Enum containing the possible observation classes described
+ * by the observation ontology. If you wish to add a new observation
+ * to the ontology, it must be added here.
+ */
 export enum OntologyObservation {
     ClassObservation = 'ClassObservation',
     InstanceObservation = 'InstanceObservation',
@@ -10,6 +14,11 @@ export enum OntologyObservation {
     PropertyExistenceObservation = 'PropertyExistenceObservation',
 }
 
+/**
+ * Enum containing the possible propertis of observation classes
+ * described by the observation ontology. If you wish to add a new
+ * property to one of the observation classes, it must be added here.
+ */
 export enum OntologyProperty {
     DescribedClass = 'describedClass',
     NumberOfInstances = 'numberOfInstances',
@@ -28,13 +37,29 @@ export enum OntologyProperty {
     PropertyIri = 'propertyIri',
 }
 
+/**
+ * Utility function for creating a full ontology IRI.
+ *
+ * @param prefix Prefix IRI for the created ontology.
+ * @param resource Resource to prefix.
+ * @returns
+ */
 export function ontologyIri(
+    prefix: string,
     resource: OntologyObservation | OntologyProperty,
 ): string {
-    return `${ONTOLOGY_PREFIX_IRI}${resource}`;
+    return `${prefix}${resource}`;
 }
 
+/**
+ * Describes a single observation class from the ontology, i.e.
+ * a single observation.
+ */
 export type ObservationQuads = Partial<Record<OntologyProperty, Quad>>;
+
+/**
+ * Multiple observation grouped together by observation class.
+ */
 export type Observations = Partial<
     Record<OntologyObservation, ObservationQuads[]>
 >;

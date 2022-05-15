@@ -1,5 +1,4 @@
 import { EndpointClient } from '../client';
-import { SPARQLEndpointDefinition } from '../endpoints';
 import { EndpointObserver } from '../observer';
 import {
     ObservationQuads,
@@ -9,8 +8,15 @@ import {
 } from '../ontology';
 import { groupObservations } from '../utils';
 import { Quad } from 'rdf-js';
-import { MAX_PROPERTY_COUNT, ONTOLOGY_PREFIX_IRI } from '../../api/config';
+import { ObservationConfig } from '../../api/config';
+import { SPARQLEndpointDefinition } from '../endpoints';
+import { Logger } from 'winston';
 
+/**
+ * Observer which makes observations about the counts of property
+ * instances, i.e. how many times each property occurs
+ * in the SPARQL endpoint.
+ */
 export class PropertyCountObserver implements EndpointObserver {
     triggers: OntologyObservation[] = [
         OntologyObservation.PropertyExistenceObservation,
@@ -18,12 +24,12 @@ export class PropertyCountObserver implements EndpointObserver {
 
     async observeEndpoint(
         triggerObservations: ObservationQuads[],
-        config: {
-            endpoint: SPARQLEndpointDefinition;
-        },
+        endpoint: SPARQLEndpointDefinition,
+        config: ObservationConfig,
+        logger?: Logger,
     ): Promise<Observations> {
         const resultQuads: Quad[] = [];
-        console.info(
+        logger?.info(
             `Observing property counts of ${triggerObservations.length} properties...`,
         );
         for (const observation of triggerObservations) {
@@ -32,25 +38,27 @@ export class PropertyCountObserver implements EndpointObserver {
             const propertyIri =
                 observation[OntologyProperty.PropertyIri]!.object.value;
 
-            const client = new EndpointClient(config.endpoint);
+            const client = new EndpointClient(endpoint, logger);
             const query = this.buildQuery(
+                config.ontologyPrefixIri,
                 classIri,
                 propertyIri,
-                MAX_PROPERTY_COUNT,
+                config.maxPropertyCount ?? 0,
             );
             const result = await client.runConstructQuery(query);
             resultQuads.push(...result.quads);
         }
 
-        return groupObservations(resultQuads);
+        return groupObservations(resultQuads, config);
     }
 
     private buildQuery = (
+        prefix: string,
         classIri: string,
         propertyIri: string,
         maxCount = 0,
     ) =>
-        `PREFIX se: <${ONTOLOGY_PREFIX_IRI}>
+        `PREFIX se: <${prefix}>
             CONSTRUCT {
               []
                 a se:PropertyCountObservation ;

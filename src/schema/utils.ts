@@ -1,6 +1,6 @@
 import { ClassDescriptor } from '../models/class';
 import { PropertyDescriptor } from '../models/property';
-import { MAX_PROPERTY_COUNT } from './config';
+import { MAX_PROPERTY_COUNT } from '../api/config';
 
 export function getPropertyDescription(
     property: PropertyDescriptor,
