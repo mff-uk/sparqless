@@ -55,6 +55,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../querying/">Querying</a>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../hot_reloading/">Hot Reloading</a>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Developer Guide</span></p>
 <ul>
@@ -95,32 +97,72 @@
 </ul>
 <p>Once you have installed them, run <code>npm install</code> in the project root directory to install
 all required dependencies with npm.</p>
+<h2 id="library-interface">Library interface</h2>
+<p>The main functionality is encapsulated by the <code>SPARQL2GraphQL</code> class in <code>src/api/index.ts</code>.
+This class contains functions for the main tasks users may want to perform.</p>
+<p>Most notably, the <code>buildSchemaAndRunEndpoint</code> functions is provided for users
+who want the least configuration necessary. It is enough to simply set up a <code>Config</code>
+as shown in the next section, and run SPARQL2GraphQL like so:</p>
+<pre><code class="language-ts">const config = {
+    ...
+};
+
+const sparql2graphql = new SPARQL2GraphQL();
+
+// This method returns a Promise, so you should await it
+// if you want to do something after the server has started.
+sparql2graphql.buildSchemaAndRunEndpoint(config);
+</code></pre>
+<p>The <code>SPARQL2GraphQL</code> class also contains other functions which perform
+smaller parts of the whole algorithm, which you may want to use if your
+task is more complex than <em>convert this SPARQL endpoint into a GraphQL endpoint</em>.
+For example, the <code>observeAndBuildSchema</code> function performs all the steps up to
+and including schema building, meaning one could use it to simply save the
+GraphQL schema into a file and do something else with it, rather than
+starting a GraphQL endpoint.</p>
 <h2 id="edit-configuration">Edit configuration</h2>
-<p>There is one required configuration step before you run the project - configuring
+<p>There is one required configuration step before you run the library - configuring
 the SPARQL endpoint you want to run. In <code>src/api/config.ts</code>, set the value
-<code>ENDPOINT_TO_RUN</code> to refer to your endpoint. There is a pre-defined list of endpoints
-in <code>src/observation/endpoints.ts</code> in case you just want to try the project
-without having a specific SPARQL endpoint in mind, but you can easily define your own like so:</p>
-<pre><code class="language-ts">export const ENDPOINT_TO_RUN = {
-    url: 'https://data.europa.eu/sparql',
-    name: 'European Data',
+<code>ENDPOINT_TO_RUN</code> to refer to your endpoint. There is a pre-defined list of known
+online and working endpoints in <code>src/observation/endpoints.ts</code> in case you just want
+to try the project without having a specific SPARQL endpoint in mind, but you can
+easily define your own.</p>
+<p>A very basic configuration can look like this:</p>
+<pre><code class="language-ts">import { Config, SIMPLE_LOGGER } from './api/config';
+
+const config: Config = {
+    endpoint: {
+        url: 'https://dev.nkod.opendata.cz/sparql',
+        name: 'NKOD',
+    },
+    logger: SIMPLE_LOGGER,
 };
 </code></pre>
-<p>The <code>name</code> can be whatever you want, it's just an easily readable identifier used in logs.</p>
-<p>There are other configuration values which you are free to modify, but they have
+<p>The endpoint <code>name</code> can be whatever you want, it's just an easily readable
+identifier used in logs. The <code>logger</code> property is not mandatory,
+but it is very helpful to specify a logger in order to see what's
+going on. Any <a href="https://github.com/winstonjs/winston">winston</a> logger will do,
+but the <code>SIMPLE_LOGGER</code> defined in <code>src/api/config.ts</code> defines a sane default
+logger which logs the most important messages to the console.</p>
+<p>There are other configuration values in <code>Config</code> which you are free to modify, but they have
 sensible defaults in case you just want to get started. If you want to find out
-more about additional configuration options, variables are documented in the
-configuration files itself. More advanced configuration options like postprocessing
-hooks are also available, you can read more about them <a href="../postprocessing/">here</a>.</p>
+more about additional configuration options, they are documented in the
+configuration file itself.</p>
 <h2 id="run-it">Run it</h2>
-<p>After everything is configured, run <code>npm start</code> to start SPARQL2GraphQL.</p>
+<p>Putting together the above code examples is enough to start a SPARQL2GraphQL instance,
+which will observe the configured SPARQL endpoint and convert it to a GraphQL one.
+Alternatively, if you are running SPARQL2GraphQL from this repository,
+you can run <code>npm start</code>, which will run <code>src/main.ts</code>, which is an entrypoint
+meant for starting the server from withing this repository.</p>
 <p>In the logs, you will see that it will first run some observations on the target
 endpoint to collect information about its schema and the data contained within.
 This may take a while, especially for large datasets, depending on the configuration
-parameters used.</p>
+parameters used. As an example, the <a href="https://data.gov.cz/english/">NKOD</a> endpoint
+shown in the configuraiton above takes about 2 minutes to have a fully functional
+GraphQL instance running.</p>
 <p>After observation is finished, you will see that a fully functional GraphQL interface is
-available for you to explore at the configured port (<a href="http://localhost:4000">localhost:4000</a>
-by default).</p>
+available for you to explore and query at the configured port
+(<a href="http://localhost:4000">localhost:4000</a> by default).</p>
 <h2 id="explore-the-schema">Explore the schema</h2>
 <p>When you open the GraphQL interface in your browser, you will see an interface
 provided by Apollo Server. It allows you to explore the schema including all of the available
@@ -128,8 +170,29 @@ classes, as well as their properties, relations, how many times they occur in th
 and other metadata.</p>
 <p><img alt="GraphQL interface" src="../img/interface.png"/></p>
 <p>The interface also allows you to interactively build and execute queries against the endpoint.</p>
+<h2 id="hot-reloading">Hot reloading</h2>
+<p>You may notice that with the default configuration, another round of observation
+will start right after the GraphQL server is created.</p>
+<p>This is <a href="../hot_reloading/">hot reloading</a> in action. Because fully observing the entire
+dataset in the endpoint may take a long time, the initial observations are limited
+by the default configuration - observation will only count up to 1000 occurences
+for each property in the dataset.</p>
+<p>After the server has started, it's fully available and functional for purposes of
+schema exploration and querying. In the background, SPARQL2GraphQL continues
+to make more detailed observations, and seamlessly updating the GraphQL
+schema in the GraphQL endpoint.</p>
+<p>You can read more about hot reloading <a href="../hot_reloading/">here</a>.</p>
 <h2 id="query-the-endpoint">Query the endpoint</h2>
-<p><strong>TODO:</strong> WRITE THIS SECTION AFTER IMPLEMENTING QUERYING</p>
+<p>If you are not yet familiar with how to compose GraphQL queries, you can learn more
+about GraphQL <a href="https://graphql.org/learn/">here</a>.</p>
+<p>You can use the interface to query the data, either writing the query yourself,
+or using the graphical query editor to compose the query.</p>
+<p><img alt="GraphQL querying" src="../img/querying.png"/></p>
+<p><strong>NOTE:</strong> be careful running queries which have an unlimited result size!
+If your SPARQL endpoint contains a very large dataset, the query could either
+run for a <em>very</em> long time, or it might just fail due to a timeout.
+You should use the <code>limit</code> and <code>offset</code> parameters provided in each query
+field as shown in the image above.</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">

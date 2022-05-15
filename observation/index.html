@@ -55,6 +55,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../querying/">Querying</a>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../hot_reloading/">Hot Reloading</a>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Developer Guide</span></p>
 <ul>
@@ -89,31 +91,53 @@
 starts observing the SPARQL endpoint, and collecting observations in the form
 of RDF quads (stored in the <code>QueryResult</code> type). These quads are generally
 constructed to have a blank node subject representing a single observation,
-and its properties then describe that observation. The following is an
-example of quads describing the existence of a class in the dataset
-(<code>_:observation</code> denotes a blank node):</p>
-<pre><code class="language-rdf">_:observation
-   se:class foaf:Agent;
-   se:numberOfInstances 42.
+and its properties then describe that observation.</p>
+<h2 id="ontology">Ontology</h2>
+<p>All observations conform to an ontology described in the <code>ontology.ttl</code> file,
+which contains a <a href="https://www.w3.org/TR/rdf-schema/">RDFS</a> definition
+of the observations in the <a href="https://www.w3.org/TR/turtle/">Turtle</a> format.</p>
+<h2 id="observer-system">Observer system</h2>
+<p>Observation is essentially just a process where we need to execute
+many SPARQL queries, where some queries have dependencies on outputs
+of previous queries. As an example, we cannot observe the existence
+of properties on some class, before we even know about the class'
+existence.</p>
+<p>Therefore the observation logic is split up into observer classes,
+namely <code>EndpointObserver</code> and <code>InitEndpointObserver</code>. These observers
+each collect a specific set of observations. <code>EndpointObserver</code>s may
+declare dependencies on observations produced by other observers.
+<code>InitEndpointObserver</code>s do not required any previous observations to
+do their observations, and they produce the initial observations
+which are in turn used by other observers.</p>
+<p>The flow of data between observers and their invokation is handled
+by the <code>ObserverManager</code> class. It collects the outputs of its
+registered observers, and triggers observers which are subscribed
+to new observations accordingly.</p>
+<p>Its usage looks as follows:</p>
+<pre><code class="language-ts">const observerManager = new ObserverManager(config);
+
+observerManager.subscribeInit(new ClassObserver());
+observerManager.subscribe(new PropertyObserver());
+observerManager.subscribe(new AttributeObserver());
+observerManager.subscribe(new AssociationObserver());
+observerManager.subscribe(new PropertyCountObserver());
+
+const observations: Observations = await observerManager.runObservers();
 </code></pre>
-<p><strong>TODO: make this more ontology-oriented</strong></p>
-<p>This particular observation says that the dataset contains a class called
-<code>foaf:Agent</code> which has 42 instances.</p>
-<h2 id="collected-observations">Collected observations</h2>
-<p>The queries used to collect observations are stored in the <code>QueryBuilder</code> class.
-Currently, there are 5 of them:</p>
+<h2 id="implemented-observers">Implemented observers</h2>
+<p>While it is possible for library users to implement and use their own observers,
+some observers are pre-implemented to facilitate the main flow of SPARQL2GraphQL.</p>
+<p>They each collect a single kind of observation from the ontology:</p>
 <ul>
-<li><code>CLASSES_AND_INSTANCE_NUMBERS</code>: Find classes and how many of them there are.</li>
-<li><code>CLASS_INSTANCES</code>: Find instances of a class for further examination.</li>
-<li><code>INSTANCE_ATTRIBUTES</code>: Get attributes of an instance (attributes are properties
-which have simple types as their domain, like <code>boolean</code> or <code>number</code>).</li>
-<li><code>INSTANCE_ASSOCIATIONS</code>: Get associations of an instance (associations are
-properties which relate to another class).</li>
-<li><code>NUMBER_OF_INSTANCE_PROPERTIES</code>: Collect information about how many instances
-there are of various class properties.</li>
+<li><code>ClassObserver</code>: collects <code>ClassObservation</code>s</li>
+<li><code>PropertyObserver</code>: collects <code>PropertyExistenceObservation</code>s</li>
+<li><code>AttributeObserver</code>: collects <code>AttributeObservation</code>s</li>
+<li><code>AssociationObserver</code>: collects <code>AssociationObservation</code>s</li>
+<li><code>PropertyCountObserver</code>: collects <code>PropertyCountObservation</code>s</li>
+<li><code>InstanceObserver</code>: collects <code>InstanceObservation</code>s <em>(currently unused)</em></li>
 </ul>
-<p>This list is bound to change in the future, but the goal is to not modify
-the existing queries if possible, but rather add new ones.</p>
+<p>The data flow between these observers looks like this:</p>
+<p><img alt="observers" src="../img/observers.png"/></p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
