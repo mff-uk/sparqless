@@ -28,7 +28,7 @@ export class AttributeObserver implements EndpointObserver {
         logger?: Logger,
     ): Promise<Observations> {
         const resultQuads: Quad[] = [];
-        logger?.info(
+        logger?.debug(
             `Observing ${triggerObservations.length} properties as attributes...`,
         );
         for (const observation of triggerObservations) {

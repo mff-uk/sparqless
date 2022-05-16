@@ -28,8 +28,15 @@ export class PropertyCountObserver implements EndpointObserver {
         config: ObservationConfig,
         logger?: Logger,
     ): Promise<Observations> {
+        if (!config.shouldCountProperties) {
+            logger?.debug(
+                'Skipping counting properties since it is disabled in the config.',
+            );
+            return {};
+        }
+
         const resultQuads: Quad[] = [];
-        logger?.info(
+        logger?.debug(
             `Observing property counts of ${triggerObservations.length} properties (limit ${config.maxPropertyCount})...`,
         );
         for (const observation of triggerObservations) {

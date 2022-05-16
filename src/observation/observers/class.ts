@@ -18,7 +18,7 @@ export class ClassObserver implements InitEndpointObserver {
     ): Promise<Observations> {
         const client = new EndpointClient(endpoint, logger);
 
-        logger?.info(`Observing classes and their number of instances...`);
+        logger?.debug(`Observing classes and their number of instances...`);
         const query = this.buildQuery(config.ontologyPrefixIri);
         const result = await client.runConstructQuery(query);
 

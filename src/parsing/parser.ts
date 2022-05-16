@@ -32,6 +32,7 @@ export class ObservationParser {
         this.createAssociationDescriptors(observations, classDescriptors);
 
         this.createPropertyCountDescriptors(observations, classDescriptors);
+        this.markScalarProperties(observations, classDescriptors);
 
         return classDescriptors;
     }
@@ -206,6 +207,26 @@ export class ObservationParser {
                 this.config.logger?.warn(
                     `Missing descriptor for ${classDescriptor.iri}: ${propertyQuad.object.value}.`,
                 );
+            }
+        }
+    }
+
+    private markScalarProperties(
+        observations: Observations,
+        classes: ClassDescriptor[],
+    ) {
+        for (const observation of observations[
+            OntologyObservation.PropertyIsAPartialFunctionObservation
+        ]!) {
+            const propertyIRI =
+                observation[OntologyProperty.PartialFunctionProperty]!.object
+                    .value;
+            const propertyDescriptor = classes
+                .flatMap((x) => [...x.attributes, ...x.associations])
+                .find((x) => x.iri === propertyIRI);
+
+            if (propertyDescriptor) {
+                propertyDescriptor.isArray = false;
             }
         }
     }

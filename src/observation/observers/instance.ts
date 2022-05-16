@@ -25,7 +25,7 @@ export class InstanceObserver implements EndpointObserver {
         logger?: Logger,
     ): Promise<Observations> {
         const resultQuads: Quad[] = [];
-        logger?.info(
+        logger?.debug(
             `Observing instances of ${triggerObservations.length} classes...`,
         );
         for (const observation of triggerObservations) {

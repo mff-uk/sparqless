@@ -28,7 +28,7 @@ export class AssociationObserver implements EndpointObserver {
         logger?: Logger,
     ): Promise<Observations> {
         const resultQuads: Quad[] = [];
-        logger?.info(
+        logger?.debug(
             `Observing ${triggerObservations.length} properties as associations...`,
         );
         for (const observation of triggerObservations) {

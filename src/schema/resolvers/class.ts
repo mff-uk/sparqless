@@ -118,6 +118,7 @@ async function resolveInstanceIRIs(
                 : ''
         }
     }
+    ${args.sort ? `ORDER BY DESC( ?instance )` : ''}
     ${args.limit ? `LIMIT ${args.limit}` : ''}
     ${args.offset ? `OFFSET ${args.offset}` : ''}`;
 

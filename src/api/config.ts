@@ -61,6 +61,22 @@ export interface ObservationConfig {
      * The IRI used as a prefix for the ontology created during observation.
      */
     ontologyPrefixIri: string;
+
+    /**
+     * If `true`, observations will be made about whether properties are arrays
+     * or scalars. By default, all properties are treated as arrays, since
+     * any property can be duplicated in RDF. Enabling scalar detection
+     * will allow properties which only ever occur up to once to be shown
+     * as scalars in the generated GraphQL schema.
+     */
+    shouldDetectNonArrayProperties: boolean | undefined;
+
+    /**
+     * If `true`, observations will be made which count the number of times
+     * each property occurs in the dataset. If this is not enabled,
+     * all property counts will be displayed as `0`.
+     */
+    shouldCountProperties: boolean | undefined;
 }
 
 export interface PostprocessingConfig {
@@ -138,8 +154,10 @@ export const SIMPLE_LOGGER = winston.createLogger({
 });
 
 export const DEFAULT_OBSERVATION_CONFIG: ObservationConfig = {
-    maxPropertyCount: 1000,
+    maxPropertyCount: 100,
     ontologyPrefixIri: 'http://skodapetr.eu/ontology/sparql-endpoint/',
+    shouldDetectNonArrayProperties: true,
+    shouldCountProperties: true,
 };
 
 export const DEFAULT_POSTPROCESSING_CONFIG: PostprocessingConfig = {
@@ -165,6 +183,12 @@ export const DEFAULT_SERVER_CONFIG: ServerConfig = {
             if (newConfig.maxPropertyCount) {
                 newConfig.maxPropertyCount *= 10;
             }
+
+            // Check for scalar properties during hot reloading
+            newConfig.shouldDetectNonArrayProperties = true;
+
+            // Count properties during hot reload
+            newConfig.shouldCountProperties = true;
             return newConfig;
         },
         shouldIterate: (_config, oldModel, newModel) => {

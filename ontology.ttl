@@ -132,3 +132,16 @@ se:targetClass
     rdfs:domain se:AssociationObservation ;
     rdfs:range rdfs:Class ;
     rdfs:comment "The class which is the object of this association." .
+
+
+se:PropertyIsAPartialFunctionObservation
+    a rdfs:Class ;
+    rdfs:subClassOf se:Observation ;
+    rdfs:comment "Observation signifying that the described property is a partial function, i.e. for every triple
+    ?s ?p ?o1 where ?p is the described property, there exists no triple ?s ?p ?o2 such that ?o1 != ?o2." .
+
+se:partialFunctionProperty
+    a rdfs:Property ;
+    rdfs:domain se:PropertyIsAPartialFunctionObservation ;
+    rdfs:range rdfs:Property ;
+    rdfs:comment "The property which behaves like a partial function." .

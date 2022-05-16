@@ -18,6 +18,8 @@ const config: Config = {
     observation: {
         maxPropertyCount: 1000,
         ontologyPrefixIri: 'http://skodapetr.eu/ontology/sparql-endpoint/',
+        shouldCountProperties: true,
+        shouldDetectNonArrayProperties: true,
     },
     schema: {
         graphqlSchemaOutputPath: path.join(

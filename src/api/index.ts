@@ -17,6 +17,7 @@ import { set } from 'lodash';
 import { Observations } from '../observation/ontology';
 import { NexusGraphQLSchema } from 'nexus/dist/core';
 import { ClassDescriptor } from '../models/class';
+import { PartialFunctionPropertyObserver } from '../observation/observers/partial_function';
 
 /**
  * Encapsulating class for the core SPARQL2GraphQL functionality,
@@ -74,6 +75,7 @@ export class SPARQL2GraphQL {
         observerManager.subscribe(new AttributeObserver());
         observerManager.subscribe(new AssociationObserver());
         observerManager.subscribe(new PropertyCountObserver());
+        observerManager.subscribe(new PartialFunctionPropertyObserver());
 
         config.logger?.info('Observing endpoint, this may take a while...');
         const observations: Observations = await observerManager.runObservers();

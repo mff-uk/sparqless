@@ -1,5 +1,6 @@
 import { makeSchema, queryType } from 'nexus';
 import {
+    booleanArg,
     intArg,
     NexusGraphQLSchema,
     NexusObjectTypeDef,
@@ -40,6 +41,7 @@ export function createSchema(
                     args: {
                         limit: intArg(),
                         offset: intArg(),
+                        sort: booleanArg(),
                     },
                     resolve: createClassResolver(
                         classDescriptor,

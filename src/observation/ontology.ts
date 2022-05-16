@@ -12,6 +12,7 @@ export enum OntologyObservation {
     AssociationObservation = 'AssociationObservation',
     PropertyCountObservation = 'PropertyCountObservation',
     PropertyExistenceObservation = 'PropertyExistenceObservation',
+    PropertyIsAPartialFunctionObservation = 'PropertyIsAPartialFunctionObservation',
 }
 
 /**
@@ -35,6 +36,7 @@ export enum OntologyProperty {
     TargetClass = 'targetClass',
     PropertyOf = 'propertyOf',
     PropertyIri = 'propertyIri',
+    PartialFunctionProperty = 'partialFunctionProperty',
 }
 
 /**
