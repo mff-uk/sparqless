@@ -72,7 +72,7 @@ export class AssociationObserver implements EndpointObserver {
                     
                     ?targetResource a ?targetClass .
                 }
-                LIMIT 1
+                LIMIT 1000
             } 
         }`;
 }

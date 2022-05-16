@@ -1,7 +1,7 @@
 import { Literal } from '@rdfjs/types';
 import { FieldResolver } from 'nexus';
 
-export function createBooleanResolver(resolverConfig: {
+export function createStringResolver(resolverConfig: {
     isArrayType: boolean;
 }): FieldResolver<string, string> {
     return async (parent, _args, _context, info) => {
@@ -10,14 +10,12 @@ export function createBooleanResolver(resolverConfig: {
             return undefined;
         }
 
-        const booleanValues = values.map((x) =>
-            ['true', '1'].includes(String(x.value.value)),
-        );
+        const stringValues = values.map((x) => x.value.value);
 
         if (resolverConfig.isArrayType) {
-            return booleanValues;
+            return stringValues;
         }
 
-        return booleanValues[0];
+        return stringValues[0];
     };
 }

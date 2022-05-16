@@ -1,3 +1,5 @@
+import { Literal } from '@rdfjs/types';
+import { uniq } from 'lodash';
 import { Config } from '../api/config';
 import { ClassDescriptor } from '../models/class';
 import {
@@ -95,20 +97,37 @@ export class ObservationParser {
             )!;
 
             const attributeIri = propertyQuad.object.value;
-            const attributeType: string =
-                // @ts-ignore
-                literalQuad.object.datatype.value;
+            const literal = literalQuad.object as Literal;
+            const attributeType = literal.datatype.value;
+            // Replacing characters which are illegal in GraphQL identifiers
+            const attributeLanguage = literal.language.replace(
+                /[^_a-zA-Z0-9]/gi,
+                '_',
+            );
 
-            // Only add the attribute if it is not already there
-            if (
-                !classDescriptor.attributes.find(
-                    (x) => x.iri === attributeIri && x.type === attributeType,
-                )
-            ) {
+            const attributeDescriptor = classDescriptor.attributes.find(
+                (x) => x.iri === attributeIri,
+            );
+
+            if (attributeDescriptor) {
+                attributeDescriptor.types = uniq([
+                    ...attributeDescriptor.types,
+                    attributeType,
+                ]);
+                if (attributeLanguage !== '') {
+                    attributeDescriptor.languages = uniq([
+                        ...attributeDescriptor.languages,
+                        attributeLanguage,
+                    ]);
+                }
+            } else {
                 classDescriptor.attributes.push({
                     iri: attributeIri,
                     name: '',
-                    type: attributeType,
+                    types: [attributeType],
+                    languages:
+                        attributeLanguage === '' ? [] : [attributeLanguage],
+                    isArray: true,
                     count: 0,
                 });
             }
@@ -134,22 +153,26 @@ export class ObservationParser {
 
             const associationIri = propertyQuad.object.value;
             const targetClassIri = targetClassQuad.object.value;
+            const targetClassDescriptor = classes.find(
+                (x) => x.iri === targetClassIri,
+            )!;
+
+            const associationDescriptor = classDescriptor.associations.find(
+                (x) => x.iri === associationIri,
+            );
 
             // Only add the attribute if it is not already there
-            if (
-                !classDescriptor.associations.find(
-                    (x) =>
-                        x.iri === associationIri &&
-                        x.targetClass.iri === targetClassIri,
-                )
-            ) {
-                const targetClassDescriptor = classes.find(
-                    (x) => x.iri === targetClassIri,
-                )!;
+            if (associationDescriptor) {
+                associationDescriptor.targetClasses = uniq([
+                    ...associationDescriptor.targetClasses,
+                    targetClassDescriptor,
+                ]);
+            } else {
                 classDescriptor.associations.push({
                     iri: associationIri,
                     name: '',
-                    targetClass: targetClassDescriptor,
+                    targetClasses: [targetClassDescriptor],
+                    isArray: true,
                     count: 0,
                 });
             }

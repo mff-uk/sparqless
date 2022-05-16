@@ -50,6 +50,7 @@ export class AttributeObserver implements EndpointObserver {
         return groupObservations(resultQuads, config);
     }
 
+    // TODO: allow deepening of property number search?
     private buildQuery = (
         prefix: string,
         classIri: string,
@@ -71,7 +72,7 @@ export class AttributeObserver implements EndpointObserver {
                         <${propertyIri}> ?targetLiteral .
                     FILTER isLiteral(?targetLiteral) 
                 }
-                LIMIT 1
+                LIMIT 1000
             } 
         }`;
 }
