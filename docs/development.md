@@ -38,7 +38,7 @@ and may take longer to run.
 
 Alternatively, if you use VSCode for development, a `Debug API` debug config
 is included in the repository. Running this debugging config will automatically
-compile the required files and run the app in debug mode.
+compile the required files and run `src/main.ts` in debug mode.
 
 ### Testing
 

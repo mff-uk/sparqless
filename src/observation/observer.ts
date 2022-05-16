@@ -1,113 +1,67 @@
-import { EndpointClient, QueryResult } from './client';
-import { ENDPOINTS, SPARQLEndpointDefinition } from './endpoints';
-import { QueryBuilder } from './query_builder';
-import { writeFileSync } from 'fs';
+import { Logger } from 'winston';
+import { ObservationConfig } from '../api/config';
+import { SPARQLEndpointDefinition } from './endpoints';
+import {
+    ObservationQuads,
+    Observations,
+    OntologyObservation,
+} from './ontology';
 
 /**
- * Class which carries out observations of SPARQL endpoint contents.
- *
- * These observations can then be parsed into an object model,
- * and subsequently converted to a GraphQL schema.
+ * Observer which will run once during observations,
+ * right at the beginning. Init observers can provide
+ * the initial observations, which other observers can
+ * then subscribe to, and conduct additional observations
+ * based on them.
  */
-export class EndpointObserver {
+export interface InitEndpointObserver {
     /**
-     * Carry out observations about all endpoints configured in `ENDPOINTS`
-     * in `./endpoints.ts`.
+     * Function called by the `ObserverManager` in order
+     * to get observations about an endpoint.
      *
-     * This can take a **VERY** long time.
+     * @param endpoint SPARQL endpoint to observe.
+     * @param config Observation configuration.
+     * @param logger Logger which may be used by the observer.
      *
-     * @returns Observations about all endpoints
+     * @returns Observations made by this observer.
      */
-    async observeAllEndpoints(): Promise<QueryResult[][]> {
-        const allResults = [];
-        for (const endpoint of ENDPOINTS) {
-            const endpointResults = await this.observeEndpoint(endpoint);
-
-            allResults.push(endpointResults);
-            writeFileSync(
-                `${endpoint.name}.json`,
-                JSON.stringify(endpointResults),
-            );
-        }
-
-        return allResults;
-    }
-
-    /**
-     * Carry out observations on the specified SPARQL endpoint.
-     *
-     * @param endpoint Endpoint to observe
-     * @param classSearchLimit If set to a value greater than zero,
-     *      only that many classes will be thoroughly searched, i.e.
-     *      their instances, properties and associations.
-     *      Limiting this number will speed up observation greatly.
-     * @returns Observations about the endpoint
-     */
-    async observeEndpoint(
+    observeEndpoint(
         endpoint: SPARQLEndpointDefinition,
-        classSearchLimit = 0,
-    ): Promise<QueryResult[]> {
-        const endpointResults = [];
-        const client = new EndpointClient(endpoint);
+        config: ObservationConfig,
+        logger?: Logger,
+    ): Promise<Observations>;
+}
 
-        const query = QueryBuilder.CLASSES_AND_INSTANCE_NUMBERS();
-        const result = await client.runQuery(query);
-        endpointResults.push(result);
+/**
+ * Observer which requires previous observations in order
+ * to conduct its own observations. It can subscribe to
+ * other observers' observations using the `triggers` property,
+ * and when any observation of that kind is made, this observer
+ * will be called with that observation as a parameter.
+ */
+export interface EndpointObserver {
+    /**
+     * Property containing the observations which this
+     * observer should be subscribed to.
+     */
+    triggers: OntologyObservation[];
 
-        let classIriList = result.quads
-            .filter(
-                (x) =>
-                    x.predicate.value ===
-                    'http://skodapetr.eu/ontology/sparql-endpoint/class',
-            )
-            .map((x) => x.object.value);
-
-        if (classSearchLimit > 0) {
-            classIriList = classIriList.slice(0, classSearchLimit);
-        }
-
-        let classCount = 0;
-        for (const classIri of classIriList) {
-            console.debug(
-                `Observing class ${++classCount} of ${
-                    classIriList.length
-                } [${classIri}]`,
-            );
-            const propQuery =
-                QueryBuilder.NUMBER_OF_INSTANCE_PROPERTIES(classIri);
-            const propResult = await client.runQuery(propQuery);
-            endpointResults.push(propResult);
-
-            const instanceQuery = QueryBuilder.CLASS_INSTANCES(classIri);
-            const instanceResult = await client.runQuery(instanceQuery);
-            endpointResults.push(instanceResult);
-
-            const instanceIriList = instanceResult.quads
-                .filter(
-                    (x) =>
-                        x.predicate.value ===
-                        'http://skodapetr.eu/ontology/sparql-endpoint/resource',
-                )
-                .map((x) => x.object.value);
-            for (const instanceIri of instanceIriList) {
-                const attributeQuery = QueryBuilder.INSTANCE_ATTRIBUTES(
-                    classIri,
-                    instanceIri,
-                );
-                const attributeResult = await client.runQuery(attributeQuery);
-                endpointResults.push(attributeResult);
-
-                const associationQuery = QueryBuilder.INSTANCE_ASSOCIATIONS(
-                    classIri,
-                    instanceIri,
-                );
-                const associationResult = await client.runQuery(
-                    associationQuery,
-                );
-                endpointResults.push(associationResult);
-            }
-        }
-
-        return endpointResults;
-    }
+    /**
+     * Function called by the `ObserverManager` in order
+     * to get observations about an endpoint.
+     *
+     * @param triggerObservations Observations which triggered
+     * this observer's execution.
+     * @param endpoint SPARQL endpoint to observe.
+     * @param config Observation configuration.
+     * @param logger Logger which may be used by the observer.
+     *
+     * @returns Observations made by this observer.
+     */
+    observeEndpoint(
+        triggerObservations: ObservationQuads[],
+        endpoint: SPARQLEndpointDefinition,
+        config: ObservationConfig,
+        logger?: Logger,
+    ): Promise<Observations>;
 }

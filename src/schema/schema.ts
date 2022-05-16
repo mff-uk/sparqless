@@ -1,33 +1,45 @@
 import { makeSchema, queryType } from 'nexus';
 import {
+    intArg,
     NexusGraphQLSchema,
     NexusObjectTypeDef,
     objectType,
 } from 'nexus/dist/core';
 import { ClassDescriptor } from '../models/class';
+import { createClassResolver } from './resolvers/class';
+import { createAssociationResolver } from './resolvers/association';
+import { createBooleanResolver } from './resolvers/boolean';
+import { getClassDescription, getPropertyDescription } from './utils';
+import { Config } from '../api/config';
 
 /**
  * Generate a complete GraphQL schema from class descriptors.
  * This schema may then be used by a GraphQL server.
  *
  * @param classes Class descriptors describing the SPARQL endpoint.
- * @param schemaOutputPath The path where the GraphQL schema should be
- * generated. Set to `undefined` if you don't want to output
- * the generated GraphQL schema to disk.
+ * @param config SPARQL2GraphQL configuration.
  * @return Generated GraphQL schema.
  */
 export function createSchema(
     classes: ClassDescriptor[],
-    schemaOutputPath: string | undefined,
+    config: Config,
 ): NexusGraphQLSchema {
-    const endpointTypes = createEndpointTypes(classes);
+    const endpointTypes = createEndpointTypes(classes, config);
 
-    // TODO: add resolvers functionality (big feature)
     const query = queryType({
         definition(t) {
             for (const classDescriptor of classes) {
-                t.field(classDescriptor.name, {
+                t.nonNull.list.field(classDescriptor.name, {
                     type: classDescriptor.name,
+                    args: {
+                        limit: intArg(),
+                        offset: intArg(),
+                    },
+                    resolve: createClassResolver(
+                        classDescriptor,
+                        { isArrayType: true, areFieldsOptional: false },
+                        config,
+                    ),
                 });
             }
         },
@@ -36,7 +48,7 @@ export function createSchema(
     const schema = makeSchema({
         types: [query, ...endpointTypes],
         outputs: {
-            schema: schemaOutputPath,
+            schema: config.schema?.graphqlSchemaOutputPath,
         },
     });
 
@@ -45,6 +57,7 @@ export function createSchema(
 
 function createEndpointTypes(
     classes: ClassDescriptor[],
+    config: Config,
 ): NexusObjectTypeDef<any>[] {
     return classes.map((classDescriptor) =>
         objectType({
@@ -52,15 +65,23 @@ function createEndpointTypes(
             definition(t) {
                 for (const attribute of classDescriptor.attributes) {
                     const fieldConfig = {
-                        description: `This attribute has ${attribute.count} occurences.\n
-Original IRI is ${attribute.iri}.`,
+                        description: getPropertyDescription(
+                            attribute,
+                            'attribute',
+                            config.observation?.maxPropertyCount,
+                        ),
                     };
                     if (attribute.type.endsWith('string')) {
                         t.string(attribute.name, fieldConfig);
                     } else if (attribute.type.endsWith('integer')) {
+                        // Custom resolver is not necessary for ints, since the default
+                        // resolver is able to parse them from strings.
                         t.int(attribute.name, fieldConfig);
                     } else if (attribute.type.endsWith('boolean')) {
-                        t.boolean(attribute.name, fieldConfig);
+                        t.boolean(attribute.name, {
+                            ...fieldConfig,
+                            resolve: createBooleanResolver(false),
+                        });
                     } else {
                         // TODO: what should we do about other attribute types? Like dates or custom ones
                         t.string(attribute.name, fieldConfig);
@@ -70,8 +91,19 @@ Original IRI is ${attribute.iri}.`,
                 for (const association of classDescriptor.associations) {
                     t.field(association.name, {
                         type: association.targetClass.name,
-                        description: `This association has ${association.count} occurences.\n
-Original IRI is ${association.iri}.`,
+                        description: getPropertyDescription(
+                            association,
+                            'association',
+                            config.observation?.maxPropertyCount,
+                        ),
+                        resolve: createAssociationResolver(
+                            classDescriptor,
+                            {
+                                associationDescriptor: association,
+                                isArrayType: false,
+                            },
+                            config,
+                        ),
                     });
                 }
 
@@ -83,8 +115,7 @@ Original IRI is ${association.iri}.`,
                         'IRI representing the RDF type of this object.',
                 });
             },
-            description: `Generated SPARQL class with ${classDescriptor.numberOfInstances} instances.\n
-Original IRI is ${classDescriptor.iri}.`,
+            description: getClassDescription(classDescriptor),
         }),
     );
 }

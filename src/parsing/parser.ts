@@ -1,27 +1,24 @@
-import { groupBy } from 'lodash';
+import { Config } from '../api/config';
 import { ClassDescriptor } from '../models/class';
-import { QueryResult } from '../observation/client';
-
-const OBS_PREFIX = 'http://skodapetr.eu/ontology/sparql-endpoint/';
-const OBS_CLASS = OBS_PREFIX + 'class';
-const OBS_NUM_INSTANCES = OBS_PREFIX + 'numberOfInstances';
-const OBS_RESOURCE = OBS_PREFIX + 'resource';
-const OBS_PROPERTY = OBS_PREFIX + 'property';
-const OBS_TARGET_LITERAL = OBS_PREFIX + 'targetLiteral';
-const OBS_SOURCE_CLASS = OBS_PREFIX + 'sourceClass';
-const OBS_TARGET_CLASS = OBS_PREFIX + 'targetClass';
+import {
+    Observations,
+    OntologyObservation,
+    OntologyProperty,
+} from '../observation/ontology';
 
 /**
  * Class handling the parsing of SPARQL endpoint observations into an object model.
  */
 export class ObservationParser {
+    constructor(private config: Config) {}
+
     /**
      * Build our class model using the provided observations.
      *
      * @param observations Results of `EndpointObserver`'s observation of a SPARQL endpoint.
      * @return Complete class model of the observed data.
      */
-    buildEndpointModel(observations: QueryResult[]): ClassDescriptor[] {
+    buildEndpointModel(observations: Observations): ClassDescriptor[] {
         // Creating class descriptors has to be done first
         const classDescriptors = this.createClassDescriptors(observations);
 
@@ -38,233 +35,154 @@ export class ObservationParser {
     }
 
     private createClassDescriptors(
-        observations: QueryResult[],
+        observations: Observations,
     ): ClassDescriptor[] {
         const descriptors: ClassDescriptor[] = [];
 
-        for (const queryResult of observations) {
-            const groupedResults = groupBy(
-                queryResult.quads,
-                (quad) => quad.subject.value,
-            );
-            for (const [_key, value] of Object.entries(groupedResults)) {
-                const classNameQuad = value.find(
-                    (x) => x.predicate.value === OBS_CLASS,
-                );
+        for (const observation of observations[
+            OntologyObservation.ClassObservation
+        ]!) {
+            const classNameQuad = observation[OntologyProperty.DescribedClass]!;
+            const numInstancesQuad =
+                observation[OntologyProperty.NumberOfInstances]!;
+            const newClass: ClassDescriptor = {
+                iri: classNameQuad.object.value,
+                name: '',
+                numberOfInstances: parseInt(numInstancesQuad.object.value),
+                instances: [],
+                attributes: [],
+                associations: [],
+            };
 
-                if (classNameQuad) {
-                    const numInstancesQuad = value.find(
-                        (x) => x.predicate.value === OBS_NUM_INSTANCES,
-                    );
-                    if (numInstancesQuad) {
-                        const newClass: ClassDescriptor = {
-                            iri: classNameQuad.object.value,
-                            name: '',
-                            numberOfInstances: parseInt(
-                                numInstancesQuad.object.value,
-                            ),
-                            instances: [],
-                            attributes: [],
-                            associations: [],
-                        };
-                        descriptors.push(newClass);
-                    }
-                }
-            }
+            descriptors.push(newClass);
         }
 
         return descriptors;
     }
 
     private createInstanceDescriptors(
-        observations: QueryResult[],
+        observations: Observations,
         classes: ClassDescriptor[],
     ) {
-        for (const queryResult of observations) {
-            const groupedResults = groupBy(
-                queryResult.quads,
-                (quad) => quad.subject.value,
-            );
-            for (const [_key, value] of Object.entries(groupedResults)) {
-                const resourceQuad = value.find(
-                    (x) => x.predicate.value === OBS_RESOURCE,
-                );
-                if (resourceQuad) {
-                    const classNameQuad = value.find(
-                        (x) => x.predicate.value === OBS_CLASS,
-                    );
-                    const classIri = classNameQuad!.object.value;
-                    const classDescriptor = classes.find(
-                        (x) => x.iri === classIri,
-                    )!;
-                    classDescriptor.instances.push({
-                        iri: resourceQuad.object.value,
-                    });
-                }
-            }
+        for (const observation of observations[
+            OntologyObservation.InstanceObservation
+        ]!) {
+            const resourceQuad = observation[OntologyProperty.ClassInstance]!;
+            const classNameQuad = observation[OntologyProperty.ParentClass]!;
+            const classIri = classNameQuad.object.value;
+            const classDescriptor = classes.find((x) => x.iri === classIri)!;
+            classDescriptor.instances.push({
+                iri: resourceQuad.object.value,
+            });
         }
     }
 
     private createAttributeDescriptors(
-        observations: QueryResult[],
+        observations: Observations,
         classes: ClassDescriptor[],
     ) {
-        for (const queryResult of observations) {
-            const groupedResults = groupBy(
-                queryResult.quads,
-                (quad) => quad.subject.value,
-            );
-            for (const [_key, value] of Object.entries(groupedResults)) {
-                const literalQuad = value.find(
-                    (x) => x.predicate.value === OBS_TARGET_LITERAL,
-                );
-                if (literalQuad) {
-                    const propertyQuad = value.find(
-                        (x) => x.predicate.value === OBS_PROPERTY,
-                    )!;
-                    const classQuad = value.find(
-                        (x) => x.predicate.value === OBS_SOURCE_CLASS,
-                    )!;
+        for (const observation of observations[
+            OntologyObservation.AttributeObservation
+        ]!) {
+            const literalQuad = observation[OntologyProperty.TargetLiteral]!;
+            const propertyQuad =
+                observation[OntologyProperty.DescribedAttribute]!;
+            const classQuad =
+                observation[OntologyProperty.AttributeSourceClass]!;
 
-                    const classDescriptor = classes.find(
-                        (x) => x.iri === classQuad.object.value,
-                    )!;
+            const classDescriptor = classes.find(
+                (x) => x.iri === classQuad.object.value,
+            )!;
 
-                    const attributeIri = propertyQuad.object.value;
-                    const attributeType: string =
-                        // @ts-ignore
-                        literalQuad.object.datatype.value;
+            const attributeIri = propertyQuad.object.value;
+            const attributeType: string =
+                // @ts-ignore
+                literalQuad.object.datatype.value;
 
-                    // Only add the attribute if it is not already there
-                    if (
-                        !classDescriptor.attributes.find(
-                            (x) =>
-                                x.iri === attributeIri &&
-                                x.type === attributeType,
-                        )
-                    ) {
-                        classDescriptor.attributes.push({
-                            iri: attributeIri,
-                            name: '',
-                            type: attributeType,
-                            count: 0,
-                        });
-                    }
-                }
+            // Only add the attribute if it is not already there
+            if (
+                !classDescriptor.attributes.find(
+                    (x) => x.iri === attributeIri && x.type === attributeType,
+                )
+            ) {
+                classDescriptor.attributes.push({
+                    iri: attributeIri,
+                    name: '',
+                    type: attributeType,
+                    count: 0,
+                });
             }
         }
     }
 
     private createAssociationDescriptors(
-        observations: QueryResult[],
+        observations: Observations,
         classes: ClassDescriptor[],
     ) {
-        for (const queryResult of observations) {
-            const groupedResults = groupBy(
-                queryResult.quads,
-                (quad) => quad.subject.value,
-            );
-            for (const [_key, value] of Object.entries(groupedResults)) {
-                const targetClassQuad = value.find(
-                    (x) => x.predicate.value === OBS_TARGET_CLASS,
-                );
-                if (targetClassQuad) {
-                    const propertyQuad = value.find(
-                        (x) => x.predicate.value === OBS_PROPERTY,
-                    )!;
-                    const classQuad = value.find(
-                        (x) => x.predicate.value === OBS_SOURCE_CLASS,
-                    )!;
+        for (const observation of observations[
+            OntologyObservation.AssociationObservation
+        ]!) {
+            const targetClassQuad = observation[OntologyProperty.TargetClass]!;
+            const propertyQuad =
+                observation[OntologyProperty.DescribedAssociation]!;
+            const classQuad =
+                observation[OntologyProperty.AssociationSourceClass]!;
 
-                    const classDescriptor = classes.find(
-                        (x) => x.iri === classQuad.object.value,
-                    )!;
+            const classDescriptor = classes.find(
+                (x) => x.iri === classQuad.object.value,
+            )!;
 
-                    const associationIri = propertyQuad.object.value;
-                    const targetClassIri = targetClassQuad.object.value;
+            const associationIri = propertyQuad.object.value;
+            const targetClassIri = targetClassQuad.object.value;
 
-                    // Only add the attribute if it is not already there
-                    if (
-                        !classDescriptor.associations.find(
-                            (x) =>
-                                x.iri === associationIri &&
-                                x.targetClass.iri === targetClassIri,
-                        )
-                    ) {
-                        const targetClassDescriptor = classes.find(
-                            (x) => x.iri === targetClassIri,
-                        )!;
-                        classDescriptor.associations.push({
-                            iri: associationIri,
-                            name: '',
-                            targetClass: targetClassDescriptor,
-                            count: 0,
-                        });
-                    }
-                }
+            // Only add the attribute if it is not already there
+            if (
+                !classDescriptor.associations.find(
+                    (x) =>
+                        x.iri === associationIri &&
+                        x.targetClass.iri === targetClassIri,
+                )
+            ) {
+                const targetClassDescriptor = classes.find(
+                    (x) => x.iri === targetClassIri,
+                )!;
+                classDescriptor.associations.push({
+                    iri: associationIri,
+                    name: '',
+                    targetClass: targetClassDescriptor,
+                    count: 0,
+                });
             }
         }
     }
 
     private createPropertyCountDescriptors(
-        observations: QueryResult[],
+        observations: Observations,
         classes: ClassDescriptor[],
     ) {
-        for (const queryResult of observations) {
-            const groupedResults = groupBy(
-                queryResult.quads,
-                (quad) => quad.subject.value,
-            );
-            for (const [_key, value] of Object.entries(groupedResults)) {
-                const propertyQuad = value.find(
-                    (x) => x.predicate.value === OBS_PROPERTY,
-                );
-                const numInstancesQuad = value.find(
-                    (x) => x.predicate.value === OBS_NUM_INSTANCES,
-                );
-                const classQuad = value.find(
-                    (x) => x.predicate.value === OBS_SOURCE_CLASS,
-                );
-                if (propertyQuad && numInstancesQuad && classQuad) {
-                    const targetClassQuad = value.find(
-                        (x) => x.predicate.value === OBS_TARGET_CLASS,
-                    );
+        for (const observation of observations[
+            OntologyObservation.PropertyCountObservation
+        ]!) {
+            const propertyQuad = observation[OntologyProperty.CountedProperty]!;
+            const numInstancesQuad =
+                observation[OntologyProperty.NumberOfPropertyInstances]!;
+            const classQuad =
+                observation[OntologyProperty.CountedPropertySourceClass]!;
+            const classDescriptor = classes.find(
+                (x) => x.iri === classQuad.object.value,
+            )!;
 
-                    const classDescriptor = classes.find(
-                        (x) => x.iri === classQuad.object.value,
-                    )!;
+            const descriptor = [
+                ...classDescriptor.attributes,
+                ...classDescriptor.associations,
+            ].find((x) => x.iri === propertyQuad.object.value);
 
-                    // The descriptors already have to exist
-                    if (targetClassQuad) {
-                        const associationDescriptor =
-                            classDescriptor.associations.find(
-                                (x) =>
-                                    x.iri === propertyQuad.object.value &&
-                                    x.targetClass.iri ===
-                                        targetClassQuad.object.value,
-                            );
-                        associationDescriptor!.count = parseInt(
-                            numInstancesQuad.object.value,
-                        );
-                    } else {
-                        // TODO: is this filtering enough? Can we have duplicate attributes, in which case
-                        //       this would be inaccurate, because it would get assigned to the first one?
-                        //       Also the duplicates could be causing unnecessary name clashes.
-                        const attributeDescriptor =
-                            classDescriptor.attributes.find(
-                                (x) => x.iri === propertyQuad.object.value,
-                            );
-
-                        // When attributeDescriptor is not found, it means that the property was not on any
-                        // of the queried instances, i.e. the number of examined instances was too low.
-                        // TODO: what should happen in this case? Adding some kind of placeholder property?
-                        if (attributeDescriptor) {
-                            attributeDescriptor.count = parseInt(
-                                numInstancesQuad.object.value,
-                            );
-                        }
-                    }
-                }
+            if (descriptor) {
+                descriptor.count = parseInt(numInstancesQuad.object.value);
+            } else {
+                this.config.logger?.warn(
+                    `Missing descriptor for ${classDescriptor.iri}: ${propertyQuad.object.value}.`,
+                );
             }
         }
     }

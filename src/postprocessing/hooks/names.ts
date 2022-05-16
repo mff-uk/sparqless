@@ -19,9 +19,13 @@ export function buildNamesFromIRIs(descriptors: NamedEntityDescriptor[]) {
     // are present in the IRI. It will replace them with the accentless version,
     // rather than an underscore.
     for (const descriptor of descriptors) {
-        const shortName = deburr(
+        let shortName = deburr(
             descriptor.iri.split(/[/#]/).slice(-1).pop()!,
         ).replace(/[^_a-zA-Z0-9]/gi, '_');
+        if (!shortName) {
+            shortName = convertIRIToLongName(descriptor.iri);
+        }
+
         if (nameDict[shortName]) {
             nameDict[shortName].push(descriptor);
         } else {
@@ -37,11 +41,12 @@ export function buildNamesFromIRIs(descriptors: NamedEntityDescriptor[]) {
             // long unique names. This could probably be improved to take only
             // as long of a name as necessary, not the whole IRI.
             for (const descriptor of descriptors) {
-                descriptor.name = deburr(descriptor.iri).replace(
-                    /[^_a-zA-Z0-9]/gi,
-                    '_',
-                );
+                descriptor.name = convertIRIToLongName(descriptor.iri);
             }
         }
     }
+}
+
+function convertIRIToLongName(iri: string): string {
+    return deburr(iri).replace(/[^_a-zA-Z0-9]/gi, '_');
 }

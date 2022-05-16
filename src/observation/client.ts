@@ -1,6 +1,8 @@
+import arrayifyStream from 'arrayify-stream';
+import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { Quad } from 'rdf-js';
 import StreamClient from 'sparql-http-client';
-import { DETAILED_LOG } from '../api/config';
+import { Logger } from 'winston';
 import { SPARQLEndpointDefinition } from './endpoints';
 
 /**
@@ -8,7 +10,10 @@ import { SPARQLEndpointDefinition } from './endpoints';
  * SPARQL endpoint, using the `method` function.
  */
 export class EndpointClient {
-    constructor(private endpoint: SPARQLEndpointDefinition) {}
+    constructor(
+        private endpoint: SPARQLEndpointDefinition,
+        private logger?: Logger,
+    ) {}
 
     /**
      * Execute the given query against the configured SPARQL endpoint.
@@ -19,7 +24,7 @@ export class EndpointClient {
      * @param query SPARQL query to execute
      * @return `Promise` with results of the query
      */
-    async runQuery(query: string): Promise<QueryResult> {
+    async runConstructQuery(query: string): Promise<QueryResult> {
         const client = new StreamClient({
             endpointUrl: this.endpoint.url,
         });
@@ -48,16 +53,25 @@ export class EndpointClient {
         }).then((value) => {
             const queryResult = value as QueryResult;
 
-            if (DETAILED_LOG) {
-                console.debug(
-                    `Got ${queryResult.quads.length} quads from ${
-                        this.endpoint.name
-                    } in ${(queryResult.elapsedTimeMs / 1000).toFixed(2)}s.`,
-                );
-            }
+            this.logger?.silly(
+                `Got ${queryResult.quads.length} quads from ${
+                    this.endpoint.name
+                } in ${(queryResult.elapsedTimeMs / 1000).toFixed(2)}s.`,
+            );
 
             return queryResult;
         });
+    }
+
+    async runSelectQuery(query: string): Promise<any[]> {
+        // Using the fetch-sparql-endpoint library for this
+        // seems to give much more reliable results than sparql-http-client,
+        // which would throw errors on many endpoints.
+        const fetcher = new SparqlEndpointFetcher();
+        const stream = await fetcher.fetchBindings(this.endpoint.url, query);
+        const results = await arrayifyStream(stream);
+
+        return results;
     }
 
     private getElapsedTime(startTimeMs: number): number {

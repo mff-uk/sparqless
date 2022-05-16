@@ -56,7 +56,7 @@ test('postprocessor runs hooks on correct entities', () => {
     };
 
     const postprocessor = new DescriptorPostprocessor();
-    postprocessor.postprocess(descriptors, hooks);
+    postprocessor.postprocess(descriptors, { hooks });
 
     expect(class1.iri.includes('ENTITY')).toBe(true);
     expect(class1.iri.includes('NAME')).toBe(true);

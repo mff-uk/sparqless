@@ -1,0 +1,134 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema> .
+@prefix se: <http://skodapetr.eu/ontology/sparql-endpoint/> .
+
+se:Observation
+    a rdfs:Class ;
+    rdfs:comment "Base class for all observations carried out by SPARQL2GraphQL." .
+
+
+se:ClassObservation
+    a rdfs:Class ;
+    rdfs:subClassOf se:Observation ;
+    rdfs:comment "Observation describing the existence of a class with `numbeOfInstances` instances." .
+
+se:describedClass
+    a rdfs:Property ;
+    rdfs:domain se:ClassObservation ;
+    rdfs:range rdfs:Class ;
+    rdfs:comment "The class being described by this observation." .
+
+se:numberOfInstances
+    a rdfs:Property ;
+    rdfs:domain se:ClassObservation ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "The number of instances of this class." .
+
+
+se:InstanceObservation
+    a rdfs:Class ;
+    rdfs:subClassOf se:Observation ;
+    rdfs:comment "Observation describing the existence of a class instance." .
+
+se:classInstance
+    a rdfs:Property ;
+    rdfs:domain se:InstanceObservation ;
+    rdfs:range rdfs:Class ;
+    rdfs:comment "The instance being described by this observation." .
+
+se:parentClass
+    a rdfs:Property ;
+    rdfs:domain se:InstanceObservation ;
+    rdfs:range rdfs:Class ;
+    rdfs:comment "Class which the described instance is an instance of." .
+
+
+se:PropertyExistenceObservation
+    a rdfs:Class ;
+    rdfs:subClassOf se:Observation ;
+    rdfs:comment "Observation describing the existence of a class property." .
+
+se:propertyOf
+    a rdfs:Property ;
+    rdfs:domain se:PropertyExistenceObservation ;
+    rdfs:range rdfs:Class ;
+    rdfs:comment "The class to which this property belongs." .
+
+se:propertyIri
+    a rdfs:Property ;
+    rdfs:domain se:PropertyExistenceObservation ;
+    rdfs:range rdfs:Property ;
+    rdfs:comment "The IRI of the described property." .
+
+
+se:PropertyCountObservation
+    a rdfs:Class ;
+    rdfs:subClassOf se:Observation ;
+    rdfs:comment "Observation describing the number of occurences of a given property" .
+
+se:countedProperty
+    a rdfs:Property ;
+    rdfs:domain se:PropertyCountObservation ;
+    rdfs:range rdfs:Property ;
+    rdfs:comment "IRI of the property being counted." .
+
+se:countedPropertySourceClass
+    a rdfs:Property ;
+    rdfs:domain se:PropertyCountObservation ;
+    rdfs:range rdfs:Class ;
+    rdfs:comment "The class which the counted property belongs to." .
+
+se:numberOfPropertyInstances
+    a rdfs:Property ;
+    rdfs:domain se:PropertyCountObservation ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Number of instances of the counted property." .
+
+
+se:AttributeObservation
+    a rdfs:Class ;
+    rdfs:subClassOf se:Observation ;
+    rdfs:comment "Observation describing the existence of an attribute, i.e. a property whose range is literals." .
+
+se:describedAttribute
+    a rdfs:Property ;
+    rdfs:domain se:AttributeObservation ;
+    rdfs:range rdfs:Property ;
+    rdfs:comment "The attribute being described." .
+
+se:attributeSourceClass
+    a rdfs:Property ;
+    rdfs:domain se:AttributeObservation ;
+    rdfs:range rdfs:Class ;
+    rdfs:comment "The class which the attribute belongs to." .
+
+se:targetLiteral
+    a rdfs:Property ;
+    rdfs:domain se:AttributeObservation ;
+    rdfs:range rdfs:Literal ;
+    rdfs:comment "The literal which is the object of this attribute." .
+
+
+se:AssociationObservation
+    a rdfs:Class ;
+    rdfs:subClassOf se:Observation ;
+    rdfs:comment "Observation describing the existence of an association, i.e. a property whose range is another class." .
+
+se:describedAssociation
+    a rdfs:Property ;
+    rdfs:domain se:AssociationObservation ;
+    rdfs:range rdfs:Property ;
+    rdfs:comment "The association being described." .
+
+se:associationSourceClass
+    a rdfs:Property ;
+    rdfs:domain se:AssociationObservation ;
+    rdfs:range rdfs:Class ;
+    rdfs:comment "The class which the association belongs to." .
+
+se:targetClass
+    a rdfs:Property ;
+    rdfs:domain se:AssociationObservation ;
+    rdfs:range rdfs:Class ;
+    rdfs:comment "The class which is the object of this association." .
