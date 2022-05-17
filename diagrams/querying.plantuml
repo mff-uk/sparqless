@@ -1,0 +1,35 @@
+@startuml
+actor User
+database "GraphQL Server"
+database "SPARQL Endpoint"
+
+User -> "GraphQL Server": GraphQL query:\n""book {""\n""  author {""\n""    name""\n""  }""\n""  title""\n""}""
+
+rnote over "GraphQL Server"
+  Execute book resolver
+endrnote
+
+"GraphQL Server" -> "SPARQL Endpoint": SPARQL query:\n//Get IRIs of books which//\n//have an author and a title//
+
+"GraphQL Server" <- "SPARQL Endpoint": ""http://example.com/book1""
+
+hnote over "GraphQL Server"
+  For each returned IRI,
+  do the following:
+endhnote
+
+"GraphQL Server" -> "SPARQL Endpoint": SPARQL query:\n//Get the author and title properties//\n//for //""http://example.com/book1""
+
+"GraphQL Server" <- "SPARQL Endpoint": //author://\n""http://example.com/author1""\n//title://\n""Of Mice and Men""
+
+rnote over "GraphQL Server"
+  Execute author resolver
+endrnote
+
+"GraphQL Server" -> "SPARQL Endpoint": SPARQL query:\n//Get the name property//\n//for //""http://example.com/author1""
+
+"GraphQL Server" <- "SPARQL Endpoint": //name://\n""John Steinbeck""
+
+User <- "GraphQL Server": JSON result:\n""{""\n""  "author": {""\n""    "name": "John Steinbeck" ""\n""  }""\n""  "title": "Of Mice and Men" ""\n""}""
+
+@enduml

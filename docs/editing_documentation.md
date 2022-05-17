@@ -17,7 +17,7 @@ nav:
   - 'How it works':
     - Overview: 'overview.md'
     - Observation: 'observation.md'
-    - Parsing: 'parsing.md'
+    - Parsing: 'model_parsing.md'
     - Postprocessing: 'postprocessing.md'
     - 'Schema Creation': 'schema.md'
     - Querying: 'querying.md'

@@ -7,6 +7,7 @@ import {
     NexusUnionTypeDef,
     ObjectDefinitionBlock,
     objectType,
+    stringArg,
     unionType,
 } from 'nexus/dist/core';
 import { ClassDescriptor } from '../models/class';
@@ -42,7 +43,11 @@ export function createSchema(
                     args: {
                         limit: intArg(),
                         offset: intArg(),
-                        sort: booleanArg(),
+                        sort: stringArg({
+                            description: `Sort by instance IRI.\n
+Allowed values are "ASC" and "DESC" for ascending and descending sort respectively.\n
+If you want pagination to return values in a stable order, you should also sort them.`
+                        }),
                     },
                     resolve: createClassResolver(
                         classDescriptor,

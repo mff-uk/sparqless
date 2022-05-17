@@ -17,6 +17,9 @@ export function createClassResolver(
     config: Config,
 ): FieldResolver<string, string> {
     return async (_parent, args, _context, info) => {
+        if (args.sort && !["ASC", "DESC"].includes(args.sort)) {
+            throw new Error(`Invalid sort direction: ${args.sort}. Allowed values are ASC and DESC.`);
+        }
         const queryVars = getQueryVars(classDescriptor, info, config.logger);
         const instanceIRIs = await resolveInstanceIRIs(
             classDescriptor,
@@ -118,7 +121,7 @@ async function resolveInstanceIRIs(
                 : ''
         }
     }
-    ${args.sort ? `ORDER BY DESC( ?instance )` : ''}
+    ${args.sort ? `ORDER BY ${args.sort}( ?instance )` : ''}
     ${args.limit ? `LIMIT ${args.limit}` : ''}
     ${args.offset ? `OFFSET ${args.offset}` : ''}`;
 
