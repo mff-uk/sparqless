@@ -92,37 +92,113 @@
 <div class="section" itemprop="articleBody">
 <h1 id="parsing">Parsing</h1>
 <p>Observations made about a SPARQL endpoint are then parsed by
-the <code>ObservationParser</code>. Its method <code>buildEndpointModel</code> receives
-a list of observations as a parameter (in the form of <code>QueryResult[]</code>),
-and it parses those observations into an object model describing
-the data.</p>
+the <code>ObservationParser</code> class. It contains an implementation of an algorithm
+which converts RDF observations into <strong>descriptors</strong>. <strong>Descriptors</strong> are
+plain JavaScript objects which describe the model of the data in the SPARQL
+endpoint. They are the stepping stone between the RDF observations,
+and creation of the GraphQL schema.</p>
+<p>This parsing algorithm is not the only possible parsing algorithm for the
+observations we are collecting. Observations are simply pieces of information
+to be interpreted, and there are many ways of interpreting that information.
+The parsing algorithm implemented is simply one which uses all of the observations
+SPARQL2GraphQL is currently collecting efficiently. There are currently
+no plans to let library users specify custom parsing algorithms, but should
+the need arise, the library design is modular enough to allow it.</p>
 <h2 id="descriptors">Descriptors</h2>
-<p>The model is expressed in the form of <strong>descriptors</strong>, which are objects
-storing metadata about various entities present in the dataset.
-The descriptors are located in the <code>src/models/</code> folder.</p>
-<p>These are the descriptors currently used:</p>
-<ul>
-<li><code>EntityDescriptor</code>: Describes any entity with an IRI, which is basically
-everything in the RDF world. Other descriptors inherit from this descriptor.</li>
-<li><code>NamedEntityDescriptor</code>: Describes any entity which should also have
-a human-readable and short name. It can be a bit cumbersome for humans
-to constantly use IRIs to refer to things, so SPARQL2GraphQL makes this
-easier by providing simplified names to display in the user interface.</li>
-<li><code>ClassDescriptor</code>: Describes a single class present in the dataset.</li>
-<li><code>InstanceDescriptor</code>: Describes a single instance of a class.</li>
-<li><code>PropertyDescriptor</code>: Describes a property of a class (association
-or attribute),</li>
-<li><code>AssociationDescriptor</code>: Describes an association of a class, i.e.
-a property whose range is another class.</li>
-<li><code>AttributeDescriptor</code>: Describes an attribute of a class, i.e.
-a property whose range is a primitive type.</li>
-</ul>
-<h2 id="parsing-algorithm">Parsing algorithm</h2>
-<p>For each type of observation, there is a method in the <code>ObservationParser</code>
-which parses this observation into a descriptor object.</p>
-<p>Therefore the parsing algorithm essentially consists of iterating
-over the collected observations, choosing the correct parsing
-function for each observation, and then executing the function.</p>
+<p>This section contains a more thorough explanation of what each descriptor
+means, and what it says about the underlying data. The following is a class
+diagram showing all of the currently used descriptors:</p>
+<p><img alt="Descriptors diagram" src="../img/descriptors_diagram.png"/></p>
+<h3 id="resourcedescriptor">ResourceDescriptor</h3>
+<p>Describes any RDF resource which is identified by
+an IRI, i.e. classes and properties. This descriptor also has a name field,
+which is meant to contain a GraphQL-compatible, human-readable name,
+meaning a string only consisting of characters <code>[_a-zA-Z0-9]</code>.
+This name is used as the GraphQL identifier for this resource.
+After all, it's much easier for humans to read and reason about
+<code>Label</code> than <code>http://www.w3.org/2008/05/skos-xl#Label</code>.</p>
+<pre><code class="language-ts">interface ResourceDescriptor {
+    iri: string;
+    name: string;
+}
+</code></pre>
+<p>This descriptor is extended by all other descriptors.</p>
+<h3 id="classdescriptor">ClassDescriptor</h3>
+<p>Describes a single class present in the dataset.</p>
+<pre><code class="language-ts">interface ClassDescriptor extends ResourceDescriptor {
+    numberOfInstances: number;
+    attributes: AttributeDescriptor[];
+    associations: AssociationDescriptor[];
+}
+</code></pre>
+<p>For example, if the dataset contains 5 dogs and 10 cats,
+we would have the following class descriptors:</p>
+<pre><code class="language-ts">[
+    {
+        iri: 'http://example.com/dog',
+        name: 'Dog',
+        numberOfInstances: 5,
+        attributes: [],
+        associations: [],
+    },
+    {
+        iri: 'http://example.com/cat',
+        name: 'Cat',
+        numberOfInstances: 10,
+        attributes: [],
+        associations: [],
+    }
+]
+</code></pre>
+<h3 id="propertydescriptor">PropertyDescriptor</h3>
+<p>Describes a property of a class. A property is any relation
+in the dataset where the subject is a class. This descriptor is
+not instantiated on its own, rather it is always as an instance
+of an <code>AssociationDescriptor</code> or an <code>AttributeDescriptor</code>.</p>
+<pre><code class="language-ts">interface PropertyDescriptor extends ResourceDescriptor {
+    count: number;
+    isArray: boolean;
+}
+</code></pre>
+<h3 id="associationdescriptor">AssociationDescriptor</h3>
+<p>A special case of a property where its domain is another class.
+If an association has multiple target classes, its range is their
+union.</p>
+<pre><code class="language-ts">interface AssociationDescriptor extends PropertyDescriptor {
+    targetClasses: ClassDescriptor[];
+}
+</code></pre>
+<p>In our cats and dogs example, let's say each cat has a friend among the dogs.
+That would be modelled like so:</p>
+<pre><code class="language-ts">{
+    iri: 'http://example.com/cat',
+    name: 'Cat',
+    numberOfInstances: 10,
+    attributes: [],
+    associations: [{
+        count: 10,
+        isArray: false,
+        targetClasses: [{
+            iri: 'http://example.com/dog',
+            name: 'Dog',
+            numberOfInstances: 5,
+            attributes: [],
+            associations: [],
+        }],
+    }],
+}
+</code></pre>
+<h3 id="attributedescriptor">AttributeDescriptor</h3>
+<p>A special case of a property where its domain is a literal,
+i.e. a primitive value like a string or an integer.</p>
+<pre><code class="language-ts">interface AttributeDescriptor extends PropertyDescriptor {
+    types: string[];
+    languages: string[];
+}
+</code></pre>
+<p>The <code>types</code> array contains a list of types in this attribute's range.
+If the <code>types</code> array contains a language string type, then the <code>languages</code>
+array will hold a list of available languages for this language string.</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
