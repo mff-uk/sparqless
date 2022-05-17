@@ -2,6 +2,7 @@ import { Literal } from '@rdfjs/types';
 import { uniq } from 'lodash';
 import { Config } from '../api/config';
 import { ClassDescriptor } from '../models/class';
+import { DataModel } from '../models/data_model';
 import {
     Observations,
     OntologyObservation,
@@ -18,9 +19,9 @@ export class ObservationParser {
      * Build our class model using the provided observations.
      *
      * @param observations Results of `EndpointObserver`'s observation of a SPARQL endpoint.
-     * @return Complete class model of the observed data.
+     * @return Complete object model of the observed data.
      */
-    buildEndpointModel(observations: Observations): ClassDescriptor[] {
+    buildEndpointModel(observations: Observations): DataModel {
         // Creating class descriptors has to be done first
         const classDescriptors = this.createClassDescriptors(observations);
 
@@ -30,11 +31,13 @@ export class ObservationParser {
         // descriptors before we update their counts.
         this.createAttributeDescriptors(observations, classDescriptors);
         this.createAssociationDescriptors(observations, classDescriptors);
+        this.createOtherPropertyDescriptors(observations, classDescriptors);
 
+        // These depend on all properties already existing
         this.createPropertyCountDescriptors(observations, classDescriptors);
         this.markScalarProperties(observations, classDescriptors);
 
-        return classDescriptors;
+        return new DataModel(classDescriptors);
     }
 
     private createClassDescriptors(
@@ -173,6 +176,37 @@ export class ObservationParser {
                     iri: associationIri,
                     name: '',
                     targetClasses: [targetClassDescriptor],
+                    isArray: true,
+                    count: 0,
+                });
+            }
+        }
+    }
+
+    private createOtherPropertyDescriptors(
+        observations: Observations,
+        classes: ClassDescriptor[],
+    ) {
+        for (const observation of observations[
+            OntologyObservation.PropertyExistenceObservation
+        ]!) {
+            const propertyIRI =
+                observation[OntologyProperty.PropertyIri]!.object.value;
+            const propertyClassIRI =
+                observation[OntologyProperty.PropertyOf]!.object.value;
+            const classDescriptor = classes.find(
+                (x) => x.iri === propertyClassIRI,
+            )!;
+            const isPropertyDefined = [
+                ...classDescriptor.attributes,
+                ...classDescriptor.associations,
+            ].find((x) => x.iri === propertyIRI);
+            if (!isPropertyDefined) {
+                classDescriptor.attributes.push({
+                    iri: propertyIRI,
+                    name: '',
+                    types: ['http://www.w3.org/2001/XMLSchema#string'],
+                    languages: [],
                     isArray: true,
                     count: 0,
                 });

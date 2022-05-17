@@ -19,7 +19,9 @@ import { Logger } from 'winston';
  * ?s ?p ?o2 such that ?o1 != ?o2.
  */
 export class PartialFunctionPropertyObserver implements EndpointObserver {
-    triggers: OntologyObservation[] = [OntologyObservation.PropertyCountObservation];
+    triggers: OntologyObservation[] = [
+        OntologyObservation.PropertyCountObservation,
+    ];
 
     async observeEndpoint(
         triggerObservations: ObservationQuads[],
@@ -40,17 +42,23 @@ export class PartialFunctionPropertyObserver implements EndpointObserver {
         );
         for (const observation of triggerObservations) {
             const classIri =
-                observation[OntologyProperty.CountedPropertySourceClass]!.object.value;
+                observation[OntologyProperty.CountedPropertySourceClass]!.object
+                    .value;
             const propertyIri =
                 observation[OntologyProperty.CountedProperty]!.object.value;
-            const propertyCount = parseInt(observation[OntologyProperty.NumberOfPropertyInstances]!.object.value);
-            if (config.maxPropertyCount && propertyCount >= config.maxPropertyCount) {
+            const propertyCount = parseInt(
+                observation[OntologyProperty.NumberOfPropertyInstances]!.object
+                    .value,
+            );
+            if (
+                config.maxPropertyCount &&
+                propertyCount >= config.maxPropertyCount
+            ) {
                 // Checking for the max count to avoid counting properties
                 // which have potentially way too many instances to count quickly.
                 continue;
             }
 
-            // TODO: test this more
             const client = new EndpointClient(endpoint, logger);
             const query = this.buildQuery(
                 config.ontologyPrefixIri,
@@ -64,7 +72,11 @@ export class PartialFunctionPropertyObserver implements EndpointObserver {
         return groupObservations(resultQuads, config);
     }
 
-    private buildQuery = (prefix: string, classIri: string, propertyIri: string) =>
+    private buildQuery = (
+        prefix: string,
+        classIri: string,
+        propertyIri: string,
+    ) =>
         `PREFIX se: <${prefix}>
         CONSTRUCT {
             []

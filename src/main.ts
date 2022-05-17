@@ -12,6 +12,12 @@ const config: Config = {
             '../../generated-schema.graphql',
         ),
     },
+    modelCheckpoint: {
+        loadModelFromCheckpoint: true,
+        saveModelToFile: true,
+        overwriteFile: true,
+        checkpointFilePath: path.join(__dirname, '../../model-checkpoint.json'),
+    },
 };
 
 const sparql2graphql = new SPARQL2GraphQL();

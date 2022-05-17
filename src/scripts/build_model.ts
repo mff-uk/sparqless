@@ -43,5 +43,7 @@ observerManager.subscribe(new PropertyCountObserver());
 observerManager.runObservers().then((observations) => {
     const parser = new ObservationParser(config);
     const model = parser.buildEndpointModel(observations);
-    config.logger?.info(`Done! Model has ${model.length} class descriptors.`);
+    config.logger?.info(
+        `Done! Model has ${model.descriptors.length} class descriptors.`,
+    );
 });

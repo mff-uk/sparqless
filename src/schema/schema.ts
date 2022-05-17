@@ -18,24 +18,25 @@ import { Config } from '../api/config';
 import { createLangStringResolver } from './resolvers/lang_string';
 import { createStringResolver } from './resolvers/string';
 import { createIntResolver } from './resolvers/int';
+import { DataModel } from '../models/data_model';
 
 /**
  * Generate a complete GraphQL schema from class descriptors.
  * This schema may then be used by a GraphQL server.
  *
- * @param classes Class descriptors describing the SPARQL endpoint.
+ * @param model Class descriptors describing the SPARQL endpoint.
  * @param config SPARQL2GraphQL configuration.
  * @return Generated GraphQL schema.
  */
 export function createSchema(
-    classes: ClassDescriptor[],
+    model: DataModel,
     config: Config,
 ): NexusGraphQLSchema {
-    const endpointTypes = createEndpointTypes(classes, config);
+    const endpointTypes = createEndpointTypes(model.descriptors, config);
 
     const query = queryType({
         definition(t) {
-            for (const classDescriptor of classes) {
+            for (const classDescriptor of model.descriptors) {
                 t.nonNull.list.field(classDescriptor.name, {
                     type: classDescriptor.name,
                     args: {

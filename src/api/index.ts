@@ -9,15 +9,17 @@ import { ObservationParser } from '../parsing/parser';
 import { DescriptorPostprocessor } from '../postprocessing/postprocessor';
 import {
     Config,
+    DEFAULT_HOT_RELOAD_CONFIG,
     DEFAULT_OBSERVATION_CONFIG,
     DEFAULT_SERVER_CONFIG,
+    ModelCheckpointConfig,
 } from './config';
 import { createSchema } from '../schema/schema';
 import { set } from 'lodash';
 import { Observations } from '../observation/ontology';
 import { NexusGraphQLSchema } from 'nexus/dist/core';
-import { ClassDescriptor } from '../models/class';
 import { PartialFunctionPropertyObserver } from '../observation/observers/partial_function';
+import { DataModel } from '../models/data_model';
 
 /**
  * Encapsulating class for the core SPARQL2GraphQL functionality,
@@ -68,7 +70,39 @@ export class SPARQL2GraphQL {
      */
     async observeAndBuildSchema(
         config: Config,
-    ): Promise<[NexusGraphQLSchema, ClassDescriptor[]]> {
+    ): Promise<[NexusGraphQLSchema, DataModel]> {
+        // Load checkpoint if enabled, otherwise undefined is returned
+        let model = DataModel.loadCheckpoint(
+            config.modelCheckpoint,
+            config.logger,
+        );
+        if (!model) {
+            const observations = await this.observe(config);
+
+            config.logger?.info('Building object model...');
+            const parser = new ObservationParser(config);
+            model = parser.buildEndpointModel(observations);
+
+            // Create checkpoint if enabled
+            model.createCheckpoint(config.modelCheckpoint, config.logger);
+        }
+
+        config.logger?.info('Running postprocessing hooks...');
+        const postprocessor = new DescriptorPostprocessor();
+        postprocessor.postprocess(model, config.postprocessing);
+
+        config.logger?.info('Creating GraphQL schema...');
+        const schema = createSchema(model, config);
+        return [schema, model];
+    }
+
+    /**
+     * Carry out observations against the configured SPARQL endpoint
+     * and return them.
+     *
+     * @returns Observations from the SPARQL endpoint.
+     */
+    async observe(config: Config): Promise<Observations> {
         const observerManager = new ObserverManager(config);
         observerManager.subscribeInit(new ClassObserver());
         observerManager.subscribe(new PropertyObserver());
@@ -79,17 +113,7 @@ export class SPARQL2GraphQL {
 
         config.logger?.info('Observing endpoint, this may take a while...');
         const observations: Observations = await observerManager.runObservers();
-        config.logger?.info('Building object model...');
-        const parser = new ObservationParser(config);
-        const classes = parser.buildEndpointModel(observations);
-
-        config.logger?.info('Running postprocessing hooks...');
-        const postprocessor = new DescriptorPostprocessor();
-        postprocessor.postprocess(classes, config.postprocessing);
-
-        config.logger?.info('Creating GraphQL schema...');
-        const schema = createSchema(classes, config);
-        return [schema, classes];
+        return observations;
     }
 
     /**
@@ -132,12 +156,25 @@ export class SPARQL2GraphQL {
      */
     async hotReloadServerSchema(
         config: Config,
-        model: ClassDescriptor[],
+        model: DataModel,
         server: ApolloServer,
     ): Promise<void> {
-        const serverConfig = config.server ?? DEFAULT_SERVER_CONFIG;
-        if (serverConfig.hotReload) {
+        const hotReloadConfig = config.hotReload ?? DEFAULT_HOT_RELOAD_CONFIG;
+        if (hotReloadConfig.isEnabled) {
             config.logger?.info('Schema hot reload is enabled.');
+            if (!hotReloadConfig.configIterator) {
+                config.logger?.error(
+                    'The configIterator function must be specified in order for hot reloading to work.',
+                );
+                return;
+            }
+            if (!hotReloadConfig.shouldIterate) {
+                config.logger?.error(
+                    'The shouldIterate function must be specified in order for hot reloading to work.',
+                );
+                return;
+            }
+
             let previousModel = model;
             let currentObservationConfig =
                 config.observation ?? DEFAULT_OBSERVATION_CONFIG;
@@ -147,22 +184,30 @@ export class SPARQL2GraphQL {
                 config.logger?.info(
                     `Generating new GraphQL schema - iteration ${iteration++}...`,
                 );
-                currentObservationConfig =
-                    serverConfig.hotReload.configIterator(
-                        currentObservationConfig,
-                        previousModel,
-                    );
+                currentObservationConfig = hotReloadConfig.configIterator(
+                    currentObservationConfig,
+                    previousModel,
+                );
+                // Do not load data model from checkpoint during hot reload, it doesn't make sense.
+                // Checpoints exist to speed up the initial load time, and hot reloading
+                // wouldn't do anything if we just loaded from checkpoint every time.
+                const checkpointConfig: ModelCheckpointConfig | undefined =
+                    config.modelCheckpoint && {
+                        ...config.modelCheckpoint,
+                        loadModelFromCheckpoint: false,
+                    };
 
                 try {
                     const [newSchema, newModel] =
                         await this.observeAndBuildSchema({
                             ...config,
                             observation: currentObservationConfig,
+                            modelCheckpoint: checkpointConfig,
                         });
                     await this.updateServerSchema(server, newSchema);
                     config.logger?.info('GraphQL schema has been updated!');
 
-                    const shouldContinue = serverConfig.hotReload.shouldIterate(
+                    const shouldContinue = hotReloadConfig.shouldIterate(
                         currentObservationConfig,
                         previousModel,
                         newModel,

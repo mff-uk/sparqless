@@ -1,4 +1,5 @@
 import { ClassDescriptor } from '../models/class';
+import { DataModel } from '../models/data_model';
 import { PostprocessingHookDict } from './hook_types';
 import { DescriptorPostprocessor } from './postprocessor';
 
@@ -59,7 +60,8 @@ test('postprocessor runs hooks on correct entities', () => {
     };
 
     const postprocessor = new DescriptorPostprocessor();
-    postprocessor.postprocess(descriptors, { hooks });
+    const model = new DataModel(descriptors);
+    postprocessor.postprocess(model, { hooks });
 
     expect(class1.iri.includes('ENTITY')).toBe(true);
     expect(class1.iri.includes('NAME')).toBe(true);
