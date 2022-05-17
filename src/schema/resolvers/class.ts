@@ -17,8 +17,10 @@ export function createClassResolver(
     config: Config,
 ): FieldResolver<string, string> {
     return async (_parent, args, _context, info) => {
-        if (args.sort && !["ASC", "DESC"].includes(args.sort)) {
-            throw new Error(`Invalid sort direction: ${args.sort}. Allowed values are ASC and DESC.`);
+        if (args.sort && !['ASC', 'DESC'].includes(args.sort)) {
+            throw new Error(
+                `Invalid sort direction: ${args.sort}. Allowed values are ASC and DESC.`,
+            );
         }
         const queryVars = getQueryVars(classDescriptor, info, config.logger);
         const instanceIRIs = await resolveInstanceIRIs(

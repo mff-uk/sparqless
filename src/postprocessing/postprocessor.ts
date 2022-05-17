@@ -3,7 +3,7 @@ import {
     PostprocessingConfig,
 } from '../api/config';
 import { DataModel } from '../models/data_model';
-import { EntityDescriptor } from '../models/entity';
+import { ResourceDescriptor } from '../models/resource';
 import { PostprocessingHook } from './hook_types';
 
 /**
@@ -25,27 +25,16 @@ export class DescriptorPostprocessor {
     postprocess(model: DataModel, config?: PostprocessingConfig): void {
         const hooks = config?.hooks ?? DEFAULT_POSTPROCESSING_CONFIG.hooks;
         const descriptors = model.descriptors;
-        this.runHooks(descriptors, hooks.entity);
-        this.runHooks(descriptors, hooks.namedEntity);
+        this.runHooks(descriptors, hooks.resource);
         this.runHooks(descriptors, hooks.class);
 
         for (const classDescriptor of descriptors) {
-            this.runHooks(classDescriptor.instances, hooks.entity);
-            this.runHooks(classDescriptor.instances, hooks.instance);
-
             this.runHooks(
                 [
                     ...classDescriptor.associations,
                     ...classDescriptor.attributes,
                 ],
-                hooks.entity,
-            );
-            this.runHooks(
-                [
-                    ...classDescriptor.associations,
-                    ...classDescriptor.attributes,
-                ],
-                hooks.namedEntity,
+                hooks.resource,
             );
             this.runHooks(
                 [
@@ -60,7 +49,7 @@ export class DescriptorPostprocessor {
         }
     }
 
-    private runHooks<TDescriptor extends EntityDescriptor>(
+    private runHooks<TDescriptor extends ResourceDescriptor>(
         descriptors: TDescriptor[],
         hooks: PostprocessingHook<TDescriptor>[],
     ): void {

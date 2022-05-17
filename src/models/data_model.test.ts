@@ -7,7 +7,6 @@ test('model serialization and deserialization returns equivalent model', () => {
         name: '1',
         associations: [],
         attributes: [],
-        instances: [],
         numberOfInstances: 0,
     };
     const class2: ClassDescriptor = {
@@ -32,7 +31,6 @@ test('model serialization and deserialization returns equivalent model', () => {
                 isArray: false,
             },
         ],
-        instances: [],
         numberOfInstances: 0,
     };
     const descriptors: ClassDescriptor[] = [class1, class2];
@@ -45,7 +43,6 @@ test('model serialization and deserialization returns equivalent model', () => {
     expect(parsedModel[0].name).toBe('1');
     expect(parsedModel[0].associations.length).toBe(0);
     expect(parsedModel[0].attributes.length).toBe(0);
-    expect(parsedModel[0].instances.length).toBe(0);
     expect(parsedModel[0].numberOfInstances).toBe(0);
 
     expect(parsedModel[1].iri).toBe('2');
@@ -56,6 +53,5 @@ test('model serialization and deserialization returns equivalent model', () => {
     );
     expect(parsedModel[1].attributes.length).toBe(1);
     expect(parsedModel[1].attributes[0].types[0]).toBe('string');
-    expect(parsedModel[1].instances.length).toBe(0);
     expect(parsedModel[1].numberOfInstances).toBe(0);
 });

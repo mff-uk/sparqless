@@ -48,6 +48,13 @@ Note that you may see an error about a missing theme during build - this is unav
 when using the same `mkdocs.yaml` for both the website and the PDF documentation, and you
 may safely ignore this error.
 
+## Diagrams
+
+Diagrams are generated with [PlantUML](https://plantuml.com/), which is a tool for
+generating UML diagrams out of text descriptions.
+
+The source files for all diagrams contained in this documentation are in the `diagrams` folder.
+
 ## Deploying documentation
 
 If you want to deploy the documentation to GitHub Pages, run `mkdocs gh-deploy`,

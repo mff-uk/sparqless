@@ -10,6 +10,8 @@ options to save the generated data model to disk,
 and then later reuse it instead of carrying out observations
 again.
 
+# TODO: add sequence diagram for model checkpointing
+
 ```ts
 interface ModelCheckpointConfig {
     loadModelFromCheckpoint: boolean;

@@ -1,6 +1,5 @@
 import { makeSchema, queryType } from 'nexus';
 import {
-    booleanArg,
     intArg,
     NexusGraphQLSchema,
     NexusObjectTypeDef,
@@ -46,7 +45,7 @@ export function createSchema(
                         sort: stringArg({
                             description: `Sort by instance IRI.\n
 Allowed values are "ASC" and "DESC" for ascending and descending sort respectively.\n
-If you want pagination to return values in a stable order, you should also sort them.`
+If you want pagination to return values in a stable order, you should also sort them.`,
                         }),
                     },
                     resolve: createClassResolver(
@@ -171,6 +170,7 @@ function createAttributes(
                     isArrayType: attribute.isArray,
                 }),
             });
+            // TODO: resolve this thing with only looking at the first type
         } else if (attribute.types[0].endsWith('string')) {
             fieldDef.string(attribute.name, {
                 ...fieldConfig,

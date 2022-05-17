@@ -211,10 +211,8 @@ export const DEFAULT_OBSERVATION_CONFIG: ObservationConfig = {
 
 export const DEFAULT_POSTPROCESSING_CONFIG: PostprocessingConfig = {
     hooks: {
-        entity: [],
-        namedEntity: [buildNamesFromIRIs],
+        resource: [buildNamesFromIRIs],
         class: [],
-        instance: [],
         property: [],
         association: [],
         attribute: [],

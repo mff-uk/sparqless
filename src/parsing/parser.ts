@@ -25,8 +25,6 @@ export class ObservationParser {
         // Creating class descriptors has to be done first
         const classDescriptors = this.createClassDescriptors(observations);
 
-        this.createInstanceDescriptors(observations, classDescriptors);
-
         // The order here is also important - create attribute and association
         // descriptors before we update their counts.
         this.createAttributeDescriptors(observations, classDescriptors);
@@ -55,7 +53,6 @@ export class ObservationParser {
                 iri: classNameQuad.object.value,
                 name: '',
                 numberOfInstances: parseInt(numInstancesQuad.object.value),
-                instances: [],
                 attributes: [],
                 associations: [],
             };
@@ -64,23 +61,6 @@ export class ObservationParser {
         }
 
         return descriptors;
-    }
-
-    private createInstanceDescriptors(
-        observations: Observations,
-        classes: ClassDescriptor[],
-    ) {
-        for (const observation of observations[
-            OntologyObservation.InstanceObservation
-        ]!) {
-            const resourceQuad = observation[OntologyProperty.ClassInstance]!;
-            const classNameQuad = observation[OntologyProperty.ParentClass]!;
-            const classIri = classNameQuad.object.value;
-            const classDescriptor = classes.find((x) => x.iri === classIri)!;
-            classDescriptor.instances.push({
-                iri: resourceQuad.object.value,
-            });
-        }
     }
 
     private createAttributeDescriptors(

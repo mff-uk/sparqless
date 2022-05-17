@@ -28,7 +28,7 @@ export type PostprocessingHook<TDescriptor extends EntityDescriptor> = (
 In other words, it's a function which takes a single parameter - the descriptors of a particular
 type, and it returns nothing. For example, `PostprocessingHook<ClassDescriptor>` would
 be run with the list of all `ClassDescriptor`s in the model. You can specify more generic
-hook constraints, for example using `NamedEntityDescriptor` would run your hook
+hook constraints, for example using `ResourceDescriptor` would run your hook
 against all descriptors which have a display name property.
 
 The contents of a hook will usually do one or more of the following things:

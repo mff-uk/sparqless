@@ -17,6 +17,8 @@ the default playground which is started with SPARQL2GraphQL,
 they don't even need to refresh their browser window to see
 the new schema - it refreshes itself automatically.
 
+# TODO: add sequence diagram for hot reloading
+
 ## How it works
 
 After the server starts, the `hotReloadServerSchema` function of the
