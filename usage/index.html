@@ -40,6 +40,8 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal current" href="./">Usage</a>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">How it works</span></p>
 <ul>
@@ -47,13 +49,15 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../observation/">Observation</a>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../parsing/">Parsing</a>
+<li class="toctree-l1"><a class="reference internal" href="../model_parsing/">Parsing</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../postprocessing/">Postprocessing</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../schema/">Schema Creation</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../querying/">Querying</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../model_checkpointing/">Model Checkpointing</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../hot_reloading/">Hot Reloading</a>
 </li>
@@ -153,7 +157,8 @@ configuration file itself.</p>
 which will observe the configured SPARQL endpoint and convert it to a GraphQL one.
 Alternatively, if you are running SPARQL2GraphQL from this repository,
 you can run <code>npm start</code>, which will run <code>src/main.ts</code>, which is an entrypoint
-meant for starting the server from withing this repository.</p>
+meant for starting the server from withing this repository.
+In that case, edit your configuration there.</p>
 <p>In the logs, you will see that it will first run some observations on the target
 endpoint to collect information about its schema and the data contained within.
 This may take a while, especially for large datasets, depending on the configuration
@@ -197,7 +202,7 @@ field as shown in the image above.</p>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
 <a class="btn btn-neutral float-left" href=".." title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-<a class="btn btn-neutral float-right" href="../overview/" title="Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+<a class="btn btn-neutral float-right" href="../configuration/" title="Configuration">Next <span class="icon icon-circle-arrow-right"></span></a>
 </div>
 <hr/>
 <div role="contentinfo">
@@ -216,7 +221,7 @@ field as shown in the image above.</p>
 <a class="fa fa-github" href="https://github.com/yawnston/sparql2graphql" style="color: #fcfcfc"> GitHub</a>
 </span>
 <span><a href=".." style="color: #fcfcfc">« Previous</a></span>
-<span><a href="../overview/" style="color: #fcfcfc">Next »</a></span>
+<span><a href="../configuration/" style="color: #fcfcfc">Next »</a></span>
 </span>
 </div>
 <script>var base_url = '..';</script>

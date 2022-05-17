@@ -2,57 +2,67 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://yawnston.github.io/sparql2graphql/</loc>
-         <lastmod>2022-05-15</lastmod>
+         <lastmod>2022-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://yawnston.github.io/sparql2graphql/configuration/</loc>
+         <lastmod>2022-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://yawnston.github.io/sparql2graphql/development/</loc>
-         <lastmod>2022-05-15</lastmod>
+         <lastmod>2022-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://yawnston.github.io/sparql2graphql/editing_documentation/</loc>
-         <lastmod>2022-05-15</lastmod>
+         <lastmod>2022-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://yawnston.github.io/sparql2graphql/hot_reloading/</loc>
-         <lastmod>2022-05-15</lastmod>
+         <lastmod>2022-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://yawnston.github.io/sparql2graphql/model_checkpointing/</loc>
+         <lastmod>2022-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://yawnston.github.io/sparql2graphql/model_parsing/</loc>
+         <lastmod>2022-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://yawnston.github.io/sparql2graphql/observation/</loc>
-         <lastmod>2022-05-15</lastmod>
+         <lastmod>2022-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://yawnston.github.io/sparql2graphql/overview/</loc>
-         <lastmod>2022-05-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://yawnston.github.io/sparql2graphql/parsing/</loc>
-         <lastmod>2022-05-15</lastmod>
+         <lastmod>2022-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://yawnston.github.io/sparql2graphql/postprocessing/</loc>
-         <lastmod>2022-05-15</lastmod>
+         <lastmod>2022-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://yawnston.github.io/sparql2graphql/querying/</loc>
-         <lastmod>2022-05-15</lastmod>
+         <lastmod>2022-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://yawnston.github.io/sparql2graphql/schema/</loc>
-         <lastmod>2022-05-15</lastmod>
+         <lastmod>2022-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://yawnston.github.io/sparql2graphql/usage/</loc>
-         <lastmod>2022-05-15</lastmod>
+         <lastmod>2022-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

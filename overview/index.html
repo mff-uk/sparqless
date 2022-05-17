@@ -40,6 +40,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage/">Usage</a>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">How it works</span></p>
 <ul class="current">
@@ -47,13 +49,15 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../observation/">Observation</a>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../parsing/">Parsing</a>
+<li class="toctree-l1"><a class="reference internal" href="../model_parsing/">Parsing</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../postprocessing/">Postprocessing</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../schema/">Schema Creation</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../querying/">Querying</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../model_checkpointing/">Model Checkpointing</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../hot_reloading/">Hot Reloading</a>
 </li>
@@ -89,33 +93,90 @@
 <h1 id="overview-of-how-it-all-works">Overview of how it all works</h1>
 <p>This page will explain the process used by SPARQL2GraphQL when creating
 a GraphQL endpoint from the SPARQL endpoint.</p>
-<h2 id="general-flow">General flow</h2>
+<h2 id="bootstrapping-flow">Bootstrapping flow</h2>
 <p>First of all, the user should configure the application. The most basic configuration step
-is to configure the SPARQL endpoint to observe. However, besides other configuration
-values, the user may also write custom postprocessing hooks for parts of the
-extracted data model. You can read more about those <a href="../postprocessing/">here</a>.</p>
-<p>When the user configures and runs the application, the setup flow looks
-like this:</p>
-<p><img alt="Observation sequence diagram" src="../img/observation.png"/></p>
+is to configure the SPARQL endpoint to observe. You can read more about
+configuration <a href="../configuration/">here</a>.</p>
+<p>The bootstrapping phase of SPARQL2GraphQL is divided into four distinct phases:</p>
+<ol>
+<li><a href="../observation/"><strong>Observation</strong></a></li>
+<li><a href="../model_parsing/"><strong>Model Parsing</strong></a></li>
+<li><a href="../postprocessing/"><strong>Postprocessing</strong></a></li>
+<li><a href="../schema/"><strong>Schema Creation</strong></a></li>
+</ol>
+<p>The <a href="../observation/">observation</a> phase uses SPARQL queries
+to extract some information about the schema of the data
+in the endpoint. There are many kinds of observations,
+but the most basic ones are along the lines of
+<code>X is a class with N instances</code> or <code>Y is a property of class X</code>.
+These observations are in the form of RDF data conforming
+to an ontology defined by SPARQL2GraphQL. This phase
+can take up to tens of minutes to execute if the SPARQL
+endpoint contains a large amount of data.</p>
+<p>After the observations are collected, the
+<a href="../model_parsing/">model parsing</a> phase converts these
+observations into a set of JavaScript objects describing the data
+schema. These objects are referred to as <strong>descriptors</strong>,
+since they <em>describe</em> the data model.</p>
+<p>The <a href="../postprocessing/">postprocessing</a> phase is meant
+to execute functions called <strong>postprocessing hooks</strong>
+on descriptors (parts of the model), after the whole
+model has been built. An example of a postprocessing
+is giving each property and class in the model
+a short human-readable name, which it does not necessarily
+have in the original RDF representation.</p>
+<p>The <a href="../schema/">schema creation</a> phase takes the model and
+its descriptors, and converts it into a GraphQL schema.</p>
+<p>After all of these phases are performed, a GraphQL endpoint
+is started using the generated schema (using
+<a href="https://www.apollographql.com/docs/apollo-server/">Apollo Server</a>).
+The whole flow we just described looks like this:</p>
+<p><img alt="Observation sequence diagram" src="../img/observation_diagram.png"/></p>
 <p>As the diagram shows, at the end of the setup, there is a fully functional
-GraphQL endpoint active, in which the user can explore and query the endpoint.</p>
-<p><strong>TODO:</strong> ADD QUERY RESOLVERS INFORMATION HERE WHEN THAT FEATURE IS FINISHED
-(INCLUDING A GRAPH SHOWING HOW THE GraphQL QUERY IS EXECUTED)</p>
+GraphQL endpoint active, which the user is free to explore and query.
+Visiting the endpoint URL in the browser will redirect the user
+to a playground, which provides helpful tools for exploring
+and querying.</p>
+<h2 id="querying-flow">Querying flow</h2>
+<p>SPARQL2GraphQL utilizes a query translation approach, whereby incoming
+GraphQL queries are translated into SPARQL queries, executed on the
+SPARQL endpoint, and their results are aggregated into a JSON
+response returned by the GraphQL endpoint.</p>
+<p>GraphQL querying is based on the concept of
+<a href="https://graphql.org/learn/execution/">resolvers</a>, which are functions,
+each of which is able to return a single requested property.
+If the following GraphQL query is sent to the GraphQL endpoint:</p>
+<pre><code class="language-graphql">book {
+    author {
+        name
+    }
+    title
+}
+</code></pre>
+<p>then a resolver will be called for the <code>books</code> field, and when that
+resolver returns an object, resolvers for the <code>author</code> and <code>title</code>
+fields will be run. SPARQL2GraphQL resolvers effectively translate
+each field query into a SPARQL query if the queried field contains
+a non-scalar value. Scalar values are fetched with the parent object's
+query.</p>
+<p>Execution of this example query would look like this:</p>
+<p><img alt="Querying sequence diagram" src="../img/querying_diagram.png"/></p>
 <h2 id="components">Components</h2>
 <p>The following is a list of components you can see in the diagrams above,
 with more detailed descriptions of what they do and how they do it:</p>
 <ul>
 <li><a href="../observation/">Observation</a></li>
-<li><a href="../parsing/">Parsing</a></li>
+<li><a href="../model_parsing/">Model Parsing</a></li>
 <li><a href="../postprocessing/">Postprocessing</a></li>
 <li><a href="../schema/">Schema Creation</a></li>
 <li><a href="../querying/">Querying</a></li>
+<li><a href="../model_checkpointing/">Model Checkpointing</a></li>
 <li><a href="../hot_reloading/">Hot Reloading</a></li>
 </ul>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
-<a class="btn btn-neutral float-left" href="../usage/" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-left" href="../configuration/" title="Configuration"><span class="icon icon-circle-arrow-left"></span> Previous</a>
 <a class="btn btn-neutral float-right" href="../observation/" title="Observation">Next <span class="icon icon-circle-arrow-right"></span></a>
 </div>
 <hr/>
@@ -134,7 +195,7 @@ with more detailed descriptions of what they do and how they do it:</p>
 <span>
 <a class="fa fa-github" href="https://github.com/yawnston/sparql2graphql" style="color: #fcfcfc"> GitHub</a>
 </span>
-<span><a href="../usage/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../configuration/" style="color: #fcfcfc">« Previous</a></span>
 <span><a href="../observation/" style="color: #fcfcfc">Next »</a></span>
 </span>
 </div>

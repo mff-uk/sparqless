@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html class="writer-html5" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://yawnston.github.io/sparql2graphql/configuration/" rel="canonical"/>
+<link href="../img/favicon.ico" rel="shortcut icon"/>
+<title>Configuration - SPARQL2GraphQL</title>
+<link href="../css/theme.css" rel="stylesheet"/>
+<link href="../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
+<script>
+        // Current page data
+        var mkdocs_page_name = "Configuration";
+        var mkdocs_page_input_path = "configuration.md";
+        var mkdocs_page_url = "/sparql2graphql/configuration/";
+      </script>
+<script defer="" src="../js/jquery-3.6.0.min.js"></script>
+<!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<link href="../pdf/documentation.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href=".."> SPARQL2GraphQL
+        </a>
+</div>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usage/">Usage</a>
+</li>
+<li class="toctree-l1 current"><a class="reference internal current" href="./">Configuration</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">How it works</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../observation/">Observation</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../model_parsing/">Parsing</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../postprocessing/">Postprocessing</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../schema/">Schema Creation</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../querying/">Querying</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../model_checkpointing/">Model Checkpointing</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../hot_reloading/">Hot Reloading</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/">Development</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../editing_documentation/">Editing documentation</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="..">SPARQL2GraphQL</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a alt="Docs" class="icon icon-home" href=".."></a> »</li>
+<li>User Guide »</li><li>Configuration</li>
+<li class="wy-breadcrumbs-aside">
+<a class="icon icon-github" href="https://github.com/yawnston/sparql2graphql/edit/master/docs/configuration.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<h1 id="configuration">Configuration</h1>
+<p>This page reviews and explains all available configuration options in SPARQL2GraphQL. Before you explore the individual
+configuration options, it is recommended that you familiarize
+yourself with the basic concepts in SPARQL2GraphQL described
+<a href="../overview/">here</a>.</p>
+<h2 id="general-configuration">General configuration</h2>
+<p>The root configuration type is <code>Config</code>, which exposes the following properties:</p>
+<pre><code class="language-ts">interface Config {
+    endpoint: SPARQLEndpointDefinition;
+    logger?: winston.Logger;
+    observation?: ObservationConfig;
+    postprocessing?: PostprocessingConfig;
+    schema?: SchemaConfig;
+    server?: ServerConfig;
+    hotReload?: HotReloadConfig;
+    modelCheckpoint?: ModelCheckpointConfig;
+}
+</code></pre>
+<p>Only the <code>endpoint</code> property is mandatory, since it contains the SPARQL endpoint
+which you want SPARQL2GraphQL to run against. An endpoint looks like this:</p>
+<pre><code class="language-ts">{
+    url: 'https://dev.nkod.opendata.cz/sparql',
+    name: 'NKOD',
+}
+</code></pre>
+<p>It is also very highly recommended to configure a <code>logger</code>, since it is
+very helpful to know what exactly is happening, since the bootstrapping
+process can take a very long time. The logging framework of choice
+is <a href="https://github.com/winstonjs/winston">winston</a>, so you are free to
+pass in any winston logger. However, if you want a sensible default,
+you can use the <code>DEFAULT_LOGGER</code> exposed by SPARQL2GraphQL.</p>
+<h2 id="specialized-configuration">Specialized configuration</h2>
+<p>The remaining configuration values are more specialized,
+and they affect individual components of SPARQL2GraphQL.</p>
+<p>All of these options have sane default values, so it is
+recommended to first try not defining them (and thereby
+using the defaults). If you find that you want to adjust
+the behavior of SPARQL2GraphQL afterwards, then you can
+look into modifying these values.</p>
+<h3 id="observation">Observation</h3>
+<p>The <code>observation</code> property of <code>Config</code> modified the endpoint observation phase,
+and it can contain the following values:</p>
+<pre><code class="language-ts">interface ObservationConfig {
+    maxPropertyCount: number | undefined;
+    ontologyPrefixIri: string;
+    shouldDetectNonArrayProperties: boolean | undefined;
+    shouldCountProperties: boolean | undefined;
+}
+</code></pre>
+<p><code>maxPropertyCount</code> sets a maximum number of properties to be examined
+when performing observations which count or enumerate many properties.
+Unless you <em>need</em> to have the most accurate schema in the GraphQL endpoint
+from the very start, it is recommended to set this value. It will <strong>significantly</strong>
+speed up observations on large datasets. A good default value is <code>1000</code>,
+and for best results, combine this value with <a href="../hot_reloading/">hot reloading</a>,
+where each iteration of hot reloading increases it by an order of magnitude.</p>
+<p><code>ontologyPrefixIri</code> sets the IRI for the ontology created during observation.
+You should not need to modify this value from the default
+<code>http://skodapetr.eu/ontology/sparql-endpoint/</code>, unless you wish to save the
+observations themselves and use them for other purposes.</p>
+<p>By default, all properties in the created GraphQL schema are arrays, since in RDF, any property can be specified multiple times. <code>shouldDetectNonArrayProperties</code> allows observations which flag properties as scalars, making sure that
+properties are not flagged as arrays unless they can really contain multiple values.</p>
+<p>The created GraphQL schema contains comments which have additional information
+about the data, namely for each property, it specifies how many times it occurs
+in the dataset. This can be helpful when first exploring the schema, and deciding
+whether a property is important or not. Setting <code>shouldCountProperties</code> to <code>true</code>
+will enable the counting of properties, otherwise their counts will be set to <code>0</code>.</p>
+<p>It is recommended to initially set both <code>shouldCountProperties</code> and
+<code>shouldDetectNonArrayProperties</code> to <code>false</code> to ensure fast startup time,
+but to set them to <code>true</code> in the <a href="../hot_reloading/">hot reloading</a> config.
+That way, the necessary observations will be carried out in the background while
+you can already explore and query the dataset.</p>
+<h3 id="postprocessing">Postprocessing</h3>
+<p>Read more about postprocessing <a href="../postprocessing/">here</a>.</p>
+<h3 id="schema">Schema</h3>
+<p>The schema configuration only contains one option:</p>
+<pre><code class="language-ts">interface SchemaConfig {
+    graphqlSchemaOutputPath: string | undefined;
+}
+</code></pre>
+<p>If you set <code>graphqlSchemaOutputPath</code> to a valid file path,
+the generated GraphQL schema will be saved to this path
+when it is generated. This can be useful if you want to use
+some visualization tools to better aid you in exploring
+the created GraphQL endpoint.</p>
+<h3 id="server">Server</h3>
+<p>The server configuration contains one option:</p>
+<pre><code class="language-ts">interface ServerConfig {
+    port: number;
+}
+</code></pre>
+<p>The <code>port</code> option will configure the port where the GraphQL
+endpoint will be available.</p>
+<h3 id="model-checkpointing">Model Checkpointing</h3>
+<p>Read more about model checkpointing
+<a href="../model_checkpointing/">here</a>.</p>
+<h3 id="hot-reload">Hot reload</h3>
+<p>Read more about hot reloading <a href="../hot_reloading/">here</a>.</p>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="../usage/" title="Usage"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../overview/" title="Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+</div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+</div>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-github" href="https://github.com/yawnston/sparql2graphql" style="color: #fcfcfc"> GitHub</a>
+</span>
+<span><a href="../usage/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../overview/" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script>var base_url = '..';</script>
+<script defer="" src="../js/theme_extra.js"></script>
+<script defer="" src="../js/theme.js"></script>
+<script defer="">
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+</body>
+</html>

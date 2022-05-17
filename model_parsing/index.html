@@ -4,17 +4,17 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://yawnston.github.io/sparql2graphql/editing_documentation/" rel="canonical"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://yawnston.github.io/sparql2graphql/model_parsing/" rel="canonical"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>Editing documentation - SPARQL2GraphQL</title>
+<title>Parsing - SPARQL2GraphQL</title>
 <link href="../css/theme.css" rel="stylesheet"/>
 <link href="../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
 <script>
         // Current page data
-        var mkdocs_page_name = "Editing documentation";
-        var mkdocs_page_input_path = "editing_documentation.md";
-        var mkdocs_page_url = "/sparql2graphql/editing_documentation/";
+        var mkdocs_page_name = "Parsing";
+        var mkdocs_page_input_path = "model_parsing.md";
+        var mkdocs_page_url = "/sparql2graphql/model_parsing/";
       </script>
 <script defer="" src="../js/jquery-3.6.0.min.js"></script>
 <!--[if lt IE 9]>
@@ -44,12 +44,12 @@
 </li>
 </ul>
 <p class="caption"><span class="caption-text">How it works</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../observation/">Observation</a>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../model_parsing/">Parsing</a>
+<li class="toctree-l1 current"><a class="reference internal current" href="./">Parsing</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../postprocessing/">Postprocessing</a>
 </li>
@@ -63,10 +63,10 @@
 </li>
 </ul>
 <p class="caption"><span class="caption-text">Developer Guide</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../development/">Development</a>
 </li>
-<li class="toctree-l1 current"><a class="reference internal current" href="./">Editing documentation</a>
+<li class="toctree-l1"><a class="reference internal" href="../editing_documentation/">Editing documentation</a>
 </li>
 </ul>
 </div>
@@ -81,62 +81,53 @@
 <div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
 <ul class="wy-breadcrumbs">
 <li><a alt="Docs" class="icon icon-home" href=".."></a> »</li>
-<li>Developer Guide »</li><li>Editing documentation</li>
+<li>How it works »</li><li>Parsing</li>
 <li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/yawnston/sparql2graphql/edit/master/docs/editing_documentation.md"> Edit on GitHub</a>
+<a class="icon icon-github" href="https://github.com/yawnston/sparql2graphql/edit/master/docs/model_parsing.md"> Edit on GitHub</a>
 </li>
 </ul>
 <hr/>
 </div>
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
-<h1 id="editing-documentation">Editing documentation</h1>
-<p>This documentation is generated using <a href="https://www.mkdocs.org/">mkdocs</a> from the Markdown files
-in the <code>docs</code> directory, and manually deployed to GitHub Pages with <code>mkdocs gh-deploy</code>.
-The URL for the deployed documentation is
-<a href="https://yawnston.github.io/sparql2graphql/">https://yawnston.github.io/sparql2graphql/</a>.</p>
-<p>If you want to modify the documentation, simply modify the Markdown source
-of whichever documentation you wish. If you create a new documentation page,
-you will need to add it to the <code>nav</code> in <code>mkdocs.yml</code>:</p>
-<pre><code class="language-yaml">nav:
-  - Home: 'index.md'
-  - 'User Guide':
-    - Usage: 'usage.md'
-  - 'How it works':
-    - Overview: 'overview.md'
-    - Observation: 'observation.md'
-    - Parsing: 'model_parsing.md'
-    - Postprocessing: 'postprocessing.md'
-    - 'Schema Creation': 'schema.md'
-    - Querying: 'querying.md'
-  - 'Developer Guide':
-    - Development: 'development.md'
-</code></pre>
-<h2 id="installing-requirements">Installing requirements</h2>
-<p>In order to build, serve or deploy the documentation, you will
-need to have Python 3 installed, since it is required to run <a href="https://www.mkdocs.org/">mkdocs</a>.</p>
-<p>To install mkdocs and other required plugins, run <code>pip install -r requirements.txt</code>.</p>
-<h2 id="viewing-documentation-locally">Viewing documentation locally</h2>
-<p>Run <code>mkdocs serve</code> to build the documentation and serve it on localhost.
-In the terminal, you will see a link to open this documentation
-in your web browser.</p>
-<h2 id="generating-pdf-documentation">Generating PDF documentation</h2>
-<p>If for any reason you want to have a PDF version of the documentation,
-run <code>mkdocs build</code>. This will generate a PDF containing the documentation
-in <code>site/pdf/documentation.pdf</code>.</p>
-<p>Note that you may see an error about a missing theme during build - this is unavoidable
-when using the same <code>mkdocs.yaml</code> for both the website and the PDF documentation, and you
-may safely ignore this error.</p>
-<h2 id="deploying-documentation">Deploying documentation</h2>
-<p>If you want to deploy the documentation to GitHub Pages, run <code>mkdocs gh-deploy</code>,
-and the updated documentation should be available at
-<a href="https://yawnston.github.io/sparql2graphql/">https://yawnston.github.io/sparql2graphql/</a>
-within a few minutes. Note that you may need to refresh the page without caching in order
-to see the changes (<code>Ctrl</code> + <code>F5</code> or <code>Shift</code> + <code>F5</code> in Google Chrome).</p>
+<h1 id="parsing">Parsing</h1>
+<p>Observations made about a SPARQL endpoint are then parsed by
+the <code>ObservationParser</code>. Its method <code>buildEndpointModel</code> receives
+a list of observations as a parameter (in the form of <code>QueryResult[]</code>),
+and it parses those observations into an object model describing
+the data.</p>
+<h2 id="descriptors">Descriptors</h2>
+<p>The model is expressed in the form of <strong>descriptors</strong>, which are objects
+storing metadata about various entities present in the dataset.
+The descriptors are located in the <code>src/models/</code> folder.</p>
+<p>These are the descriptors currently used:</p>
+<ul>
+<li><code>EntityDescriptor</code>: Describes any entity with an IRI, which is basically
+everything in the RDF world. Other descriptors inherit from this descriptor.</li>
+<li><code>NamedEntityDescriptor</code>: Describes any entity which should also have
+a human-readable and short name. It can be a bit cumbersome for humans
+to constantly use IRIs to refer to things, so SPARQL2GraphQL makes this
+easier by providing simplified names to display in the user interface.</li>
+<li><code>ClassDescriptor</code>: Describes a single class present in the dataset.</li>
+<li><code>InstanceDescriptor</code>: Describes a single instance of a class.</li>
+<li><code>PropertyDescriptor</code>: Describes a property of a class (association
+or attribute),</li>
+<li><code>AssociationDescriptor</code>: Describes an association of a class, i.e.
+a property whose range is another class.</li>
+<li><code>AttributeDescriptor</code>: Describes an attribute of a class, i.e.
+a property whose range is a primitive type.</li>
+</ul>
+<h2 id="parsing-algorithm">Parsing algorithm</h2>
+<p>For each type of observation, there is a method in the <code>ObservationParser</code>
+which parses this observation into a descriptor object.</p>
+<p>Therefore the parsing algorithm essentially consists of iterating
+over the collected observations, choosing the correct parsing
+function for each observation, and then executing the function.</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
-<a class="btn btn-neutral float-left" href="../development/" title="Development"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-left" href="../observation/" title="Observation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../postprocessing/" title="Postprocessing">Next <span class="icon icon-circle-arrow-right"></span></a>
 </div>
 <hr/>
 <div role="contentinfo">
@@ -154,7 +145,8 @@ to see the changes (<code>Ctrl</code> + <code>F5</code> or <code>Shift</code> + 
 <span>
 <a class="fa fa-github" href="https://github.com/yawnston/sparql2graphql" style="color: #fcfcfc"> GitHub</a>
 </span>
-<span><a href="../development/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../observation/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../postprocessing/" style="color: #fcfcfc">Next »</a></span>
 </span>
 </div>
 <script>var base_url = '..';</script>
