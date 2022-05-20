@@ -26,7 +26,7 @@ export class PropertyObserver implements EndpointObserver {
         logger?: Logger,
     ): Promise<Observations> {
         const resultQuads: Quad[] = [];
-        logger?.info(
+        logger?.debug(
             `Observing property IRIs for ${triggerObservations.length} classes...`,
         );
         for (const observation of triggerObservations) {

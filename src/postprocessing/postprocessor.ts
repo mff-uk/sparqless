@@ -2,8 +2,8 @@ import {
     DEFAULT_POSTPROCESSING_CONFIG,
     PostprocessingConfig,
 } from '../api/config';
-import { ClassDescriptor } from '../models/class';
-import { EntityDescriptor } from '../models/entity';
+import { DataModel } from '../models/data_model';
+import { ResourceDescriptor } from '../models/resource';
 import { PostprocessingHook } from './hook_types';
 
 /**
@@ -19,35 +19,22 @@ export class DescriptorPostprocessor {
     /**
      * Apply the postprocessing hooks to the given descriptors.
      *
-     * @param descriptors Class descriptors containing the whole schema.
+     * @param model Data model describing the whole schema.
      * @param config Postprocessing configuration, including hooks to run.
      */
-    postprocess(
-        descriptors: ClassDescriptor[],
-        config?: PostprocessingConfig,
-    ): void {
+    postprocess(model: DataModel, config?: PostprocessingConfig): void {
         const hooks = config?.hooks ?? DEFAULT_POSTPROCESSING_CONFIG.hooks;
-        this.runHooks(descriptors, hooks.entity);
-        this.runHooks(descriptors, hooks.namedEntity);
+        const descriptors = model.descriptors;
+        this.runHooks(descriptors, hooks.resource);
         this.runHooks(descriptors, hooks.class);
 
         for (const classDescriptor of descriptors) {
-            this.runHooks(classDescriptor.instances, hooks.entity);
-            this.runHooks(classDescriptor.instances, hooks.instance);
-
             this.runHooks(
                 [
                     ...classDescriptor.associations,
                     ...classDescriptor.attributes,
                 ],
-                hooks.entity,
-            );
-            this.runHooks(
-                [
-                    ...classDescriptor.associations,
-                    ...classDescriptor.attributes,
-                ],
-                hooks.namedEntity,
+                hooks.resource,
             );
             this.runHooks(
                 [
@@ -62,7 +49,7 @@ export class DescriptorPostprocessor {
         }
     }
 
-    private runHooks<TDescriptor extends EntityDescriptor>(
+    private runHooks<TDescriptor extends ResourceDescriptor>(
         descriptors: TDescriptor[],
         hooks: PostprocessingHook<TDescriptor>[],
     ): void {

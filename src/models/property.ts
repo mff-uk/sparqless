@@ -1,5 +1,6 @@
-import { NamedEntityDescriptor } from './named_entity';
+import { ResourceDescriptor } from './resource';
 
-export interface PropertyDescriptor extends NamedEntityDescriptor {
+export interface PropertyDescriptor extends ResourceDescriptor {
     count: number;
+    isArray: boolean;
 }

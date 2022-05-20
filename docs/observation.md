@@ -63,4 +63,4 @@ They each collect a single kind of observation from the ontology:
 
 The data flow between these observers looks like this:
 
-![observers](img/observers.png)
+![observers](img/observers_diagram.png)

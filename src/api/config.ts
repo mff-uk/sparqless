@@ -1,6 +1,6 @@
 import { cloneDeep } from 'lodash';
 import winston from 'winston';
-import { ClassDescriptor } from '../models/class';
+import { DataModel } from '../models/data_model';
 import { SPARQLEndpointDefinition } from '../observation/endpoints';
 import { buildNamesFromIRIs } from '../postprocessing/hooks/names';
 import { PostprocessingHookDict } from '../postprocessing/hook_types';
@@ -42,6 +42,36 @@ export interface Config {
     postprocessing?: PostprocessingConfig;
     schema?: SchemaConfig;
     server?: ServerConfig;
+
+    /**
+     * Configuration of hot reloading, which happen after the initial
+     * observation have been made, the GraphQL schema has been generated
+     * and the GraphQL endpoint is running.
+     *
+     * After the endpoint is live, a new `ObservationConfig` will be created
+     * using `configIterator`, and it will be used to make new observations.
+     * These observations will be used to create a new GraphQL schema,
+     * and the server schema will be updated in the background.
+     *
+     * Afterwards, the `shouldIterate` function is used to determine whether
+     * the hot reloading should continue in another iteration, or whether
+     * it should stop.
+     */
+    hotReload?: HotReloadConfig;
+
+    /**
+     * Configuration of model checkpointing. Without checkpointing, every time
+     * SPARQL2GraphQL is started, observations have to be performed again
+     * in order to build the data model. This can take a considerable amount
+     * of time.
+     *
+     * Model checkpointing allows you to save the model to a file after
+     * observations are made, and the model is built.
+     * Afterwards, this checkpoint can be used instead of making
+     * new observations and building a new model. This will speed up the startup
+     * time dramatically.
+     */
+    modelCheckpoint?: ModelCheckpointConfig;
 }
 
 export interface ObservationConfig {
@@ -61,6 +91,22 @@ export interface ObservationConfig {
      * The IRI used as a prefix for the ontology created during observation.
      */
     ontologyPrefixIri: string;
+
+    /**
+     * If `true`, observations will be made about whether properties are arrays
+     * or scalars. By default, all properties are treated as arrays, since
+     * any property can be duplicated in RDF. Enabling scalar detection
+     * will allow properties which only ever occur up to once to be shown
+     * as scalars in the generated GraphQL schema.
+     */
+    shouldDetectNonArrayProperties: boolean | undefined;
+
+    /**
+     * If `true`, observations will be made which count the number of times
+     * each property occurs in the dataset. If this is not enabled,
+     * all property counts will be displayed as `0`.
+     */
+    shouldCountProperties: boolean | undefined;
 }
 
 export interface PostprocessingConfig {
@@ -82,45 +128,64 @@ export interface ServerConfig {
      * The port which the GraphQL server will run on.
      */
     port: number;
+}
+
+export interface ModelCheckpointConfig {
+    /**
+     * Set to `true` if you want SPARQL2GraphQL to load the model
+     * from the file configured in `checkpointFilePath`.
+     * If this is set to `true` and the file does not exist,
+     * observations will be made as normal.
+     */
+    loadModelFromCheckpoint: boolean;
 
     /**
-     * Configuration of hot reloading, which happen after the initial
-     * observation have been made, the GraphQL schema has been generated
-     * and the GraphQL endpoint is running.
-     *
-     * After the endpoint is live, a new `ObservationConfig` will be created
-     * using `configIterator`, and it will be used to make new observations.
-     * These observations will be used to create a new GraphQL schema,
-     * and the server schema will be updated in the background.
-     *
-     * Afterwards, the `shouldIterate` function is used to determine whether
-     * the hot reloading should continue in another iteration, or whether
-     * it should stop.
+     * Set to `true` if you want the model to be saved to the
+     * file configured in `checkpointFilePath` after observatiosn
+     * are made, and the model is built.
      */
-    hotReload?: {
-        /**
-         * Funciton creating a new `ObservationConfig` for the next
-         * iteration of hot reloading. Note that it should return a new
-         * instance of `ObservationConfig`, the original one should
-         * not be modified.
-         */
-        configIterator: (
-            config: ObservationConfig,
-            oldModel: ClassDescriptor[],
-        ) => ObservationConfig;
+    saveModelToFile: boolean;
 
-        /**
-         * After each hot reload iteration, this function is polled
-         * to decide whether hot reloading should continue.
-         * This function can compare the old and new data model
-         * to determine whether iterating again makes sense.
-         */
-        shouldIterate: (
-            config: ObservationConfig,
-            oldModel: ClassDescriptor[],
-            newModel: ClassDescriptor[],
-        ) => boolean;
-    };
+    /**
+     * Set to `true` if you want to allow the model saving to
+     * overwrite the previous model file if it exists.
+     * If set to `false`, and the model file already exists,
+     * the model will not be saved.
+     */
+    overwriteFile: boolean;
+
+    /**
+     * The path to the checkpoint file. This path will be used to
+     * load the model checkpoint and to save it.
+     */
+    checkpointFilePath: string;
+}
+
+export interface HotReloadConfig {
+    isEnabled: boolean;
+
+    /**
+     * Funciton creating a new `ObservationConfig` for the next
+     * iteration of hot reloading. Note that it should return a new
+     * instance of `ObservationConfig`, the original one should
+     * not be modified.
+     */
+    configIterator?: (
+        config: ObservationConfig,
+        oldModel: DataModel,
+    ) => ObservationConfig;
+
+    /**
+     * After each hot reload iteration, this function is polled
+     * to decide whether hot reloading should continue.
+     * This function can compare the old and new data model
+     * to determine whether iterating again makes sense.
+     */
+    shouldIterate?: (
+        config: ObservationConfig,
+        oldModel: DataModel,
+        newModel: DataModel,
+    ) => boolean;
 }
 
 export const SIMPLE_LOGGER = winston.createLogger({
@@ -138,16 +203,16 @@ export const SIMPLE_LOGGER = winston.createLogger({
 });
 
 export const DEFAULT_OBSERVATION_CONFIG: ObservationConfig = {
-    maxPropertyCount: 1000,
+    maxPropertyCount: 100,
     ontologyPrefixIri: 'http://skodapetr.eu/ontology/sparql-endpoint/',
+    shouldDetectNonArrayProperties: false,
+    shouldCountProperties: false,
 };
 
 export const DEFAULT_POSTPROCESSING_CONFIG: PostprocessingConfig = {
     hooks: {
-        entity: [],
-        namedEntity: [buildNamesFromIRIs],
+        resource: [buildNamesFromIRIs],
         class: [],
-        instance: [],
         property: [],
         association: [],
         attribute: [],
@@ -156,37 +221,48 @@ export const DEFAULT_POSTPROCESSING_CONFIG: PostprocessingConfig = {
 
 export const DEFAULT_SERVER_CONFIG: ServerConfig = {
     port: 4000,
-    hotReload: {
-        configIterator: (config, _oldModel) => {
-            // Examine 10 times more properties than in the last iteration.
+};
 
-            const newConfig = cloneDeep(config);
+export const DEFAULT_HOT_RELOAD_CONFIG: HotReloadConfig = {
+    isEnabled: true,
+    configIterator: (config, _oldModel) => {
+        // Examine 10 times more properties than in the last iteration.
 
-            if (newConfig.maxPropertyCount) {
-                newConfig.maxPropertyCount *= 10;
-            }
-            return newConfig;
-        },
-        shouldIterate: (_config, oldModel, newModel) => {
-            // Check if the maximum property count changed in the last iteration.
-            // If not, then there is no point in continuing to count them, since
-            // we already have everything counted.
+        const newConfig = cloneDeep(config);
 
-            const getMaxPropertyCount = (model: ClassDescriptor[]) =>
-                Math.max(
-                    ...model
-                        .flatMap((x) => [...x.attributes, ...x.associations])
-                        .map((x) => x.count),
-                );
+        if (newConfig.maxPropertyCount) {
+            newConfig.maxPropertyCount *= 10;
+        }
 
-            const maxPropertyCountOld = getMaxPropertyCount(oldModel);
-            const maxPropertyCountNew = getMaxPropertyCount(newModel);
+        // Count properties during hot reload
+        newConfig.shouldCountProperties = true;
 
-            if (maxPropertyCountOld === maxPropertyCountNew) {
-                return false;
-            }
+        // Check for scalar properties during hot reloading
+        newConfig.shouldDetectNonArrayProperties = true;
 
-            return true;
-        },
+        return newConfig;
+    },
+    shouldIterate: (config, _oldModel, newModel) => {
+        // Check if the maximum property count changed in the last iteration.
+        // If not, then there is no point in continuing to count them, since
+        // we already have everything counted.
+
+        const getMaxPropertyCount = (model: DataModel) =>
+            Math.max(
+                ...model.descriptors
+                    .flatMap((x) => [...x.attributes, ...x.associations])
+                    .map((x) => x.count),
+            );
+
+        const maxPropertyCountNew = getMaxPropertyCount(newModel);
+
+        if (
+            !config.maxPropertyCount ||
+            maxPropertyCountNew < config.maxPropertyCount
+        ) {
+            return false;
+        }
+
+        return true;
     },
 };

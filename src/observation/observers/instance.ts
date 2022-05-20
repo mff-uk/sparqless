@@ -14,6 +14,8 @@ import { Logger } from 'winston';
 
 /**
  * Obsever which makes observations about instances of classes.
+ *
+ * Currently unused in the default observation process.
  */
 export class InstanceObserver implements EndpointObserver {
     triggers: OntologyObservation[] = [OntologyObservation.ClassObservation];
@@ -25,7 +27,7 @@ export class InstanceObserver implements EndpointObserver {
         logger?: Logger,
     ): Promise<Observations> {
         const resultQuads: Quad[] = [];
-        logger?.info(
+        logger?.debug(
             `Observing instances of ${triggerObservations.length} classes...`,
         );
         for (const observation of triggerObservations) {

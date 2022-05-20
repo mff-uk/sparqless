@@ -1,11 +1,9 @@
 import { AssociationDescriptor } from './association';
 import { AttributeDescriptor } from './attribute';
-import { InstanceDescriptor } from './instance';
-import { NamedEntityDescriptor } from './named_entity';
+import { ResourceDescriptor } from './resource';
 
-export interface ClassDescriptor extends NamedEntityDescriptor {
+export interface ClassDescriptor extends ResourceDescriptor {
     numberOfInstances: number;
-    instances: InstanceDescriptor[];
     attributes: AttributeDescriptor[];
     associations: AssociationDescriptor[];
 }

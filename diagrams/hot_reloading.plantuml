@@ -1,0 +1,41 @@
+@startuml
+actor User
+database "GraphQL Server"
+database background as "GraphQL Server (Background)"
+database "SPARQL Endpoint"
+
+User -> "GraphQL Server": Start server
+
+"GraphQL Server" --> background ++: Start hot reload
+
+rnote over background
+  In the background, the GraphQL
+  Server performs additional observations
+endrnote
+
+background -> "SPARQL Endpoint": Perform observations
+background <- "SPARQL Endpoint"
+
+User -> "GraphQL Server": Query server (initial GraphQL schema)
+
+"GraphQL Server" -> "SPARQL Endpoint": SPARQL Query
+
+"GraphQL Server" <- "SPARQL Endpoint": SPARQL Result
+
+User <- "GraphQL Server": Query result (initial GraphQL schema)
+
+background -> "SPARQL Endpoint": Perform observations
+background <- "SPARQL Endpoint"
+
+rnote over background
+  Observation finishes and the GraphQL
+  schema is silently updated without
+  interrupting usage of the GraphQL
+  server
+endrnote
+
+"GraphQL Server" <-- background --: Update GraphQL schema
+
+User -> "GraphQL Server": Query server (new GraphQL schema)
+
+@enduml

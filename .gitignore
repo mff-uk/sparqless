@@ -122,3 +122,6 @@ site/
 
 # Generated GraphQL schema
 generated-schema.graphql
+
+# Saved data model checkpoint
+model-checkpoint.json

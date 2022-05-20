@@ -18,6 +18,8 @@ const config: Config = {
     observation: {
         maxPropertyCount: 1000,
         ontologyPrefixIri: 'http://skodapetr.eu/ontology/sparql-endpoint/',
+        shouldCountProperties: true,
+        shouldDetectNonArrayProperties: true,
     },
     schema: {
         graphqlSchemaOutputPath: path.join(
@@ -41,5 +43,7 @@ observerManager.subscribe(new PropertyCountObserver());
 observerManager.runObservers().then((observations) => {
     const parser = new ObservationParser(config);
     const model = parser.buildEndpointModel(observations);
-    config.logger?.info(`Done! Model has ${model.length} class descriptors.`);
+    config.logger?.info(
+        `Done! Model has ${model.descriptors.length} class descriptors.`,
+    );
 });

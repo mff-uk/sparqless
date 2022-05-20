@@ -28,7 +28,7 @@ export class AssociationObserver implements EndpointObserver {
         logger?: Logger,
     ): Promise<Observations> {
         const resultQuads: Quad[] = [];
-        logger?.info(
+        logger?.debug(
             `Observing ${triggerObservations.length} properties as associations...`,
         );
         for (const observation of triggerObservations) {
@@ -72,7 +72,7 @@ export class AssociationObserver implements EndpointObserver {
                     
                     ?targetResource a ?targetClass .
                 }
-                LIMIT 1
+                LIMIT 1000
             } 
         }`;
 }

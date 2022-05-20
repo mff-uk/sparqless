@@ -1,0 +1,29 @@
+@startuml
+abstract class ResourceDescriptor {
+  iri: string
+  name: string
+}
+class ClassDescriptor {
+  numberOfInstances: number
+}
+abstract class PropertyDescriptor {
+  count: number
+  isArray: boolean
+}
+class AttributeDescriptor {
+  types: string[]
+  languages: string[]
+}
+class AssociationDescriptor
+
+ResourceDescriptor <|-- ClassDescriptor
+ResourceDescriptor <|-- PropertyDescriptor
+PropertyDescriptor <|-- AttributeDescriptor
+PropertyDescriptor <|-- AssociationDescriptor
+
+ClassDescriptor "1" *-- "0..n" AttributeDescriptor: attributes
+ClassDescriptor "1" *-- "0..n" AssociationDescriptor: associations
+
+AssociationDescriptor "1" o-- "1..n" ClassDescriptor: targetClasses
+
+@enduml

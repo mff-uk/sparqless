@@ -6,15 +6,17 @@ import { ENDPOINTS } from './observation/endpoints';
 const config: Config = {
     endpoint: ENDPOINTS[0],
     logger: SIMPLE_LOGGER,
-    observation: {
-        maxPropertyCount: 1000,
-        ontologyPrefixIri: 'http://skodapetr.eu/ontology/sparql-endpoint/',
-    },
     schema: {
         graphqlSchemaOutputPath: path.join(
             __dirname,
             '../../generated-schema.graphql',
         ),
+    },
+    modelCheckpoint: {
+        loadModelFromCheckpoint: true,
+        saveModelToFile: true,
+        overwriteFile: true,
+        checkpointFilePath: path.join(__dirname, '../../model-checkpoint.json'),
     },
 };
 

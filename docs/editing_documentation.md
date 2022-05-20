@@ -17,7 +17,7 @@ nav:
   - 'How it works':
     - Overview: 'overview.md'
     - Observation: 'observation.md'
-    - Parsing: 'parsing.md'
+    - Parsing: 'model_parsing.md'
     - Postprocessing: 'postprocessing.md'
     - 'Schema Creation': 'schema.md'
     - Querying: 'querying.md'
@@ -47,6 +47,13 @@ in `site/pdf/documentation.pdf`.
 Note that you may see an error about a missing theme during build - this is unavoidable
 when using the same `mkdocs.yaml` for both the website and the PDF documentation, and you
 may safely ignore this error.
+
+## Diagrams
+
+Diagrams are generated with [PlantUML](https://plantuml.com/), which is a tool for
+generating UML diagrams out of text descriptions.
+
+The source files for all diagrams contained in this documentation are in the `diagrams` folder.
 
 ## Deploying documentation
 

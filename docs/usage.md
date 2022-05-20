@@ -85,6 +85,7 @@ which will observe the configured SPARQL endpoint and convert it to a GraphQL on
 Alternatively, if you are running SPARQL2GraphQL from this repository,
 you can run `npm start`, which will run `src/main.ts`, which is an entrypoint
 meant for starting the server from withing this repository.
+In that case, edit your configuration there.
 
 In the logs, you will see that it will first run some observations on the target
 endpoint to collect information about its schema and the data contained within.

@@ -6,13 +6,15 @@ nav:
   - Home: 'index.md'
   - 'User Guide':
     - Usage: 'usage.md'
+    - Configuration: 'configuration.md'
   - 'How it works':
     - Overview: 'overview.md'
     - Observation: 'observation.md'
-    - Parsing: 'parsing.md'
+    - Parsing: 'model_parsing.md'
     - Postprocessing: 'postprocessing.md'
     - 'Schema Creation': 'schema.md'
     - Querying: 'querying.md'
+    - 'Model Checkpointing': 'model_checkpointing.md'
     - 'Hot Reloading': 'hot_reloading.md'
   - 'Developer Guide':
     - Development: 'development.md'

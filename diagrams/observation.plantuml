@@ -1,48 +1,47 @@
 @startuml
 actor User
 collections Config as config.ts
-participant EndpointObserver
-participant ObservationParser
-participant DescriptorPostprocessor
-participant createSchema
-participant ApolloServer
+participant Observation
+participant "Model Parsing"
+participant Postprocessing
+participant "Schema Creation"
+database "GraphQL Server"
 
 User --> config.ts: Configure application
-User --> DescriptorPostprocessor: Register postprocessings (optional)
 
-config.ts -> EndpointObserver: Configuration
+config.ts -> Observation: Configuration
 
-rnote over EndpointObserver
+rnote over Observation
   Collect observations
   about SPARQL endpoint
 endrnote
 
-EndpointObserver -> ObservationParser: QueryResult[]
+Observation -> "Model Parsing": RDF Observations
 
-rnote over ObservationParser
+rnote over "Model Parsing"
   Build model
   from observations
 endrnote
 
-ObservationParser -> DescriptorPostprocessor: ClassDescriptor[]
+"Model Parsing" -> Postprocessing: Data Model
 
-rnote over DescriptorPostprocessor
+rnote over Postprocessing
   Run postprocessing hooks
-  on descriptors
+  on model descriptors
 endrnote
 
-DescriptorPostprocessor -> createSchema: ClassDescriptor[]
+Postprocessing -> "Schema Creation": Data Model
 
-rnote over createSchema
+rnote over "Schema Creation"
   Generate GraphQL schema
 endrnote
 
-createSchema -> ApolloServer: NexusGraphQLSchema
+"Schema Creation" -> "GraphQL Server": GraphQL Schema
 
-rnote over ApolloServer
+rnote over "GraphQL Server"
   Run GraphQL server
 endrnote
 
-User -> ApolloServer: Browse schema and build queries
+User --> "GraphQL Server": Browse schema and build queries
 
 @enduml

@@ -1,4 +1,5 @@
 import { ClassDescriptor } from '../models/class';
+import { DataModel } from '../models/data_model';
 import { PostprocessingHookDict } from './hook_types';
 import { DescriptorPostprocessor } from './postprocessor';
 
@@ -8,7 +9,6 @@ test('postprocessor runs hooks on correct entities', () => {
         name: '1',
         associations: [],
         attributes: [],
-        instances: [],
         numberOfInstances: 0,
     };
     const class2: ClassDescriptor = {
@@ -19,7 +19,8 @@ test('postprocessor runs hooks on correct entities', () => {
                 iri: '2a',
                 name: '2a',
                 count: 0,
-                targetClass: class1,
+                targetClasses: [class1],
+                isArray: false,
             },
         ],
         attributes: [
@@ -27,22 +28,19 @@ test('postprocessor runs hooks on correct entities', () => {
                 iri: '2b',
                 name: '2b',
                 count: 0,
-                type: 'string',
+                types: ['string'],
+                languages: ['en'],
+                isArray: false,
             },
         ],
-        instances: [],
         numberOfInstances: 0,
     };
     const descriptors: ClassDescriptor[] = [class1, class2];
     const hooks: PostprocessingHookDict = {
-        entity: [
-            (descriptors) => descriptors.forEach((x) => (x.iri += 'ENTITY')),
-        ],
-        namedEntity: [
+        resource: [
             (descriptors) => descriptors.forEach((x) => (x.iri += 'NAME')),
         ],
         class: [],
-        instance: [],
         property: [
             (descriptors) => descriptors.forEach((x) => (x.iri += 'PROPERTY')),
         ],
@@ -56,21 +54,18 @@ test('postprocessor runs hooks on correct entities', () => {
     };
 
     const postprocessor = new DescriptorPostprocessor();
-    postprocessor.postprocess(descriptors, { hooks });
+    const model = new DataModel(descriptors);
+    postprocessor.postprocess(model, { hooks });
 
-    expect(class1.iri.includes('ENTITY')).toBe(true);
     expect(class1.iri.includes('NAME')).toBe(true);
 
-    expect(class2.iri.includes('ENTITY')).toBe(true);
     expect(class2.iri.includes('NAME')).toBe(true);
 
-    expect(class2.associations[0].iri.includes('ENTITY')).toBe(true);
     expect(class2.associations[0].iri.includes('NAME')).toBe(true);
     expect(class2.associations[0].iri.includes('PROPERTY')).toBe(true);
     expect(class2.associations[0].iri.includes('ASSOCIATION')).toBe(true);
     expect(class2.associations[0].iri.includes('ATTRIBUTE')).toBe(false);
 
-    expect(class2.attributes[0].iri.includes('ENTITY')).toBe(true);
     expect(class2.attributes[0].iri.includes('NAME')).toBe(true);
     expect(class2.attributes[0].iri.includes('PROPERTY')).toBe(true);
     expect(class2.attributes[0].iri.includes('ATTRIBUTE')).toBe(true);
