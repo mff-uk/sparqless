@@ -1,10 +1,17 @@
 import { Literal } from '@rdfjs/types';
+import { GraphQLResolveInfo } from 'graphql';
 import { FieldResolver } from 'nexus';
+import { addSortLimitOffsetArgs } from './array_args';
 
 export function createIntResolver(resolverConfig: {
     isArrayType: boolean;
 }): FieldResolver<string, string> {
-    return async (parent, _args, _context, info) => {
+    const resolver = async (
+        parent: any,
+        _args: any,
+        _context: any,
+        info: GraphQLResolveInfo,
+    ) => {
         const values: { value: Literal }[] = parent[info.fieldName];
         if (!values) {
             return undefined;
@@ -18,4 +25,6 @@ export function createIntResolver(resolverConfig: {
 
         return intValues[0];
     };
+
+    return addSortLimitOffsetArgs(resolver, (a, b) => a - b, resolverConfig);
 }

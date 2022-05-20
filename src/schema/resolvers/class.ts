@@ -22,12 +22,17 @@ export function createClassResolver(
                 `Invalid sort direction: ${args.sort}. Allowed values are ASC and DESC.`,
             );
         }
+        const filterConfig =
+            !resolverConfig.instanceIRI && args.filter
+                ? { ...resolverConfig, instanceIRI: args.filter }
+                : resolverConfig;
+
         const queryVars = getQueryVars(classDescriptor, info, config.logger);
         const instanceIRIs = await resolveInstanceIRIs(
             classDescriptor,
             queryVars,
             args,
-            resolverConfig,
+            filterConfig,
             config,
         );
 

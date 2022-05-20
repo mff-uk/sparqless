@@ -1,0 +1,46 @@
+@startuml
+actor User
+database "GraphQL Server"
+database "SPARQL Endpoint"
+
+User -> "GraphQL Server" ++: Start server
+
+rnote over "GraphQL Server"
+  Server performs
+  observations,
+  which can take
+  a long time
+endrnote
+
+"GraphQL Server" -> "SPARQL Endpoint": Observation query 1 of N
+"GraphQL Server" -> "SPARQL Endpoint": Observation query 2 of N
+"GraphQL Server" -> "SPARQL Endpoint" --: Observation query N of N
+
+rnote over "GraphQL Server"
+  Observation finishes,
+  model is parsed
+  and saved to disk
+endrnote
+
+User -> "GraphQL Server": Use server
+
+User -> "GraphQL Server": Shut down server
+
+rnote over User
+  //some time later//
+endrnote
+
+User -> "GraphQL Server": Start server
+
+rnote over "GraphQL Server"
+  Server start is
+  very fast since
+  the model is loaded
+  from disk, and is
+  used to build the
+  GraphQL schema
+endrnote
+
+User -> "GraphQL Server": Use server
+
+@enduml

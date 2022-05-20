@@ -17,7 +17,11 @@ the default playground which is started with SPARQL2GraphQL,
 they don't even need to refresh their browser window to see
 the new schema - it refreshes itself automatically.
 
-# TODO: add sequence diagram for hot reloading
+In the following diagram, you can see how the GraphQL
+schema continues to be updated in the background while
+the user is free to explore and query the endpoint:
+
+![hot reloading diagram](img/hot_reloading_diagram.png)
 
 ## How it works
 

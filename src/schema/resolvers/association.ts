@@ -1,7 +1,9 @@
+import { GraphQLResolveInfo } from 'graphql';
 import { FieldResolver } from 'nexus';
 import { Config } from '../../api/config';
 import { AssociationDescriptor } from '../../models/association';
 import { EndpointClient } from '../../observation/client';
+import { addSortLimitOffsetArgs } from './array_args';
 import { createClassResolver } from './class';
 
 export function createAssociationResolver(
@@ -11,7 +13,12 @@ export function createAssociationResolver(
     },
     config: Config,
 ): FieldResolver<string, string> {
-    return async (parent, args, context, info) => {
+    const resolver = async (
+        parent: any,
+        args: any,
+        context: any,
+        info: GraphQLResolveInfo,
+    ) => {
         const values = parent[info.fieldName];
         if (!values) {
             return undefined;
@@ -55,6 +62,22 @@ export function createAssociationResolver(
 
         return resolvedInstances[0];
     };
+
+    return addSortLimitOffsetArgs(
+        resolver,
+        (a, b) => {
+            if (a._rdf_iri < b._rdf_iri) {
+                return -1;
+            }
+
+            if (a._rdf_iri > b._rdf_iri) {
+                return 1;
+            }
+
+            return 0;
+        },
+        resolverConfig,
+    );
 }
 
 async function resolveTargetClassType(

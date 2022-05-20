@@ -47,6 +47,9 @@ export function createSchema(
 Allowed values are "ASC" and "DESC" for ascending and descending sort respectively.\n
 If you want pagination to return values in a stable order, you should also sort them.`,
                         }),
+                        filter: stringArg({
+                            description: `Only return the instance with the given IRI.`,
+                        }),
                     },
                     resolve: createClassResolver(
                         classDescriptor,
@@ -170,18 +173,36 @@ function createAttributes(
                     isArrayType: attribute.isArray,
                 }),
             });
-            // TODO: resolve this thing with only looking at the first type
+            // TODO: implement unions for attributes?
         } else if (attribute.types[0].endsWith('string')) {
             fieldDef.string(attribute.name, {
                 ...fieldConfig,
                 resolve: createStringResolver({
                     isArrayType: attribute.isArray,
                 }),
+                args: {
+                    limit: intArg(),
+                    offset: intArg(),
+                    sort: stringArg({
+                        description: `Sort by value.\n
+Allowed values are "ASC" and "DESC" for ascending and descending sort respectively.\n
+If you want pagination to return values in a stable order, you should also sort them.`,
+                    }),
+                },
             });
         } else if (attribute.types[0].endsWith('integer')) {
             fieldDef.int(attribute.name, {
                 ...fieldConfig,
                 resolve: createIntResolver({ isArrayType: attribute.isArray }),
+                args: {
+                    limit: intArg(),
+                    offset: intArg(),
+                    sort: stringArg({
+                        description: `Sort by value.\n
+Allowed values are "ASC" and "DESC" for ascending and descending sort respectively.\n
+If you want pagination to return values in a stable order, you should also sort them.`,
+                    }),
+                },
             });
         } else if (attribute.types[0].endsWith('boolean')) {
             fieldDef.boolean(attribute.name, {
@@ -189,6 +210,7 @@ function createAttributes(
                 resolve: createBooleanResolver({
                     isArrayType: attribute.isArray,
                 }),
+                // Doesn't make sense to sort, filter or limit booleans
             });
         } else {
             // TODO: implement other custom types like floats or dates
@@ -197,6 +219,15 @@ function createAttributes(
                 resolve: createStringResolver({
                     isArrayType: attribute.isArray,
                 }),
+                args: {
+                    limit: intArg(),
+                    offset: intArg(),
+                    sort: stringArg({
+                        description: `Sort by value.\n
+Allowed values are "ASC" and "DESC" for ascending and descending sort respectively.\n
+If you want pagination to return values in a stable order, you should also sort them.`,
+                    }),
+                },
             });
         }
     }
@@ -228,6 +259,18 @@ function createAssociations(
                 },
                 config,
             ),
+            args: {
+                limit: intArg(),
+                offset: intArg(),
+                sort: stringArg({
+                    description: `Sort by instance IRI.\n
+Allowed values are "ASC" and "DESC" for ascending and descending sort respectively.\n
+If you want pagination to return values in a stable order, you should also sort them.`,
+                }),
+                filter: stringArg({
+                    description: `Only return the instance with the given IRI.`,
+                }),
+            },
         });
     }
 }

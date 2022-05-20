@@ -14,6 +14,8 @@ import { Logger } from 'winston';
 
 /**
  * Obsever which makes observations about instances of classes.
+ *
+ * Currently unused in the default observation process.
  */
 export class InstanceObserver implements EndpointObserver {
     triggers: OntologyObservation[] = [OntologyObservation.ClassObservation];
