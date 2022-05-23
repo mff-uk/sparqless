@@ -134,6 +134,7 @@ look into modifying these values.</p>
 and it can contain the following values:</p>
 <pre><code class="language-ts">interface ObservationConfig {
     maxPropertyCount: number | undefined;
+    propertySampleSize: number | undefined;
     ontologyPrefixIri: string;
     shouldDetectNonArrayProperties: boolean | undefined;
     shouldCountProperties: boolean | undefined;
@@ -146,6 +147,16 @@ from the very start, it is recommended to set this value. It will <strong>signif
 speed up observations on large datasets. A good default value is <code>1000</code>,
 and for best results, combine this value with <a href="../hot_reloading/">hot reloading</a>,
 where each iteration of hot reloading increases it by an order of magnitude.</p>
+<p>When analyzing the range for each attribute and association,
+a sample of up to <code>propertySampleSize</code> occurences is selected,
+and their types are used to determine that property's type.
+Setting <code>propertySampleSize</code> is highly recommended, with
+a reasonable default being <code>100</code> or <code>1000</code>. While this setting
+may in some rare cases lead to the generated schema missing
+some return types for some properties, leaving it unlimited
+may result in errors during observation for large datasets,
+where the process is unable to allocate enough memory
+to hold all of the observations.</p>
 <p><code>ontologyPrefixIri</code> sets the IRI for the ontology created during observation.
 You should not need to modify this value from the default
 <code>http://skodapetr.eu/ontology/sparql-endpoint/</code>, unless you wish to save the

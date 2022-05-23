@@ -91,7 +91,125 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <h1 id="querying">Querying</h1>
-<h1 id="todo-write-content-for-this"><strong>TODO:</strong> WRITE CONTENT FOR THIS</h1>
+<blockquote>
+<p><strong><em>NOTE:</em></strong>  This introduction is identical to the introduction
+given in the <a href="../overview/">overview</a>. If you have already read it,
+you may skip to the other subsections of this article.</p>
+</blockquote>
+<p>SPARQL2GraphQL utilizes a query translation approach, whereby incoming
+GraphQL queries are translated into SPARQL queries, executed on the
+SPARQL endpoint, and their results are aggregated into a JSON
+response returned by the GraphQL endpoint.</p>
+<p>GraphQL querying is based on the concept of
+<a href="https://graphql.org/learn/execution/">resolvers</a>, which are functions,
+each of which is able to return a single requested property.
+If the following GraphQL query is sent to the GraphQL endpoint:</p>
+<pre><code class="language-graphql">book {
+    author {
+        name
+    }
+    title
+}
+</code></pre>
+<p>then a resolver will be called for the <code>books</code> field, and when that
+resolver returns an object, resolvers for the <code>author</code> and <code>title</code>
+fields will be run. SPARQL2GraphQL resolvers effectively translate
+each field query into a SPARQL query if the queried field contains
+a non-scalar value. Scalar values are fetched with the parent object's
+query.</p>
+<p>Execution of this example query would look like this:</p>
+<p><img alt="Querying sequence diagram" src="../img/querying_diagram.png"/></p>
+<h2 id="query-root-execution">Query root execution</h2>
+<blockquote>
+<p><strong><em>NOTE:</em></strong> The following description of query execution functionality
+describes the way it is implemented in this library. This is not the only
+possible way of implementing querying, and the design of this library
+accounts for different possible implementations in the future.</p>
+</blockquote>
+<p>Each GraphQL query has a root <code>Query</code> object, whose fields
+are all object types extracted from the SPARQL endpoint.
+Each of these fields is a non-null list of objects,
+which are resolved with a <strong>class resolver</strong> (implemented by
+the <code>createClassResolver</code> factory function).</p>
+<p>The <strong>class resolver</strong> is a function which is called by Apollo Server
+any time class instances are requested as part of a GraphQL query.
+Its job is to return the requested instances as plain JavaScript
+objects. It does this by looking at the requested fields for these
+objects, and executing a SPARQL query which returns a list of IRIs
+representing the objects to be returned from the resolver.</p>
+<p>If we take the following GraphQL query:</p>
+<pre><code class="language-graphql">dcat_Dataset(limit: $limit) {
+    title {
+      cs
+      en
+    }
+    conformsTo
+}
+</code></pre>
+<p>then the corresponding SPARQL IRI query will look like this:</p>
+<pre><code class="language-sparql">SELECT DISTINCT ?instance
+WHERE
+{
+    ?instance a &lt;http://www.w3.org/ns/dcat#Dataset&gt; .
+
+    ?instance &lt;http://purl.org/dc/terms/title&gt; [] .
+    ?instance &lt;http://purl.org/dc/terms/conformsTo&gt; [] .        
+}
+LIMIT 10
+</code></pre>
+<p>Afterwards, the <strong>class resolver</strong> takes the received instance IRIs,
+and for each of them, it executes a SPARQL query asking for that instance's
+properties which have been requested by the GraphQL query.</p>
+<p>Assuming one of the IRIs returned by the previous query was
+<code>https://data.gov.cz/zdroj/datové-sady/00297569/3384952</code>, then the followup
+query asking for this instance's properties will look like this:</p>
+<pre><code class="language-sparql">SELECT ?property ?value
+WHERE
+{
+    VALUES (?property)
+    {
+        ( &lt;http://purl.org/dc/terms/title&gt; )
+        ( &lt;http://purl.org/dc/terms/conformsTo&gt; )
+    }
+    &lt;https://data.gov.cz/zdroj/datové-sady/00297569/3384952&gt; ?property ?value .
+}
+</code></pre>
+<p>Finally, the <strong>class resolver</strong> will create a plain JavaScript object
+containing the returned properties, and it will return it to Apollo Server.
+Apollo Server will then <em>execute a resolver for each field on this object</em>.</p>
+<p>These additional resolvers are responsible for taking the data retrieved
+by the class resolver, and converting it into the appropriate format
+for return as the GraphQL query response. What this means in practice
+is that while everything is stored as a string in RDF,
+these additional resolvers have to convert these strings to the appropriate
+data types for their respective fields. For example, a boolean field
+resolver would parse the retrieved string into a boolean.</p>
+<p>This chaining of resolvers will occur recursively for each field
+of objects nested in the query, until all fields have been resolved.
+The final GraphQL response for our example scenario will look like this:</p>
+<pre><code class="language-json">"data": {
+    "dcat_Dataset": [
+        {
+            "title": {
+                "cs": [
+                    "Moravskoslezský kraj - úřední deska"
+                ],
+                "en": [
+                    "Official bulletin board of Moravian-Silesian Region "
+                ]
+            },
+            "conformsTo": [
+                "https://ofn.gov.cz/úřední-desky/",
+                "https://ofn.gov.cz/úřední-desky/2021-07-20/"
+            ]
+        },
+      ...
+    ]
+}
+</code></pre>
+<p>The concept of resolvers is described in more detail in the
+<a href="https://graphql.org/learn/execution/">official GraphQL documentation</a>
+in case you wish to learn more.</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">

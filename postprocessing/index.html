@@ -120,11 +120,17 @@ against all descriptors which have a display name property.</p>
 <li>Run some side effects which depend on the descriptor data</li>
 <li>Log something about the descriptors</li>
 </ul>
-<p>You can add your hooks in the <code>src/postprocessing/hooks</code> directory, preferably
-putting one hook per each code file.</p>
-<p>Including your hook in the code is then as easy as editing <code>src/postprocessing/registered_hooks.ts</code>,
-and registering your hook in the <code>getRegisteredPostprocessingHooks()</code> function. And that's it!
-Your hook will now automatically be run the next time you run the app.</p>
+<p>You can run your own hooks by adding them in the <code>postprocessing</code> field of the root configuration
+object. This field takes a <code>PostprocessingConfig</code>, and its <code>hooks</code> field contains a dictionary
+containing the registered hooks for each descriptor type. These hooks are then automatically
+executed as necessary.</p>
+<blockquote>
+<p><strong><em>NOTE:</em></strong> it is recommended to use <code>DEFAULT_POSTPROCESSING_CONFIG</code>
+as the basis for adding your new hooks, since it also contains a registered hook
+for generating GraphQL identifiers for classes and properties. Only create a whole new
+<code>PostprocessingHookDict</code> if you want to replace the functionality of the
+<code>buildNamesFromIRIs</code> postprocessing hook included in this library.</p>
+</blockquote>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">

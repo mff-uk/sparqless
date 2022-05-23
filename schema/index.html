@@ -112,6 +112,39 @@ into a type definition in the GraphQL schema, and using
 its related descriptors to definte the properties of that type.</p>
 <p>Information like the number of instances is stored in the type
 and property descriptions to aid developers in exploring the dataset.</p>
+<h2 id="schema-specifics">Schema specifics</h2>
+<h3 id="classes">Classes</h3>
+<p>All classes observed in the dataset have a corresponding type created
+in the GraphQL schema, and this type is always queryable from the root
+query.</p>
+<p>Types in the root query support the following arguments:</p>
+<ul>
+<li>sort: takes either <code>ASC</code> or <code>DESC</code>, will ensure the ordering of results.
+Class instances are sorted by their IRI.</li>
+<li>limit: do not return more than <code>limit</code> results</li>
+<li>offset: skip the first <code>offset</code> instances</li>
+<li>filter: given an IRI, only return the instance with this IRI</li>
+</ul>
+<h3 id="attributes">Attributes</h3>
+<p>Attributes are represented as fields on the source type.
+Strings are mapped to string fields, ints are mapped to int fields,
+booleans are mapped to boolean fields and lang strings (strings which
+are tagged with a language in the RDF dataset) are mapped to objects
+containing the respective languages as fields.</p>
+<p>Other types are mapped to string fields by default.</p>
+<p>Attribute fields except for language strings and booleans support <code>sort</code>,
+<code>limit</code> and <code>offset</code> arguments. For booleans these arguments do not make sense.
+They may be implemented for language strings in the future.</p>
+<h3 id="associations">Associations</h3>
+<p>Associations are represented as fields on the source type,
+with the target type being one of the following:</p>
+<ul>
+<li>The target type if the associaton only has a single target type</li>
+<li>A newly created union type joining all target types of the associaiton
+in case the association has multiple target types.</li>
+</ul>
+<p>Association fields support <code>sort</code>, <code>limit</code>, <code>offset</code> and <code>filter</code>
+arguments.</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">

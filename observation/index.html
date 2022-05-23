@@ -133,15 +133,41 @@ const observations: Observations = await observerManager.runObservers();
 some observers are pre-implemented to facilitate the main flow of SPARQL2GraphQL.</p>
 <p>They each collect a single kind of observation from the ontology:</p>
 <ul>
-<li><code>ClassObserver</code>: collects <code>ClassObservation</code>s</li>
-<li><code>PropertyObserver</code>: collects <code>PropertyExistenceObservation</code>s</li>
-<li><code>AttributeObserver</code>: collects <code>AttributeObservation</code>s</li>
-<li><code>AssociationObserver</code>: collects <code>AssociationObservation</code>s</li>
-<li><code>PropertyCountObserver</code>: collects <code>PropertyCountObservation</code>s</li>
-<li><code>InstanceObserver</code>: collects <code>InstanceObservation</code>s <em>(currently unused)</em></li>
+<li><code>ClassObserver</code>: collects <code>ClassObservation</code>s. These describe the existence
+of classes and their number of instances in the dataset.</li>
+<li><code>PropertyObserver</code>: collects <code>PropertyExistenceObservation</code>s. These describe
+the existence of properties on given classes.</li>
+<li><code>AttributeObserver</code>: collects <code>AttributeObservation</code>s. These describe attributes,
+i.e. properties whose ranges contain literals (strings, ints, booleans, ...).</li>
+<li><code>AssociationObserver</code>: collects <code>AssociationObservation</code>s. These describe
+associations whose ranges contain other classes.</li>
+<li><code>PropertyCountObserver</code>: collects <code>PropertyCountObservation</code>s. These count
+the number of occurences of a given property in the dataset. This can be useful
+for users to determine which classes are important in the data.</li>
+<li><code>PartialFunctionObserver</code>: collects <code>PartialFunctionObservation</code>s.
+These describe properties which are guaranteed not to be array-type properties,
+i.e. properties which are instantiated no more than once for any given
+class instance.</li>
+<li><code>InstanceObserver</code>: collects <code>InstanceObservation</code>s. These describe
+the existence of class instances. <em>(currently unused)</em></li>
 </ul>
 <p>The data flow between these observers looks like this:</p>
 <p><img alt="observers" src="../img/observers_diagram.png"/></p>
+<h2 id="observation-speed">Observation speed</h2>
+<p>Essential observations for constructing the GraphQL schema are <code>ClassObservation</code>,
+<code>PropertyExistenceObservation</code>, <code>AttributeObservation</code> and <code>AssociationObservation</code>.
+Other observations are unnecessary, and they just enhance the schema further.
+If the fastest startup time is desired, you may want to consider disabling
+non-required observations, and configuring <a href="../hot_reloading/">hot reloading</a>
+to perform these additional observations in the background while
+the GraphQL endpoint is already functional.</p>
+<p>An interesting bit of information about observation query performance is the fact
+that in SPARQL endpoints with multiple graphs, adding a <code>GRAPH ?g { ... }</code> clause
+around the query body led to significant performance improvements on certain queries.
+Namely queries with many class instances across multiple graphs which originally took
+tens of minutes now take a few minutes at maximum. While this change did slightly
+increase execution times for other queries, the total observation time for
+endpoints with mulitple graphs has improved dramatically.</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
