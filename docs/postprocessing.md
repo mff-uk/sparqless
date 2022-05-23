@@ -37,9 +37,13 @@ The contents of a hook will usually do one or more of the following things:
 - Run some side effects which depend on the descriptor data
 - Log something about the descriptors
 
-You can add your hooks in the `src/postprocessing/hooks` directory, preferably
-putting one hook per each code file.
+You can run your own hooks by adding them in the `postprocessing` field of the root configuration
+object. This field takes a `PostprocessingConfig`, and its `hooks` field contains a dictionary
+containing the registered hooks for each descriptor type. These hooks are then automatically
+executed as necessary.
 
-Including your hook in the code is then as easy as editing `src/postprocessing/registered_hooks.ts`,
-and registering your hook in the `getRegisteredPostprocessingHooks()` function. And that's it!
-Your hook will now automatically be run the next time you run the app.
+> **_NOTE:_** it is recommended to use `DEFAULT_POSTPROCESSING_CONFIG`
+as the basis for adding your new hooks, since it also contains a registered hook
+for generating GraphQL identifiers for classes and properties. Only create a whole new
+`PostprocessingHookDict` if you want to replace the functionality of the
+`buildNamesFromIRIs` postprocessing hook included in this library.

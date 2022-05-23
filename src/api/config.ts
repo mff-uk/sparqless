@@ -125,6 +125,10 @@ export interface ObservationConfig {
 }
 
 export interface PostprocessingConfig {
+    /**
+     * Register your postprocessing hooks in this dictionary
+     * to have them automatically run by the `DescriptorPostprocessor`.
+     */
     hooks: PostprocessingHookDict;
 }
 
