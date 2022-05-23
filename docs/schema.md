@@ -36,7 +36,8 @@ query.
 
 Types in the root query support the following arguments:
 
-- sort: takes either `ASC` or `DESC`, will endure the ordering of results
+- sort: takes either `ASC` or `DESC`, will ensure the ordering of results.
+Class instances are sorted by their IRI.
 - limit: do not return more than `limit` results
 - offset: skip the first `offset` instances
 - filter: given an IRI, only return the instance with this IRI
@@ -63,3 +64,6 @@ with the target type being one of the following:
 - The target type if the associaton only has a single target type
 - A newly created union type joining all target types of the associaiton
 in case the association has multiple target types.
+
+Association fields support `sort`, `limit`, `offset` and `filter`
+arguments.

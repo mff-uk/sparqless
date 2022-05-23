@@ -3,6 +3,9 @@ import { GraphQLResolveInfo } from 'graphql';
 import { FieldResolver } from 'nexus';
 import { addSortLimitOffsetArgs } from './array_args';
 
+/**
+ * Resolver factory for integers.
+ */
 export function createIntResolver(resolverConfig: {
     isArrayType: boolean;
 }): FieldResolver<string, string> {

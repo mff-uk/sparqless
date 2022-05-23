@@ -46,4 +46,12 @@ endrnote
 
 ObserverManager <- PropertyCountObserver: PropertyCountObservation
 
+ObserverManager -> PartialFunctionPropertyObserver: PropertyCountObservation
+
+rnote over PartialFunctionPropertyObserver
+  Collect observations
+endrnote
+
+ObserverManager <- PartialFunctionPropertyObserver: PropertyIsAPartialFunctionObservation
+
 @enduml

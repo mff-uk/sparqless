@@ -76,7 +76,7 @@ export interface Config {
 
 export interface ObservationConfig {
     /**
-     * If set, this no more than `maxPropertyCount` instances of properties
+     * If set, no more than `maxPropertyCount` instances of properties
      * will be searched when counting properties. If set to `undefined`,
      * counting property instances is unlimited.
      *
@@ -85,7 +85,22 @@ export interface ObservationConfig {
      * schema hot reload to iteratively increase this value to search a larger portion
      * of the dataset while the GraphQL endpoint is already functional.
      */
-    maxPropertyCount: number | undefined;
+    maxPropertyCount?: number;
+
+    /**
+     * When analyzing the range for each attribute and association,
+     * a sample of up to `propertySampleSize` occurences is selected,
+     * and their types are used to determine that property's type.
+     *
+     * Setting `propertySampleSize` is highly recommended, with
+     * a reasonable default being `100` or `1000`. While this setting
+     * may in some rare cases lead to the generated schema missing
+     * some return types for some properties, leaving it unlimited
+     * may result in errors during observation for large datasets,
+     * where the process is unable to allocate enough memory
+     * to hold all of the observations.
+     */
+    propertySampleSize?: number;
 
     /**
      * The IRI used as a prefix for the ontology created during observation.
@@ -99,14 +114,14 @@ export interface ObservationConfig {
      * will allow properties which only ever occur up to once to be shown
      * as scalars in the generated GraphQL schema.
      */
-    shouldDetectNonArrayProperties: boolean | undefined;
+    shouldDetectNonArrayProperties?: boolean;
 
     /**
      * If `true`, observations will be made which count the number of times
      * each property occurs in the dataset. If this is not enabled,
      * all property counts will be displayed as `0`.
      */
-    shouldCountProperties: boolean | undefined;
+    shouldCountProperties?: boolean;
 }
 
 export interface PostprocessingConfig {
@@ -120,7 +135,21 @@ export interface SchemaConfig {
      *
      * If `undefined`, the generated schema will not be saved to a file on disk.
      */
-    graphqlSchemaOutputPath: string | undefined;
+    graphqlSchemaOutputPath?: string;
+
+    /**
+     * If set to `true`, fields on root objects in the GraphQL query
+     * will be treated as optional, meaning objects will be returned which may
+     * be missing some of the specified fields. This will match the behavior
+     * of all nested objects, for whom this setting cannot be changed
+     * due to the unstructured nature of RDF data, where some fields
+     * may be missing.
+     *
+     * If set to `false` or `undefined`, GraphQL queries will only return
+     * root objects which contain all of the fields specified in the query.
+     * Nested objects in the result may still be missing some fields.
+     */
+    areRootPropertiesOptional?: boolean;
 }
 
 export interface ServerConfig {
@@ -204,6 +233,7 @@ export const SIMPLE_LOGGER = winston.createLogger({
 
 export const DEFAULT_OBSERVATION_CONFIG: ObservationConfig = {
     maxPropertyCount: 100,
+    propertySampleSize: 1000,
     ontologyPrefixIri: 'http://skodapetr.eu/ontology/sparql-endpoint/',
     shouldDetectNonArrayProperties: false,
     shouldCountProperties: false,
@@ -231,7 +261,7 @@ export const DEFAULT_HOT_RELOAD_CONFIG: HotReloadConfig = {
         const newConfig = cloneDeep(config);
 
         if (newConfig.maxPropertyCount) {
-            newConfig.maxPropertyCount *= 10;
+            newConfig.maxPropertyCount *= 100;
         }
 
         // Count properties during hot reload

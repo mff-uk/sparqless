@@ -54,13 +54,42 @@ some observers are pre-implemented to facilitate the main flow of SPARQL2GraphQL
 
 They each collect a single kind of observation from the ontology:
 
-- `ClassObserver`: collects `ClassObservation`s
-- `PropertyObserver`: collects `PropertyExistenceObservation`s
-- `AttributeObserver`: collects `AttributeObservation`s
-- `AssociationObserver`: collects `AssociationObservation`s
-- `PropertyCountObserver`: collects `PropertyCountObservation`s
-- `InstanceObserver`: collects `InstanceObservation`s *(currently unused)*
+- `ClassObserver`: collects `ClassObservation`s. These describe the existence
+of classes and their number of instances in the dataset.
+- `PropertyObserver`: collects `PropertyExistenceObservation`s. These describe
+the existence of properties on given classes.
+- `AttributeObserver`: collects `AttributeObservation`s. These describe attributes,
+i.e. properties whose ranges contain literals (strings, ints, booleans, ...).
+- `AssociationObserver`: collects `AssociationObservation`s. These describe
+associations whose ranges contain other classes.
+- `PropertyCountObserver`: collects `PropertyCountObservation`s. These count
+the number of occurences of a given property in the dataset. This can be useful
+for users to determine which classes are important in the data.
+- `PartialFunctionObserver`: collects `PartialFunctionObservation`s.
+These describe properties which are guaranteed not to be array-type properties,
+i.e. properties which are instantiated no more than once for any given
+class instance.
+- `InstanceObserver`: collects `InstanceObservation`s. These describe
+the existence of class instances. *(currently unused)*
 
 The data flow between these observers looks like this:
 
 ![observers](img/observers_diagram.png)
+
+## Observation speed
+
+Essential observations for constructing the GraphQL schema are `ClassObservation`,
+`PropertyExistenceObservation`, `AttributeObservation` and `AssociationObservation`.
+Other observations are unnecessary, and they just enhance the schema further.
+If the fastest startup time is desired, you may want to consider disabling
+non-required observations, and configuring [hot reloading](hot_reloading.md)
+to perform these additional observations in the background while
+the GraphQL endpoint is already functional.
+
+An interesting bit of information about observation query performance is the fact
+that in SPARQL endpoints with multiple graphs, adding a `GRAPH ?g { ... }` clause
+around the query body led to significant performance improvements on certain queries.
+Namely queries with many class instances across multiple graphs which originally took
+tens of minutes now take a few minutes at maximum. While this change did slightly
+increase execution times for other queries, the total observation time for
+endpoints with mulitple graphs has improved dramatically.

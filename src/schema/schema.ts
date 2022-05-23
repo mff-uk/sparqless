@@ -22,6 +22,9 @@ import { DataModel } from '../models/data_model';
 
 /**
  * Generate a complete GraphQL schema from class descriptors.
+ * The schema also contains the definitions of resolvers,
+ * which are functions that are responsible for fetching queried data.
+ * 
  * This schema may then be used by a GraphQL server.
  *
  * @param model Class descriptors describing the SPARQL endpoint.
@@ -33,34 +36,9 @@ export function createSchema(
     config: Config,
 ): NexusGraphQLSchema {
     const endpointTypes = createEndpointTypes(model.descriptors, config);
+    const query = createQueryType(model, config);
 
-    const query = queryType({
-        definition(t) {
-            for (const classDescriptor of model.descriptors) {
-                t.nonNull.list.field(classDescriptor.name, {
-                    type: classDescriptor.name,
-                    args: {
-                        limit: intArg(),
-                        offset: intArg(),
-                        sort: stringArg({
-                            description: `Sort by instance IRI.\n
-Allowed values are "ASC" and "DESC" for ascending and descending sort respectively.\n
-If you want pagination to return values in a stable order, you should also sort them.`,
-                        }),
-                        filter: stringArg({
-                            description: `Only return the instance with the given IRI.`,
-                        }),
-                    },
-                    resolve: createClassResolver(
-                        classDescriptor,
-                        { isArrayType: true, areFieldsOptional: false },
-                        config,
-                    ),
-                });
-            }
-        },
-    });
-
+    // Generate the schema, optionally saving it to disk if configured
     const schema = makeSchema({
         types: [query, ...endpointTypes],
         outputs: {
@@ -76,6 +54,12 @@ If you want pagination to return values in a stable order, you should also sort 
     return schema;
 }
 
+/**
+ * Create all GraphQL types which should be present
+ * in the schema. This includes all classes with
+ * their fields, plus additional types like unions and
+ * language-tagged strings.
+ */
 function createEndpointTypes(
     classes: ClassDescriptor[],
     config: Config,
@@ -96,6 +80,58 @@ function createEndpointTypes(
     return [...classTypes, ...additionalTypes];
 }
 
+/**
+ * Create the root `Query` type, which is a special GraphQL
+ * type used as the root of all GraphQL queries.
+ * 
+ * Every field on this type is available at the query root.
+ */
+function createQueryType(
+    model: DataModel,
+    config: Config,
+): NexusObjectTypeDef<'Query'> {
+    return queryType({
+        definition(t) {
+            for (const classDescriptor of model.descriptors) {
+                t.nonNull.list.field(classDescriptor.name, {
+                    type: classDescriptor.name,
+                    args: {
+                        limit: intArg(),
+                        offset: intArg(),
+                        sort: stringArg({
+                            description: `Sort by instance IRI.\n
+Allowed values are "ASC" and "DESC" for ascending and descending sort respectively.\n
+If you want pagination to return values in a stable order, you should also sort them.`,
+                        }),
+                        filter: stringArg({
+                            description: `Only return the instance with the given IRI.`,
+                        }),
+                    },
+                    resolve: createClassResolver(
+                        classDescriptor,
+                        {
+                            isArrayType: true,
+                            areFieldsOptional:
+                                config.schema?.areRootPropertiesOptional ??
+                                false,
+                        },
+                        config,
+                    ),
+                    description: getClassDescription(classDescriptor),
+                });
+            }
+        },
+    });
+}
+
+/**
+ * Create additional GraphQL types which are needed in the endpoint.
+ * 
+ * The types created here are typically types which would normally be created
+ * on-demand by some field definitions (i.e. language-tagged strings or unions).
+ * However, field factory functions cannot define new types inside them,
+ * so these types have to be defined separately.
+ */
 function addAdditionalTypes(
     classes: ClassDescriptor[],
 ): (NexusObjectTypeDef<any> | NexusUnionTypeDef<any>)[] {
@@ -148,6 +184,11 @@ function addAdditionalTypes(
     return additionalTypes;
 }
 
+/**
+ * For a given `ClassDescriptor`, create fields on its GraphQL
+ * type for all of its attributes (properties whose ranges
+ * contain literals like strings, ints, booleans...).
+ */
 function createAttributes(
     classDescriptor: ClassDescriptor,
     t: ObjectDefinitionBlock<any>,
@@ -233,6 +274,11 @@ If you want pagination to return values in a stable order, you should also sort 
     }
 }
 
+/**
+ * For a given `ClassDescriptor`, create fields on its GraphQL
+ * type for all of its associations (properties whose ranges
+ * contain other object types).
+ */
 function createAssociations(
     classDescriptor: ClassDescriptor,
     t: ObjectDefinitionBlock<any>,
@@ -275,6 +321,9 @@ If you want pagination to return values in a stable order, you should also sort 
     }
 }
 
+/**
+ * Define common fields which are present on every object type.
+ */
 function createCommonClassFields(t: ObjectDefinitionBlock<any>) {
     t.string('_rdf_iri', {
         description: 'IRI representing this particular object.',

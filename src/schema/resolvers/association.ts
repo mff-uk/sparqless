@@ -6,6 +6,9 @@ import { EndpointClient } from '../../observation/client';
 import { addSortLimitOffsetArgs } from './array_args';
 import { createClassResolver } from './class';
 
+/**
+ * Resolver factory for associations, i.e. fields which refer to other classes.
+ */
 export function createAssociationResolver(
     resolverConfig: {
         associationDescriptor: AssociationDescriptor;
@@ -47,7 +50,7 @@ export function createAssociationResolver(
                 {
                     isArrayType: false,
                     areFieldsOptional: true,
-                    instanceIRI: instanceIRI,
+                    instanceIri: instanceIRI,
                 },
                 config,
             )(parent, args, context, info);
@@ -80,6 +83,13 @@ export function createAssociationResolver(
     );
 }
 
+/**
+ * For a class instance with a given IRI, query
+ * the SPARQL endpoint to check the actual type
+ * of this instance. This is because some associations
+ * may have multiple target types, so we need to find out
+ * which type the instance actually belongs to.
+ */
 async function resolveTargetClassType(
     instanceIRI: string,
     resolverConfig: {

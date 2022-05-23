@@ -58,6 +58,7 @@ and it can contain the following values:
 ```ts
 interface ObservationConfig {
     maxPropertyCount: number | undefined;
+    propertySampleSize: number | undefined;
     ontologyPrefixIri: string;
     shouldDetectNonArrayProperties: boolean | undefined;
     shouldCountProperties: boolean | undefined;
@@ -71,6 +72,17 @@ from the very start, it is recommended to set this value. It will **significantl
 speed up observations on large datasets. A good default value is `1000`,
 and for best results, combine this value with [hot reloading](hot_reloading.md),
 where each iteration of hot reloading increases it by an order of magnitude.
+
+When analyzing the range for each attribute and association,
+a sample of up to `propertySampleSize` occurences is selected,
+and their types are used to determine that property's type.
+Setting `propertySampleSize` is highly recommended, with
+a reasonable default being `100` or `1000`. While this setting
+may in some rare cases lead to the generated schema missing
+some return types for some properties, leaving it unlimited
+may result in errors during observation for large datasets,
+where the process is unable to allocate enough memory
+to hold all of the observations.
 
 `ontologyPrefixIri` sets the IRI for the ontology created during observation.
 You should not need to modify this value from the default

@@ -111,7 +111,9 @@ export class SPARQL2GraphQL {
         observerManager.subscribe(new PropertyCountObserver());
         observerManager.subscribe(new PartialFunctionPropertyObserver());
 
-        config.logger?.info('Observing endpoint, this may take a while...');
+        config.logger?.info(
+            `Observing endpoint "${config.endpoint.name}", this may take a while...`,
+        );
         const observations: Observations = await observerManager.runObservers();
         return observations;
     }

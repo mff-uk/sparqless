@@ -6,15 +6,19 @@ export function getPropertyDescription(
     propertyType: string,
     maxPropertyCount: number | undefined,
 ): string {
-    return `This ${propertyType} has ${property.count}${
-        property.count === maxPropertyCount ? '+' : ''
-    } occurence${property.count === 1 ? '' : 's'}.\n
+    return `This ${propertyType} has ${
+        property.count === 0 ? 'an unknown number of' : property.count
+    }${property.count === maxPropertyCount ? '+' : ''} occurence${
+        property.count === 1 ? '' : 's'
+    }.\n
 Original IRI is ${property.iri}.`;
 }
 
 export function getClassDescription(classDescriptor: ClassDescriptor): string {
     return `Generated SPARQL class with ${
-        classDescriptor.numberOfInstances
+        classDescriptor.numberOfInstances === 0
+            ? 'an unknown number of'
+            : classDescriptor.numberOfInstances
     } instance${classDescriptor.numberOfInstances === 1 ? '' : 's'}.\n
 Original IRI is ${classDescriptor.iri}.`;
 }

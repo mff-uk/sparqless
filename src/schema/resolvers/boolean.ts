@@ -1,6 +1,9 @@
 import { Literal } from '@rdfjs/types';
 import { FieldResolver } from 'nexus';
 
+/**
+ * Resolver factory for booleans.
+ */
 export function createBooleanResolver(resolverConfig: {
     isArrayType: boolean;
 }): FieldResolver<string, string> {

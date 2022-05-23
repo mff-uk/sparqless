@@ -42,6 +42,7 @@ export class AttributeObserver implements EndpointObserver {
                 config.ontologyPrefixIri,
                 classIri,
                 propertyIri,
+                config.propertySampleSize ?? 0,
             );
             const result = await client.runConstructQuery(query);
             resultQuads.push(...result.quads);
@@ -50,11 +51,11 @@ export class AttributeObserver implements EndpointObserver {
         return groupObservations(resultQuads, config);
     }
 
-    // TODO: allow deepening of property number search?
     private buildQuery = (
         prefix: string,
         classIri: string,
         propertyIri: string,
+        sampleSize: number,
     ) =>
         `PREFIX se: <${prefix}>
         CONSTRUCT {
@@ -67,12 +68,14 @@ export class AttributeObserver implements EndpointObserver {
             {
                 SELECT ?targetLiteral
                 WHERE {
-                    ?instance
-                        a <${classIri}> ;
-                        <${propertyIri}> ?targetLiteral .
-                    FILTER isLiteral(?targetLiteral) 
+                    GRAPH ?g {
+                        ?instance
+                            a <${classIri}> ;
+                            <${propertyIri}> ?targetLiteral .
+                        FILTER isLiteral(?targetLiteral) 
+                    }
                 }
-                LIMIT 1000
+                ${sampleSize > 0 ? `LIMIT ${sampleSize}` : ''}
             } 
         }`;
 }

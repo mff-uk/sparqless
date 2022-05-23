@@ -67,28 +67,30 @@ export class PropertyCountObserver implements EndpointObserver {
     ) =>
         `PREFIX se: <${prefix}>
             CONSTRUCT {
-              []
-                a se:PropertyCountObservation ;
-                se:countedProperty <${propertyIri}> ;
-                se:countedPropertySourceClass <${classIri}> ;
-                se:numberOfPropertyInstances ?numberOfInstances .
+                []
+                    a se:PropertyCountObservation ;
+                    se:countedProperty <${propertyIri}> ;
+                    se:countedPropertySourceClass <${classIri}> ;
+                    se:numberOfPropertyInstances ?numberOfInstances .
             }
             WHERE
             {
-              {
-                SELECT (COUNT(*) AS ?numberOfInstances)
-                WHERE {
-                  {
-                    SELECT ?value
-                    WHERE
-                    {
-                      ?instance
-                        a <${classIri}> ;
-                        <${propertyIri}> ?value .
+                {
+                    SELECT (COUNT(*) AS ?numberOfInstances)
+                    WHERE {
+                        {
+                            SELECT ?value
+                            WHERE
+                            {
+                                GRAPH ?g {
+                                    ?instance
+                                        a <${classIri}> ;
+                                        <${propertyIri}> ?value .
+                                }
+                            }
+                            ${maxCount > 0 ? `LIMIT ${maxCount}` : ''}
+                        }
                     }
-                    ${maxCount > 0 ? `LIMIT ${maxCount}` : ''}
-                  }
                 }
-              }
             }`;
 }
