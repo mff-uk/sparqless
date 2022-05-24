@@ -126,8 +126,8 @@ GraphQL schema into a file and do something else with it, rather than
 starting a GraphQL endpoint.</p>
 <h2 id="edit-configuration">Edit configuration</h2>
 <p>There is one required configuration step before you run the library - configuring
-the SPARQL endpoint you want to run. In <code>src/api/config.ts</code>, set the value
-<code>ENDPOINT_TO_RUN</code> to refer to your endpoint. There is a pre-defined list of known
+the SPARQL endpoint you want to run. This is done by creating a <code>Config</code> object,
+which you will pass to SPARQL2GraphQL functions. There is a pre-defined list of known
 online and working endpoints in <code>src/observation/endpoints.ts</code> in case you just want
 to try the project without having a specific SPARQL endpoint in mind, but you can
 easily define your own.</p>
@@ -136,8 +136,8 @@ easily define your own.</p>
 
 const config: Config = {
     endpoint: {
-        url: 'https://dev.nkod.opendata.cz/sparql',
-        name: 'NKOD',
+        url: 'https://data.gov.cz/sparql',
+        name: 'CZ Government Open Data',
     },
     logger: SIMPLE_LOGGER,
 };
@@ -150,8 +150,9 @@ but the <code>SIMPLE_LOGGER</code> defined in <code>src/api/config.ts</code> def
 logger which logs the most important messages to the console.</p>
 <p>There are other configuration values in <code>Config</code> which you are free to modify, but they have
 sensible defaults in case you just want to get started. If you want to find out
-more about additional configuration options, they are documented in the
-configuration file itself.</p>
+more about additional configuration options, you can refer to the
+<a href="../configuration/">configuration guide</a>. Alternatively, you can examine
+their definition in the code, where they are also documented.</p>
 <h2 id="run-it">Run it</h2>
 <p>Putting together the above code examples is enough to start a SPARQL2GraphQL instance,
 which will observe the configured SPARQL endpoint and convert it to a GraphQL one.
@@ -162,8 +163,8 @@ In that case, edit your configuration there.</p>
 <p>In the logs, you will see that it will first run some observations on the target
 endpoint to collect information about its schema and the data contained within.
 This may take a while, especially for large datasets, depending on the configuration
-parameters used. As an example, the <a href="https://data.gov.cz/english/">NKOD</a> endpoint
-shown in the configuraiton above takes about 2 minutes to have a fully functional
+parameters used. As an example, the <a href="https://data.gov.cz/english/">CZ Government open data</a> endpoint
+shown in the configuraiton above takes under 10 minutes to have a fully functional
 GraphQL instance running.</p>
 <p>After observation is finished, you will see that a fully functional GraphQL interface is
 available for you to explore and query at the configured port
@@ -194,7 +195,7 @@ about GraphQL <a href="https://graphql.org/learn/">here</a>.</p>
 or using the graphical query editor to compose the query.</p>
 <p><img alt="GraphQL querying" src="../img/querying.png"/></p>
 <p><strong>NOTE:</strong> be careful running queries which have an unlimited result size!
-If your SPARQL endpoint contains a very large dataset, the query could either
+If your SPARQL endpoint contains a large dataset, the query could either
 run for a <em>very</em> long time, or it might just fail due to a timeout.
 You should use the <code>limit</code> and <code>offset</code> parameters provided in each query
 field as shown in the image above.</p>
