@@ -16,9 +16,9 @@ export class ObservationParser {
     constructor(private config: Config) {}
 
     /**
-     * Build our class model using the provided observations.
+     * Build the class model using the provided observations.
      *
-     * @param observations Results of `EndpointObserver`'s observation of a SPARQL endpoint.
+     * @param observations RDF results of observation of a SPARQL endpoint.
      * @return Complete object model of the observed data.
      */
     buildEndpointModel(observations: Observations): DataModel {

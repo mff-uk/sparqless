@@ -47,9 +47,11 @@ function resolveNameConflict(descriptors: ResourceDescriptor[]) {
     // adding that as a prefix to the conflicting names.
     // We have to take care to remove leading numbers since
     // leading numbers are not allowed in GraphQL identifiers.
-    const prefixedNames = descriptors.map((x) =>
-        convertIRIToLongName(x.iri.split(/[/#]/).slice(-2).join('_')),
-    ).map(x => x.replace(/^[\d_]*/, ''));
+    const prefixedNames = descriptors
+        .map((x) =>
+            convertIRIToLongName(x.iri.split(/[/#]/).slice(-2).join('_')),
+        )
+        .map((x) => x.replace(/^[\d_]*/, ''));
     if (new Set(prefixedNames).size === prefixedNames.length) {
         // No conflicts with prefixed names, so we can use them
         for (let i = 0; i < prefixedNames.length; i++) {

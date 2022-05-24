@@ -24,7 +24,7 @@ import { DataModel } from '../models/data_model';
  * Generate a complete GraphQL schema from class descriptors.
  * The schema also contains the definitions of resolvers,
  * which are functions that are responsible for fetching queried data.
- * 
+ *
  * This schema may then be used by a GraphQL server.
  *
  * @param model Class descriptors describing the SPARQL endpoint.
@@ -83,7 +83,7 @@ function createEndpointTypes(
 /**
  * Create the root `Query` type, which is a special GraphQL
  * type used as the root of all GraphQL queries.
- * 
+ *
  * Every field on this type is available at the query root.
  */
 function createQueryType(
@@ -126,7 +126,7 @@ If you want pagination to return values in a stable order, you should also sort 
 
 /**
  * Create additional GraphQL types which are needed in the endpoint.
- * 
+ *
  * The types created here are typically types which would normally be created
  * on-demand by some field definitions (i.e. language-tagged strings or unions).
  * However, field factory functions cannot define new types inside them,

@@ -9,11 +9,11 @@ import { EndpointClient } from '../../observation/client';
 
 /**
  * Resolver factory for classes.
- * 
+ *
  * Each class has its own resolver, because the resolver
  * needs to know which fields the class may have,
  * and how to query those fields in a SPARQL query.
- * 
+ *
  * @param resolverConfig `isArrayType` determines whether the
  * created resolver should return potentially multiple values,
  * or just one. `areFieldsOptional` is a toggle which specifies
@@ -21,7 +21,7 @@ import { EndpointClient } from '../../observation/client';
  * be treated as optional or mandatory. If they are treated
  * as mandatory, only objects which contain all queries fields
  * will be returned. `instanceIri`, if specified, will limit
- * the results to only the class with the specified IRI. 
+ * the results to only the class with the specified IRI.
  */
 export function createClassResolver(
     classDescriptor: ClassDescriptor,
@@ -124,7 +124,7 @@ function getQueryVars(
  * Query the SPARQL endpoint for the IRIs of instances
  * of the requested class. This query is necessary
  * to implement sorting, filtering, limit and offset.
- * 
+ *
  * It is also necessary in case the requested fields
  * are mandatory, and we only want objects where
  * all of the requested fields are present to be
