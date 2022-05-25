@@ -3,17 +3,20 @@ import { FieldResolver } from 'nexus';
 import { Config } from '../../api/config';
 import { AssociationDescriptor } from '../../models/association';
 import { EndpointClient } from '../../observation/client';
+import { objectIriComparator } from '../utils';
 import { addSortLimitOffsetArgs } from './array_args';
 import { createClassResolver } from './class';
+
+interface AssociationResolverConfig {
+    associationDescriptor: AssociationDescriptor;
+    isArrayType: boolean;
+}
 
 /**
  * Resolver factory for associations, i.e. fields which refer to other classes.
  */
 export function createAssociationResolver(
-    resolverConfig: {
-        associationDescriptor: AssociationDescriptor;
-        isArrayType: boolean;
-    },
+    resolverConfig: AssociationResolverConfig,
     config: Config,
 ): FieldResolver<string, string> {
     const resolver = async (
@@ -27,22 +30,22 @@ export function createAssociationResolver(
             return undefined;
         }
 
-        const instanceIRIs: string[] = values.map((x: any) => x.value.value);
+        const instanceIris: string[] = values.map((x: any) => x.value.value);
 
         const resolvedInstances: any[] = [];
-        for (const instanceIRI of instanceIRIs) {
-            const typeIRI = await resolveTargetClassType(
-                instanceIRI,
+        for (const instanceIri of instanceIris) {
+            const typeIri = await resolveTargetClassType(
+                instanceIri,
                 resolverConfig,
                 config,
             );
-            if (!typeIRI) {
+            if (!typeIri) {
                 continue;
             }
 
             const targetClassDescriptor =
                 resolverConfig.associationDescriptor.targetClasses.find(
-                    (x) => x.iri === typeIRI,
+                    (x) => x.iri === typeIri,
                 )!;
 
             const resolvedInstance = await createClassResolver(
@@ -50,7 +53,7 @@ export function createAssociationResolver(
                 {
                     isArrayType: false,
                     areFieldsOptional: true,
-                    instanceIri: instanceIRI,
+                    instanceIri: instanceIri,
                 },
                 config,
             )(parent, args, context, info);
@@ -68,17 +71,7 @@ export function createAssociationResolver(
 
     return addSortLimitOffsetArgs(
         resolver,
-        (a, b) => {
-            if (a._rdf_iri < b._rdf_iri) {
-                return -1;
-            }
-
-            if (a._rdf_iri > b._rdf_iri) {
-                return 1;
-            }
-
-            return 0;
-        },
+        objectIriComparator,
         resolverConfig,
     );
 }
@@ -91,24 +84,23 @@ export function createAssociationResolver(
  * which type the instance actually belongs to.
  */
 async function resolveTargetClassType(
-    instanceIRI: string,
-    resolverConfig: {
-        associationDescriptor: AssociationDescriptor;
-        isArrayType: boolean;
-    },
+    instanceIri: string,
+    resolverConfig: AssociationResolverConfig,
     config: Config,
 ): Promise<string | undefined> {
     const typeQuery = `
     SELECT ?class
     WHERE
     {
-        VALUES ( ?class )
-        {
-            ${resolverConfig.associationDescriptor.targetClasses
-                .map((x) => `( <${x.iri}> )`)
-                .join('\n')}
+        GRAPH ?g {
+            VALUES ( ?class )
+            {
+                ${resolverConfig.associationDescriptor.targetClasses
+                    .map((x) => `( <${x.iri}> )`)
+                    .join('\n')}
+            }
+            <${instanceIri}> a ?class .
         }
-        <${instanceIRI}> a ?class .
     }
     LIMIT 1`;
     const typeResults = await new EndpointClient(
@@ -116,9 +108,9 @@ async function resolveTargetClassType(
         config.logger,
     ).runSelectQuery(typeQuery);
 
-    const typeIRI: string | undefined = typeResults.map(
+    const typeIri: string | undefined = typeResults.map(
         (bindings) => bindings.class.value,
     )[0];
 
-    return typeIRI;
+    return typeIri;
 }

@@ -10,7 +10,7 @@ import { ResourceDescriptor } from '../../models/resource';
  *
  * @param descriptors Descriptors for which the names will be updated.
  */
-export function buildNamesFromIRIs(descriptors: ResourceDescriptor[]) {
+export function buildNamesFromIris(descriptors: ResourceDescriptor[]) {
     const nameDict: { [name: string]: ResourceDescriptor[] } = {};
 
     // Make a dictionary to detect conflicting short names.
@@ -19,11 +19,11 @@ export function buildNamesFromIRIs(descriptors: ResourceDescriptor[]) {
     // are present in the IRI. It will replace them with the accentless version,
     // rather than an underscore.
     for (const descriptor of descriptors) {
-        let shortName = convertIRIToLongName(
+        let shortName = convertIriToLongName(
             descriptor.iri.split(/[/#]/).slice(-1).pop()!,
         );
         if (!shortName) {
-            shortName = convertIRIToLongName(descriptor.iri);
+            shortName = convertIriToLongName(descriptor.iri);
         }
 
         if (nameDict[shortName]) {
@@ -49,7 +49,7 @@ function resolveNameConflict(descriptors: ResourceDescriptor[]) {
     // leading numbers are not allowed in GraphQL identifiers.
     const prefixedNames = descriptors
         .map((x) =>
-            convertIRIToLongName(x.iri.split(/[/#]/).slice(-2).join('_')),
+            convertIriToLongName(x.iri.split(/[/#]/).slice(-2).join('_')),
         )
         .map((x) => x.replace(/^[\d_]*/, ''));
     if (new Set(prefixedNames).size === prefixedNames.length) {
@@ -64,10 +64,10 @@ function resolveNameConflict(descriptors: ResourceDescriptor[]) {
     // long unique names. This could probably be improved to take only
     // as long of a name as necessary, not the whole IRI.
     for (const descriptor of descriptors) {
-        descriptor.name = convertIRIToLongName(descriptor.iri);
+        descriptor.name = convertIriToLongName(descriptor.iri);
     }
 }
 
-function convertIRIToLongName(iri: string): string {
+function convertIriToLongName(iri: string): string {
     return deburr(iri).replace(/[^_a-zA-Z0-9]/gi, '_');
 }

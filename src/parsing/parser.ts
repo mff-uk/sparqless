@@ -170,20 +170,20 @@ export class ObservationParser {
         for (const observation of observations[
             OntologyObservation.PropertyExistenceObservation
         ]!) {
-            const propertyIRI =
+            const propertyIri =
                 observation[OntologyProperty.PropertyIri]!.object.value;
-            const propertyClassIRI =
+            const propertyClassIri =
                 observation[OntologyProperty.PropertyOf]!.object.value;
             const classDescriptor = classes.find(
-                (x) => x.iri === propertyClassIRI,
+                (x) => x.iri === propertyClassIri,
             )!;
             const isPropertyDefined = [
                 ...classDescriptor.attributes,
                 ...classDescriptor.associations,
-            ].find((x) => x.iri === propertyIRI);
+            ].find((x) => x.iri === propertyIri);
             if (!isPropertyDefined) {
                 classDescriptor.attributes.push({
-                    iri: propertyIRI,
+                    iri: propertyIri,
                     name: '',
                     types: ['http://www.w3.org/2001/XMLSchema#string'],
                     languages: [],
@@ -232,12 +232,12 @@ export class ObservationParser {
         for (const observation of observations[
             OntologyObservation.PropertyIsAPartialFunctionObservation
         ]!) {
-            const propertyIRI =
+            const propertyIri =
                 observation[OntologyProperty.PartialFunctionProperty]!.object
                     .value;
             const propertyDescriptor = classes
                 .flatMap((x) => [...x.attributes, ...x.associations])
-                .find((x) => x.iri === propertyIRI);
+                .find((x) => x.iri === propertyIri);
 
             if (propertyDescriptor) {
                 propertyDescriptor.isArray = false;

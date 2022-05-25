@@ -22,3 +22,15 @@ export function getClassDescription(classDescriptor: ClassDescriptor): string {
     } instance${classDescriptor.numberOfInstances === 1 ? '' : 's'}.\n
 Original IRI is ${classDescriptor.iri}.`;
 }
+
+export const objectIriComparator = (a: any, b: any) => {
+    if (a._rdf_iri < b._rdf_iri) {
+        return -1;
+    }
+
+    if (a._rdf_iri > b._rdf_iri) {
+        return 1;
+    }
+
+    return 0;
+};

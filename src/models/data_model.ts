@@ -94,9 +94,9 @@ export class DataModel {
             (x: ClassDescriptor) => x.associations,
         )) {
             association.targetClasses = association.targetClasses.map(
-                (classIRI: string) =>
+                (classIri: string) =>
                     descriptors.find(
-                        (x: ClassDescriptor) => x.iri === classIRI,
+                        (x: ClassDescriptor) => x.iri === classIri,
                     )!,
             );
         }

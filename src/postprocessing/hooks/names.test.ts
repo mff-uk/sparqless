@@ -1,5 +1,5 @@
 import { ClassDescriptor } from '../../models/class';
-import { buildNamesFromIRIs } from './names';
+import { buildNamesFromIris } from './names';
 
 test('names postprocessing without conflicts shortens all names', () => {
     const class1: ClassDescriptor = {
@@ -24,7 +24,7 @@ test('names postprocessing without conflicts shortens all names', () => {
         numberOfInstances: 0,
     };
 
-    buildNamesFromIRIs([class1, class2, class3]);
+    buildNamesFromIris([class1, class2, class3]);
 
     expect(class1.name).toBe('Class');
     expect(class2.name).toBe('Property');
@@ -54,7 +54,7 @@ test('names postprocessing with conflicts shortens non-conflicting names', () =>
         numberOfInstances: 0,
     };
 
-    buildNamesFromIRIs([class1, class2, class3]);
+    buildNamesFromIris([class1, class2, class3]);
 
     expect(class1.name === class3.name).toBe(false);
     expect(class2.name).toBe('Property');

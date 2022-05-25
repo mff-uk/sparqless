@@ -33,7 +33,7 @@ export class QueryRunner {
                 quadCount += 1;
             });
             stream.on('end', () => {
-                console.log(`Got ${quadCount} quads.`);
+                // console.log(`Got ${quadCount} quads.`);
                 resolve(performance.now());
             });
             stream.on('error', (error) => {

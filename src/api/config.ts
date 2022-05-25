@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash';
 import winston from 'winston';
 import { DataModel } from '../models/data_model';
 import { SPARQLEndpointDefinition } from '../observation/endpoints';
-import { buildNamesFromIRIs } from '../postprocessing/hooks/names';
+import { buildNamesFromIris } from '../postprocessing/hooks/names';
 import { PostprocessingHookDict } from '../postprocessing/hook_types';
 
 /**
@@ -245,7 +245,7 @@ export const DEFAULT_OBSERVATION_CONFIG: ObservationConfig = {
 
 export const DEFAULT_POSTPROCESSING_CONFIG: PostprocessingConfig = {
     hooks: {
-        resource: [buildNamesFromIRIs],
+        resource: [buildNamesFromIris],
         class: [],
         property: [],
         association: [],
