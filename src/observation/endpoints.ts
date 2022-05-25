@@ -73,4 +73,8 @@ export const ENDPOINTS: SPARQLEndpointDefinition[] = [
         url: 'http://data.allie.dbcls.jp/sparql',
         name: 'Allie database of abbreviations in life sciences',
     },
+    {
+        url: 'https://data.gov.cz/sparql',
+        name: 'CZ Government Open Data',
+    },
 ];

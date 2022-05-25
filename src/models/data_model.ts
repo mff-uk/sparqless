@@ -3,9 +3,22 @@ import { Logger } from 'winston';
 import { ModelCheckpointConfig } from '../api/config';
 import { ClassDescriptor } from './class';
 
+/**
+ * Class describing the data model contained in the
+ * SPARQL endpoint using plain JavaScript classes.
+ */
 export class DataModel {
     constructor(public descriptors: ClassDescriptor[]) {}
 
+    /**
+     * Create a checkpoint from this data model on disk.
+     *
+     * This checkpoint is a JSON file describing the model,
+     * and it can later be loaded with `DataModel.loadCheckpoint()`
+     * to restore it. This means you can perform observations just once,
+     * save the resulting model, and next time just re-use the
+     * finished observations for a nearly instant startup time.
+     */
     createCheckpoint(config?: ModelCheckpointConfig, logger?: Logger) {
         if (!config?.saveModelToFile) {
             logger?.debug(
@@ -24,6 +37,10 @@ export class DataModel {
         writeFileSync(config.checkpointFilePath, stringifiedModel);
     }
 
+    /**
+     * Load a model checkpoint from disk, returning
+     * a new instance of `DataModel` with the checkpoint loaded.
+     */
     static loadCheckpoint(
         config?: ModelCheckpointConfig,
         logger?: Logger,
@@ -45,6 +62,13 @@ export class DataModel {
         return new DataModel(descriptors);
     }
 
+    /**
+     * Serialize the model's class descriptors to JSON.
+     *
+     * Since associations may create reference cycles,
+     * we have to serialize and deserialize these cyclical
+     * references explicitly as IRIs.
+     */
     toJSON(): string {
         const serializedModel = JSON.stringify(
             this.descriptors,
@@ -60,6 +84,9 @@ export class DataModel {
         return serializedModel;
     }
 
+    /**
+     * Deserialize class descriptors from JSON.
+     */
     static fromJSON(json: string): ClassDescriptor[] {
         const descriptors = JSON.parse(json);
 
@@ -67,9 +94,9 @@ export class DataModel {
             (x: ClassDescriptor) => x.associations,
         )) {
             association.targetClasses = association.targetClasses.map(
-                (classIRI: string) =>
+                (classIri: string) =>
                     descriptors.find(
-                        (x: ClassDescriptor) => x.iri === classIRI,
+                        (x: ClassDescriptor) => x.iri === classIri,
                     )!,
             );
         }

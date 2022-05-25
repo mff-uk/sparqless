@@ -55,9 +55,11 @@ export class PropertyObserver implements EndpointObserver {
           {
             SELECT DISTINCT ?property
             WHERE {
-              ?instance
-                a <${classIri}> ;
-                ?property ?value .
+              GRAPH ?g {
+                ?instance
+                  a <${classIri}> ;
+                  ?property ?value .
+              }
             }
           }
         }`;

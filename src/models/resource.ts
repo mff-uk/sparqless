@@ -1,3 +1,8 @@
+/**
+ * Describes any RDF resource, i.e. anything with an IRI.
+ *
+ * The `name` field represents a GraphQL compatible identifier.
+ */
 export interface ResourceDescriptor {
     iri: string;
 

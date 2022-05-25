@@ -91,11 +91,13 @@ export class PartialFunctionPropertyObserver implements EndpointObserver {
                 {
                     FILTER NOT EXISTS
                     {
-                        ?instance
-                            a <${classIri}> ;
-                            ?property ?value1 ;
-                            ?property ?value2 .
-                        FILTER(?value1 != ?value2)
+                        GRAPH ?g {
+                            ?instance
+                                a <${classIri}> ;
+                                ?property ?value1 ;
+                                ?property ?value2 .
+                            FILTER(?value1 != ?value2)
+                        }
                     }
                 }
             }

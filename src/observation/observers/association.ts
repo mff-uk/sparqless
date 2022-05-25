@@ -42,6 +42,7 @@ export class AssociationObserver implements EndpointObserver {
                 config.ontologyPrefixIri,
                 classIri,
                 propertyIri,
+                config.propertySampleSize ?? 0,
             );
             const result = await client.runConstructQuery(query);
             resultQuads.push(...result.quads);
@@ -54,6 +55,7 @@ export class AssociationObserver implements EndpointObserver {
         prefix: string,
         classIri: string,
         propertyIri: string,
+        sampleSize: number,
     ) =>
         `PREFIX se: <${prefix}>
         CONSTRUCT {
@@ -66,13 +68,15 @@ export class AssociationObserver implements EndpointObserver {
             {
                 SELECT ?targetClass
                 WHERE {
-                    ?instance
-                        a <${classIri}> ;
-                        <${propertyIri}> ?targetResource .
+                    GRAPH ?g {
+                        ?instance
+                            a <${classIri}> ;
+                            <${propertyIri}> ?targetResource .
                     
-                    ?targetResource a ?targetClass .
+                        ?targetResource a ?targetClass .
+                    }
                 }
-                LIMIT 1000
+                ${sampleSize > 0 ? `LIMIT ${sampleSize}` : ''}
             } 
         }`;
 }

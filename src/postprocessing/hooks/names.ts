@@ -10,7 +10,7 @@ import { ResourceDescriptor } from '../../models/resource';
  *
  * @param descriptors Descriptors for which the names will be updated.
  */
-export function buildNamesFromIRIs(descriptors: ResourceDescriptor[]) {
+export function buildNamesFromIris(descriptors: ResourceDescriptor[]) {
     const nameDict: { [name: string]: ResourceDescriptor[] } = {};
 
     // Make a dictionary to detect conflicting short names.
@@ -19,11 +19,11 @@ export function buildNamesFromIRIs(descriptors: ResourceDescriptor[]) {
     // are present in the IRI. It will replace them with the accentless version,
     // rather than an underscore.
     for (const descriptor of descriptors) {
-        let shortName = deburr(
+        let shortName = convertIriToLongName(
             descriptor.iri.split(/[/#]/).slice(-1).pop()!,
-        ).replace(/[^_a-zA-Z0-9]/gi, '_');
+        );
         if (!shortName) {
-            shortName = convertIRIToLongName(descriptor.iri);
+            shortName = convertIriToLongName(descriptor.iri);
         }
 
         if (nameDict[shortName]) {
@@ -37,16 +37,37 @@ export function buildNamesFromIRIs(descriptors: ResourceDescriptor[]) {
         if (descriptors.length === 1) {
             descriptors[0].name = shortName;
         } else {
-            // In case of conflict of short name between classes, just give them all
-            // long unique names. This could probably be improved to take only
-            // as long of a name as necessary, not the whole IRI.
-            for (const descriptor of descriptors) {
-                descriptor.name = convertIRIToLongName(descriptor.iri);
-            }
+            resolveNameConflict(descriptors);
         }
     }
 }
 
-function convertIRIToLongName(iri: string): string {
+function resolveNameConflict(descriptors: ResourceDescriptor[]) {
+    // Try taking the last IRI segment before the resource name and
+    // adding that as a prefix to the conflicting names.
+    // We have to take care to remove leading numbers since
+    // leading numbers are not allowed in GraphQL identifiers.
+    const prefixedNames = descriptors
+        .map((x) =>
+            convertIriToLongName(x.iri.split(/[/#]/).slice(-2).join('_')),
+        )
+        .map((x) => x.replace(/^[\d_]*/, ''));
+    if (new Set(prefixedNames).size === prefixedNames.length) {
+        // No conflicts with prefixed names, so we can use them
+        for (let i = 0; i < prefixedNames.length; i++) {
+            descriptors[i].name = prefixedNames[i];
+        }
+        return;
+    }
+
+    // In case of conflict of even prefixed name between descriptors, just give them all
+    // long unique names. This could probably be improved to take only
+    // as long of a name as necessary, not the whole IRI.
+    for (const descriptor of descriptors) {
+        descriptor.name = convertIriToLongName(descriptor.iri);
+    }
+}
+
+function convertIriToLongName(iri: string): string {
     return deburr(iri).replace(/[^_a-zA-Z0-9]/gi, '_');
 }

@@ -17,6 +17,7 @@ const config: Config = {
     logger: SIMPLE_LOGGER,
     observation: {
         maxPropertyCount: 1000,
+        propertySampleSize: 1000,
         ontologyPrefixIri: 'http://skodapetr.eu/ontology/sparql-endpoint/',
         shouldCountProperties: true,
         shouldDetectNonArrayProperties: true,
