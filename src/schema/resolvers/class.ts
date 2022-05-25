@@ -104,7 +104,9 @@ function getQueryVars(
     }
     const requestedFieldNames = Object.values(
         resolveInfo.fieldsByTypeName[classDescriptor.name],
-    ).map(x => x.name).filter((x) => !['_rdf_type', '_rdf_iri'].includes(x));
+    )
+        .map((x) => x.name)
+        .filter((x) => !['_rdf_type', '_rdf_iri'].includes(x));
     const classProperties = [
         ...classDescriptor.attributes,
         ...classDescriptor.associations,

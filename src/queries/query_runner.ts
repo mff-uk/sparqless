@@ -28,9 +28,9 @@ export class QueryRunner {
 
     private measureQueryEnd(stream: Stream<Quad>): Promise<number> {
         return new Promise((resolve, reject) => {
-            let quadCount = 0;
+            // let quadCount = 0;
             stream.on('data', (_quad) => {
-                quadCount += 1;
+                // quadCount += 1;
             });
             stream.on('end', () => {
                 // console.log(`Got ${quadCount} quads.`);
