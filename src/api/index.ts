@@ -129,6 +129,11 @@ export class SPARQL2GraphQL {
         schema: NexusGraphQLSchema,
         config: Config,
     ): Promise<ApolloServer> {
+        this.updateSchemaDescription(
+            schema,
+            0,
+            config.hotReload?.isEnabled ?? false,
+        );
         config.logger?.info('Starting GraphQL server...');
         const server = new ApolloServer({
             schema,
@@ -183,8 +188,9 @@ export class SPARQL2GraphQL {
             let iteration = 0;
 
             while (true) {
+                iteration++;
                 config.logger?.info(
-                    `Generating new GraphQL schema - iteration ${iteration++}...`,
+                    `Generating new GraphQL schema - iteration ${iteration}...`,
                 );
                 currentObservationConfig = hotReloadConfig.configIterator(
                     currentObservationConfig,
@@ -206,20 +212,32 @@ export class SPARQL2GraphQL {
                             observation: currentObservationConfig,
                             modelCheckpoint: checkpointConfig,
                         });
-                    await this.updateServerSchema(server, newSchema);
-                    config.logger?.info('GraphQL schema has been updated!');
 
                     const shouldContinue = hotReloadConfig.shouldIterate(
                         currentObservationConfig,
                         previousModel,
                         newModel,
                     );
+
+                    this.updateSchemaDescription(
+                        newSchema,
+                        iteration,
+                        shouldContinue,
+                    );
+                    await this.updateServerSchema(server, newSchema);
+                    config.logger?.info('GraphQL schema has been updated!');
+
                     if (!shouldContinue) {
                         config.logger?.info('Schema reloading is finished.');
                         break;
                     }
                     previousModel = newModel;
                 } catch (error) {
+                    // It is not currently possible to update the server schema from here,
+                    // which would be nice to do in case the reloading fails,
+                    // to update the schema description to reflect that.
+                    // In case of a refactor in the future, we should consider also
+                    // implementing that.
                     config.logger?.error(
                         `Schema reload failed: ${error}. Stopping hot reload.`,
                     );
@@ -246,5 +264,32 @@ export class SPARQL2GraphQL {
         ).generateSchemaDerivedData(schema);
         set(server, 'schema', schema);
         set(server, 'state.schemaManager.schemaDerivedData', schemaDerivedData);
+    }
+
+    /**
+     * Update the root Query type's description in the GraphQL schema to reflect
+     * information about the current schema, i.e. which version it is and whether
+     * a new version will be created.
+     *
+     * @param schema GraphQL schema to update
+     * @param iteration Iteration of hot reloading
+     * @param willIterate `true` if hot reloading will continue, otherwise `false`
+     */
+    private updateSchemaDescription(
+        schema: NexusGraphQLSchema,
+        iteration: number,
+        willIterate: boolean,
+    ) {
+        const description = `Schema version ${iteration} generated at ${new Date()}.\n
+${
+    willIterate
+        ? 'Hot reloading is still running, so the schema may be updated in the future.'
+        : 'This is the final version of the schema.'
+}`;
+
+        const queryType = schema.getQueryType();
+        if (queryType) {
+            queryType.description = description;
+        }
     }
 }
