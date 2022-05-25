@@ -60,14 +60,14 @@ we would have the following class descriptors:
 ```ts
 [
     {
-        iri: 'http://example.com/dog',
+        iri: 'http://example.com/Dog',
         name: 'Dog',
         numberOfInstances: 5,
         attributes: [],
         associations: [],
     },
     {
-        iri: 'http://example.com/cat',
+        iri: 'http://example.com/Cat',
         name: 'Cat',
         numberOfInstances: 10,
         attributes: [],
@@ -107,15 +107,17 @@ That would be modelled like so:
 
 ```ts
 {
-    iri: 'http://example.com/cat',
+    iri: 'http://example.com/Cat',
     name: 'Cat',
     numberOfInstances: 10,
     attributes: [],
     associations: [{
+        iri: 'http://example.com/friend',
+        name: 'friend',
         count: 10,
         isArray: false,
         targetClasses: [{
-            iri: 'http://example.com/dog',
+            iri: 'http://example.com/Dog',
             name: 'Dog',
             numberOfInstances: 5,
             attributes: [],
