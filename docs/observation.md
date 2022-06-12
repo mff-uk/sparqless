@@ -50,7 +50,7 @@ const observations: Observations = await observerManager.runObservers();
 ## Implemented observers
 
 While it is possible for library users to implement and use their own observers,
-some observers are pre-implemented to facilitate the main flow of SPARQL2GraphQL.
+some observers are pre-implemented to facilitate the main flow of SPARQLess.
 
 They each collect a single kind of observation from the ontology:
 

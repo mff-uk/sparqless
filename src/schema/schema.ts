@@ -28,7 +28,7 @@ import { DataModel } from '../models/data_model';
  * This schema may then be used by a GraphQL server.
  *
  * @param model Class descriptors describing the SPARQL endpoint.
- * @param config SPARQL2GraphQL configuration.
+ * @param config SPARQLess configuration.
  * @return Generated GraphQL schema.
  */
 export function createSchema(

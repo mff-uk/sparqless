@@ -8,7 +8,7 @@ import { PropertyDescriptor } from '../models/property';
  * A function which can be used as a postprocessing hook.
  *
  * Please refer to the postprocessing documentation
- * [here](https://yawnston.github.io/sparql2graphql/postprocessing/)
+ * [here](https://mff-uk.github.io/sparqless/postprocessing/)
  * to learn more.
  */
 export type PostprocessingHook<TDescriptor extends ResourceDescriptor> = (

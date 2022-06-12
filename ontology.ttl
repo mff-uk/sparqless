@@ -5,7 +5,7 @@
 
 se:Observation
     a rdfs:Class ;
-    rdfs:comment "Base class for all observations carried out by SPARQL2GraphQL."@en .
+    rdfs:comment "Base class for all observations carried out by SPARQLess."@en .
 
 
 se:ClassObservation

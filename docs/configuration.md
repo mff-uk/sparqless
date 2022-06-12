@@ -1,8 +1,8 @@
 # Configuration
 
-This page reviews and explains all available configuration options in SPARQL2GraphQL. Before you explore the individual
+This page reviews and explains all available configuration options in SPARQLess. Before you explore the individual
 configuration options, it is recommended that you familiarize
-yourself with the basic concepts in SPARQL2GraphQL described
+yourself with the basic concepts in SPARQLess described
 [here](overview.md).
 
 ## General configuration
@@ -23,7 +23,7 @@ interface Config {
 ```
 
 Only the `endpoint` property is mandatory, since it contains the SPARQL endpoint
-which you want SPARQL2GraphQL to run against. An endpoint looks like this:
+which you want SPARQLess to run against. An endpoint looks like this:
 
 ```ts
 {
@@ -37,17 +37,17 @@ very helpful to know what exactly is happening, since the bootstrapping
 process can take a very long time. The logging framework of choice
 is [winston](https://github.com/winstonjs/winston), so you are free to
 pass in any winston logger. However, if you want a sensible default,
-you can use the `DEFAULT_LOGGER` exposed by SPARQL2GraphQL.
+you can use the `DEFAULT_LOGGER` exposed by SPARQLess.
 
 ## Specialized configuration
 
 The remaining configuration values are more specialized,
-and they affect individual components of SPARQL2GraphQL.
+and they affect individual components of SPARQLess.
 
 All of these options have sane default values, so it is
 recommended to first try not defining them (and thereby
 using the defaults). If you find that you want to adjust
-the behavior of SPARQL2GraphQL afterwards, then you can
+the behavior of SPARQLess afterwards, then you can
 look into modifying these values.
 
 ### Observation

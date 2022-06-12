@@ -5,7 +5,7 @@ is undesirable to have to wait for the entire observation
 phase to happen again every time you want to start the GraphQL
 endpoint.
 
-Therefore SPARQL2GraphQL allows you to use the following
+Therefore SPARQLess allows you to use the following
 options to save the generated data model to disk,
 and then later reuse it instead of carrying out observations
 again.
@@ -30,6 +30,6 @@ If the file already exists and `overwriteFile` is set to `false`,
 the file will not be overwritten by the new checkpoint.
 
 If `loadModelFromCheckpoint` is set to `true`, at startup,
-SPARQL2GraphQL will check whether the checkpoint exists.
+SPARQLess will check whether the checkpoint exists.
 If it does, then it will use the model checkpoint rather than
 carrying out observations again.

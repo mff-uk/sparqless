@@ -1,5 +1,5 @@
 {
-  "name": "@yawnston/sparql2graphql",
+  "name": "@mff-uk/sparqless",
   "version": "0.0.1",
   "description": "Seamlessly create a GraphQL endpoint facade for a SPARQL endpoint, no RDF knowledge required.",
   "main": "src/main.js",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yawnston/sparql2graphql.git"
+    "url": "git+https://github.com/mff-uk/sparqless.git"
   },
   "keywords": [
     "graphql",
@@ -26,14 +26,14 @@
     "linked-data",
     "open-data",
     "linked-open-data",
-    "sparql2graphql"
+    "sparqless"
   ],
-  "author": "Daniel Crha",
+  "author": "Daniel Crha (github.com/yawnston)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/yawnston/sparql2graphql/issues"
+    "url": "https://github.com/mff-uk/sparqless/issues"
   },
-  "homepage": "https://yawnston.github.io/sparql2graphql/",
+  "homepage": "https://mff-uk.github.io/sparqless/",
   "devDependencies": {
     "@babel/preset-env": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",

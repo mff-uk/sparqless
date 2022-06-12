@@ -26,4 +26,4 @@ COPY --from=build /app/out ./out
 EXPOSE 4000
 # Don't forget to specify the `SPARQL_ENDPOINT` environment
 # variable when running the container!
-CMD [ "node", "out/src/main.js" ]
+CMD [ "node", "out/src/docker_main.js" ]

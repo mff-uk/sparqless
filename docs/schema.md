@@ -16,7 +16,7 @@ to fit that schema. However, automatically generating a schema
 in the GraphQL schema language is quite cumbersome and involves
 a lot of string manipulation.
 
-Therefore SPARQL2GraphQL uses [GraphQL Nexus](https://nexusjs.org/)
+Therefore SPARQLess uses [GraphQL Nexus](https://nexusjs.org/)
 as a way to define the GraphQL schema. GraphQL Nexus is a library which
 facilitates code-first, declarative schema declarations. This means that
 defining the GraphQL schema is a matter of converting each `ClassDescriptor`

@@ -1,6 +1,6 @@
-site_name: SPARQL2GraphQL
-site_url: https://yawnston.github.io/sparql2graphql/
-repo_url: https://github.com/yawnston/sparql2graphql
+site_name: SPARQLess
+site_url: https://mff-uk.github.io/sparqless/
+repo_url: https://github.com/mff-uk/sparqless
 
 nav:
   - Home: 'index.md'

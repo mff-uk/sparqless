@@ -6,14 +6,14 @@ import { buildNamesFromIris } from '../postprocessing/hooks/names';
 import { PostprocessingHookDict } from '../postprocessing/hook_types';
 
 /**
- * Configuration for SPARQL2GraphQL. Setting the `endpoint` property
+ * Configuration for SPARQLess. Setting the `endpoint` property
  * is **mandatory**, the other configurations can be left `undefined`.
  * In that case, a default configuration will be used for those
  * configurations.
  */
 export interface Config {
     /**
-     * Select which SPARQL endpoint that SPARQL2GraphQL will run on - you can
+     * Set the SPARQL endpoint that SPARQLess will run on - you can
      * define your own endpoint like so:
      *
      * ```
@@ -30,7 +30,7 @@ export interface Config {
 
     /**
      * A [winston](https://github.com/winstonjs/winston) `Logger` to be used
-     * for logging everything SPARQL2GraphQL does. If `undefined`, nothing
+     * for logging everything SPARQLess does. If `undefined`, nothing
      * will be logged.
      *
      * A sane pre-configured console logger is also available as `SIMPLE_LOGGER`,
@@ -61,7 +61,7 @@ export interface Config {
 
     /**
      * Configuration of model checkpointing. Without checkpointing, every time
-     * SPARQL2GraphQL is started, observations have to be performed again
+     * SPARQLess is started, observations have to be performed again
      * in order to build the data model. This can take a considerable amount
      * of time.
      *
@@ -165,7 +165,7 @@ export interface ServerConfig {
 
 export interface ModelCheckpointConfig {
     /**
-     * Set to `true` if you want SPARQL2GraphQL to load the model
+     * Set to `true` if you want SPARQLess to load the model
      * from the file configured in `checkpointFilePath`.
      * If this is set to `true` and the file does not exist,
      * observations will be made as normal.
@@ -226,7 +226,7 @@ export const SIMPLE_LOGGER = winston.createLogger({
     level: 'debug',
     transports: [new winston.transports.Console()],
     format: winston.format.combine(
-        winston.format.label({ label: 'SPARQL2GraphQL' }),
+        winston.format.label({ label: 'SPARQLess' }),
         winston.format.timestamp(),
         winston.format.colorize(),
         winston.format.printf(({ level, message, label, timestamp }) => {

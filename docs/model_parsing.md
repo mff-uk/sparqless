@@ -11,7 +11,7 @@ This parsing algorithm is not the only possible parsing algorithm for the
 observations we are collecting. Observations are simply pieces of information
 to be interpreted, and there are many ways of interpreting that information.
 The parsing algorithm implemented is simply one which uses all of the observations
-SPARQL2GraphQL is currently collecting efficiently. There are currently
+SPARQLess is currently collecting efficiently. There are currently
 no plans to let library users specify custom parsing algorithms, but should
 the need arise, the library design is modular enough to allow it.
 
