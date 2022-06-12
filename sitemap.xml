@@ -16,6 +16,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://mff-uk.github.io/sparqless/docker/</loc>
+         <lastmod>2022-06-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://mff-uk.github.io/sparqless/editing_documentation/</loc>
          <lastmod>2022-06-12</lastmod>
          <changefreq>daily</changefreq>

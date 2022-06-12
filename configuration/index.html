@@ -138,6 +138,7 @@ and it can contain the following values:</p>
     ontologyPrefixIri: string;
     shouldDetectNonArrayProperties: boolean | undefined;
     shouldCountProperties: boolean | undefined;
+    observationsOutputPath: string | undefined;
 }
 </code></pre>
 <p><code>maxPropertyCount</code> sets a maximum number of properties to be examined
@@ -173,6 +174,10 @@ will enable the counting of properties, otherwise their counts will be set to <c
 but to set them to <code>true</code> in the <a href="../hot_reloading/">hot reloading</a> config.
 That way, the necessary observations will be carried out in the background while
 you can already explore and query the dataset.</p>
+<p>If set, <code>observationsOutputPath</code> dictates the path to which the collected observations
+should be written. They are saved as a <a href="https://en.wikipedia.org/wiki/Turtle_(syntax)">Turtle</a> RDF file,
+so a <code>.ttl</code> suffix is recommended. If this option is <code>undefined</code>, the observations will not
+be saved to disk.</p>
 <h3 id="postprocessing">Postprocessing</h3>
 <p>Read more about postprocessing <a href="../postprocessing/">here</a>.</p>
 <h3 id="schema">Schema</h3>

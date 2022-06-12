@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html class="writer-html5" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://mff-uk.github.io/sparqless/docker/" rel="canonical"/>
+<link href="../img/favicon.ico" rel="shortcut icon"/>
+<title>Running SPARQLess in Docker - SPARQLess</title>
+<link href="../css/theme.css" rel="stylesheet"/>
+<link href="../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
+<script>
+        // Current page data
+        var mkdocs_page_name = "Running SPARQLess in Docker";
+        var mkdocs_page_input_path = "docker.md";
+        var mkdocs_page_url = "/sparqless/docker/";
+      </script>
+<script defer="" src="../js/jquery-3.6.0.min.js"></script>
+<!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<link href="../pdf/documentation.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href=".."> SPARQLess
+        </a>
+</div>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/">Usage</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">How it works</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../observation/">Observation</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../model_parsing/">Parsing</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../postprocessing/">Postprocessing</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../schema/">Schema Creation</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../querying/">Querying</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../model_checkpointing/">Model Checkpointing</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../hot_reloading/">Hot Reloading</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/">Development</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../editing_documentation/">Editing documentation</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="..">SPARQLess</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a alt="Docs" class="icon icon-home" href=".."></a> »</li><li>Running SPARQLess in Docker</li>
+<li class="wy-breadcrumbs-aside">
+<a class="icon icon-github" href="https://github.com/mff-uk/sparqless/edit/master/docs/docker.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<h1 id="running-sparqless-in-docker">Running SPARQLess in Docker</h1>
+<p>The use case for running SPARQLess in Docker is wanting to use it as
+a black box which converts a SPARQL endpoint into a GraphQL one.
+There is virtually no configuration required (or allowed) when using
+the Docker image, the only configuration value is the SPARQL endpoint
+URL.</p>
+<p>The most basic usage scenario looks like this:</p>
+<pre><code class="language-bash"># Build the Docker image and name it `sparqless:local`.
+docker build -t sparqless:local .
+
+# Use the `sparqless:local` image to run a Docker container named `sparqless`.
+# The `-p` option binds port 4000 on the container to port 4000 on the local machine.
+# This is the port which the created GraphQL server will run on.
+# You can add the `-d` option to run the container detached from your terminal.
+docker run \
+    -it --init \
+    --name sparqless \
+    -p 4000:4000 \
+    -e SPARQL_ENDPOINT="https://data.gov.cz/sparql" \
+    sparqless:local
+</code></pre>
+<p>The <code>docker run</code> command warrants a bit of explaining:</p>
+<ul>
+<li><code>-it</code> and <code>--init</code> options are used as per the
+<a href="https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#handling-kernel-signals">Node.js Docker best practices</a>.
+Without them, Node is not able to properly handle kernel signals
+such as interrupts invoked via Ctrl+C.</li>
+<li><code>--name sparqless</code> simply assigns a name to the created container for easier
+access via <code>docker logs</code> and so on. Feel free to pick any name you want.</li>
+<li><code>-p 4000:4000</code> maps port 4000 on the host to port 4000 on the container.
+The syntax is <code>-p &lt;host_port&gt;:&lt;container_port&gt;</code>. You should not modify
+the <code>&lt;container_port&gt;</code> part, but you can change the <code>&lt;host_port&gt;</code> part
+to configure which port the GraphQL server will run on.</li>
+<li><code>-e SPARQL_ENDPOINT="https://data.gov.cz/sparql"</code> is a required configuration
+value. It sets the <code>SPARQL_ENDPOINT</code> environment variable to the URL to
+the SPARQL endpoint for SPARQLess to run against.
+If this variable is not set, the container will terminate immediately.</li>
+<li><code>-d</code> will run the container as detached from the terminal. Very useful if
+you want the container to run in the background.
+You can still see the container logs with <code>docker logs -f sparqless</code>.</li>
+</ul>
+<h2 id="mounting-artifacts">Mounting Artifacts</h2>
+<p>SPARQLess produces a handful of artifacts during its operation, namely:</p>
+<ul>
+<li><code>observations.ttl</code>: <a href="https://en.wikipedia.org/wiki/Turtle_(syntax)">Turtle</a>
+file containing RDF observations describing data in the SPARQL endpoint.</li>
+<li><code>model-checkpoint.json</code>: serialized model of the data in the SPARQL endpoint.
+On startup, SPARQLess check for the existence of this file. If it exists,
+SPARQLess will load the model from this file instead of performing
+the lengthy observation process. During observation, this file is
+automatically created.</li>
+<li><code>generated-schema.graphql</code>: <a href="https://graphql.org/learn/schema/">GraphQL schema</a>
+generated by SPARQLess. This is the same schema as the one which is available
+in the created GraphQL endpoint.</li>
+</ul>
+<p>You can learn more about the meaning of these artifacts by learning how SPARQLess
+internally operates, which is described <a href="../overview/">here</a>.</p>
+<p>If you want to access these artifacts produced by the Docker container,
+you should start the container with a bind mount for the <code>/app/data</code> directory.
+The container stores the aforementioned artifacts in this directory.
+This can be done by adding the following arguments:</p>
+<pre><code class="language-bash">docker run \
+    -it --init \
+    --name sparqless \
+    -p 4000:4000 \
+    -e SPARQL_ENDPOINT="https://data.gov.cz/sparql" \
+    --mount type=bind,source="$(pwd)/containerdata",target=/app/data \
+    sparqless:local
+</code></pre>
+<p>By doing this, the <code>containerdata</code> folder in your working directory
+will be mounted as <code>/app/data</code> inside the Docker container, and the artifacts
+will be stored inside this folder.</p>
+<p><strong>NOTE</strong>: make sure that the mounted folder has write permissions for
+all users. Otherwise the container's runtime user will not be able
+to read or write these files.</p>
+</div>
+</div><footer>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+</div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+</div>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-github" href="https://github.com/mff-uk/sparqless" style="color: #fcfcfc"> GitHub</a>
+</span>
+</span>
+</div>
+<script>var base_url = '..';</script>
+<script defer="" src="../js/theme_extra.js"></script>
+<script defer="" src="../js/theme.js"></script>
+<script defer="">
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+</body>
+</html>
