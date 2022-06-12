@@ -164,6 +164,10 @@ will be stored inside this folder.</p>
 <p><strong>NOTE</strong>: make sure that the mounted folder has write permissions for
 all users. Otherwise the container's runtime user will not be able
 to read or write these files.</p>
+<p><strong>NOTE</strong>: make sure that you don't leave a model checkpoint file in the
+mounted folder if you start the container again with a different SPARQL
+endpoint! This will result in the old model being used for the new
+SPARQL endpoint, which is no good.</p>
 </div>
 </div><footer>
 <hr/>
