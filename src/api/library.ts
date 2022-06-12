@@ -21,11 +21,7 @@ import { NexusGraphQLSchema } from 'nexus/dist/core';
 import { PartialFunctionPropertyObserver } from '../observation/observers/partial_function';
 import { DataModel } from '../models/data_model';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
-import {
-    readObservationsFromFile,
-    writeObservationsToFile,
-} from '../observation/utils';
-import path from 'path';
+import { writeObservationsToFile } from '../observation/utils';
 
 /**
  * Encapsulating class for the core SPARQLess functionality,
@@ -78,17 +74,13 @@ export class SPARQLess {
         config: Config,
     ): Promise<[NexusGraphQLSchema, DataModel]> {
         // Load checkpoint if enabled, otherwise undefined is returned
+        // TODO: if overwrite is disabled, hot reload should still overwrite the file if it did not exist at the start
         let model = DataModel.loadCheckpoint(
             config.modelCheckpoint,
             config.logger,
         );
         if (!model) {
             const observations = await this.observe(config);
-            writeObservationsToFile( // TODO: make this configurable
-                observations,
-                path.join(__dirname, '../../observations.ttl'),
-                config.observation ?? DEFAULT_OBSERVATION_CONFIG,
-            );
 
             config.logger?.info('Building object model...');
             const parser = new ObservationParser(config);
@@ -126,6 +118,16 @@ export class SPARQLess {
             `Observing endpoint "${config.endpoint.name}", this may take a while...`,
         );
         const observations: Observations = await observerManager.runObservers();
+
+        const observationConfig =
+            config.observation ?? DEFAULT_OBSERVATION_CONFIG;
+        if (observationConfig.observationsOutputPath) {
+            writeObservationsToFile(
+                observations,
+                observationConfig.observationsOutputPath,
+                observationConfig,
+            );
+        }
         return observations;
     }
 
@@ -140,11 +142,8 @@ export class SPARQLess {
         schema: NexusGraphQLSchema,
         config: Config,
     ): Promise<ApolloServer> {
-        this.updateSchemaDescription(
-            schema,
-            0,
-            config.hotReload?.isEnabled ?? false,
-        );
+        const hotReloadConfig = config.hotReload ?? DEFAULT_HOT_RELOAD_CONFIG;
+        this.updateSchemaDescription(schema, 0, hotReloadConfig.isEnabled);
         config.logger?.info('Starting GraphQL server...');
         const server = new ApolloServer({
             schema,
@@ -215,7 +214,7 @@ export class SPARQLess {
                     previousModel,
                 );
                 // Do not load data model from checkpoint during hot reload, it doesn't make sense.
-                // Checpoints exist to speed up the initial load time, and hot reloading
+                // Checkpoints exist to speed up the initial load time, and hot reloading
                 // wouldn't do anything if we just loaded from checkpoint every time.
                 const checkpointConfig: ModelCheckpointConfig | undefined =
                     config.modelCheckpoint && {

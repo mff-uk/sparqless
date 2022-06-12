@@ -1,7 +1,11 @@
 import { cloneDeep } from 'lodash';
 import path from 'path';
 import { SPARQLess } from './api';
-import { Config, SIMPLE_LOGGER } from './api/config';
+import {
+    Config,
+    DEFAULT_OBSERVATION_CONFIG,
+    SIMPLE_LOGGER,
+} from './api/config';
 import { DataModel } from './models/data_model';
 import { ENDPOINTS } from './observation/endpoints';
 
@@ -11,6 +15,10 @@ import { ENDPOINTS } from './observation/endpoints';
 const config: Config = {
     endpoint: ENDPOINTS[0],
     logger: SIMPLE_LOGGER,
+    observation: {
+        ...DEFAULT_OBSERVATION_CONFIG,
+        observationsOutputPath: path.join(__dirname, '../../observations.ttl'),
+    },
     schema: {
         graphqlSchemaOutputPath: path.join(
             __dirname,

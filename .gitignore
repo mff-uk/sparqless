@@ -125,3 +125,6 @@ generated-schema.graphql
 
 # Saved data model checkpoint
 model-checkpoint.json
+
+# Default directory for Docker container artifacts.
+containerdata/**/*

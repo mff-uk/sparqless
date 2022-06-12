@@ -29,5 +29,5 @@ plugins:
   - with-pdf:
       author: Daniel Crha
       copyright: Charles University
-      cover_subtitle: Bringing RDF datasets to all developers
+      cover_subtitle: SPARQL-less access to datasets in SPARQL endpoints
       output_path: pdf/documentation.pdf

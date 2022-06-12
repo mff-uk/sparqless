@@ -11,4 +11,4 @@ let it do its magic. Soon, you will have a GraphQL instance which you can use to
 ## Documentation
 
 The documentation located [here](https://mff-uk.github.io/sparqless/)
-includes installation instructions, programmer and user guides, and much more.
+includes installation and usage instructions, programmer and user guides, and much more.

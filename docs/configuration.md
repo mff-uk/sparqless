@@ -62,6 +62,7 @@ interface ObservationConfig {
     ontologyPrefixIri: string;
     shouldDetectNonArrayProperties: boolean | undefined;
     shouldCountProperties: boolean | undefined;
+    observationsOutputPath: string | undefined;
 }
 ```
 
@@ -103,6 +104,11 @@ It is recommended to initially set both `shouldCountProperties` and
 but to set them to `true` in the [hot reloading](hot_reloading.md) config.
 That way, the necessary observations will be carried out in the background while
 you can already explore and query the dataset.
+
+If set, `observationsOutputPath` dictates the path to which the collected observations
+should be written. They are saved as a [Turtle](https://en.wikipedia.org/wiki/Turtle_(syntax)) RDF file,
+so a `.ttl` suffix is recommended. If this option is `undefined`, the observations will not
+be saved to disk.
 
 ### Postprocessing
 

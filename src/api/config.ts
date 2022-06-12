@@ -122,6 +122,15 @@ export interface ObservationConfig {
      * all property counts will be displayed as `0`.
      */
     shouldCountProperties?: boolean;
+
+    /**
+     * If set to a string containing a path to a file, the collected
+     * observations will be saved to this file after they are made.
+     * If `undefined`, the observations will not be saved to a file.
+     *
+     * They will be saved in the Turtle RDF format.
+     */
+    observationsOutputPath?: string;
 }
 
 export interface PostprocessingConfig {
