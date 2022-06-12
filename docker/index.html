@@ -113,6 +113,8 @@ docker run \
     -e SPARQL_ENDPOINT="https://data.gov.cz/sparql" \
     sparqless:local
 </code></pre>
+<p><strong>WARNING</strong>: avoid reusing the same container for multiple SPARQL endpoints,
+unless you understand the 'Mounting Artifacts' section below.</p>
 <p>The <code>docker run</code> command warrants a bit of explaining:</p>
 <ul>
 <li><code>-it</code> and <code>--init</code> options are used as per the
@@ -170,7 +172,9 @@ to read or write these files.</p>
 <p><strong>NOTE</strong>: make sure that you don't leave a model checkpoint file in the
 mounted folder if you start the container again with a different SPARQL
 endpoint! This will result in the old model being used for the new
-SPARQL endpoint, which is no good.</p>
+SPARQL endpoint, which is no good.
+If you are not mounting a volume in the <code>/app/data</code> folder, you should
+never reuse the same container for multiple SPARQL endpoints.</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
