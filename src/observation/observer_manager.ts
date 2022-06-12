@@ -142,6 +142,10 @@ export class ObserverManager {
         newObservation: Observations,
     ): Promise<void> {
         for (const [event, quads] of Object.entries(newObservation)) {
+            if (quads.length === 0) {
+                continue; // Don't trigger dependent observers if there are no observations
+            }
+
             accumulatedObservations[event as OntologyObservation]!.push(
                 ...quads,
             );

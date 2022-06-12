@@ -45,7 +45,7 @@ export class ObservationParser {
 
         for (const observation of observations[
             OntologyObservation.ClassObservation
-        ]!) {
+        ] || []) {
             const classNameQuad = observation[OntologyProperty.DescribedClass]!;
             const numInstancesQuad =
                 observation[OntologyProperty.NumberOfInstances]!;
@@ -69,7 +69,7 @@ export class ObservationParser {
     ) {
         for (const observation of observations[
             OntologyObservation.AttributeObservation
-        ]!) {
+        ] || []) {
             const literalQuad = observation[OntologyProperty.TargetLiteral]!;
             const propertyQuad =
                 observation[OntologyProperty.DescribedAttribute]!;
@@ -124,7 +124,7 @@ export class ObservationParser {
     ) {
         for (const observation of observations[
             OntologyObservation.AssociationObservation
-        ]!) {
+        ] || []) {
             const targetClassQuad = observation[OntologyProperty.TargetClass]!;
             const propertyQuad =
                 observation[OntologyProperty.DescribedAssociation]!;
@@ -169,7 +169,7 @@ export class ObservationParser {
     ) {
         for (const observation of observations[
             OntologyObservation.PropertyExistenceObservation
-        ]!) {
+        ] || []) {
             const propertyIri =
                 observation[OntologyProperty.PropertyIri]!.object.value;
             const propertyClassIri =
@@ -200,7 +200,7 @@ export class ObservationParser {
     ) {
         for (const observation of observations[
             OntologyObservation.PropertyCountObservation
-        ]!) {
+        ] || []) {
             const propertyQuad = observation[OntologyProperty.CountedProperty]!;
             const numInstancesQuad =
                 observation[OntologyProperty.NumberOfPropertyInstances]!;
@@ -231,7 +231,7 @@ export class ObservationParser {
     ) {
         for (const observation of observations[
             OntologyObservation.PropertyIsAPartialFunctionObservation
-        ]!) {
+        ] || []) {
             const propertyIri =
                 observation[OntologyProperty.PartialFunctionProperty]!.object
                     .value;

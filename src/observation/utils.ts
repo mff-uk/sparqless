@@ -8,6 +8,8 @@ import {
     OntologyProperty,
 } from './ontology';
 import { ObservationConfig } from '../api/config';
+import { DataFactory, Parser, Writer } from 'n3';
+import { createWriteStream, readFileSync } from 'fs';
 
 /**
  * Utility function which takes a potentially large number
@@ -54,6 +56,71 @@ export function groupObservations(
     });
 
     return observations;
+}
+
+/**
+ * Writes the `observations` to the file at `filePath`.
+ * You can set the `format` argument to a format supported by N3.js
+ * if you want to write to a format other than Turtle.
+ */
+export function writeObservationsToFile(
+    observations: Observations,
+    filePath: string,
+    config: ObservationConfig,
+    format = 'Turtle',
+) {
+    const fileStream = createWriteStream(filePath);
+    const writer = new Writer(fileStream, {
+        format: format,
+        prefixes: { se: config.ontologyPrefixIri },
+        end: true, // Close the file stream when done writing
+    });
+    for (const [observationType, typeObservations] of Object.entries(
+        observations,
+    )) {
+        for (const observation of typeObservations) {
+            // Add observation type quad for each observation
+            writer.addQuad(
+                // All observation properties should have the same subject
+                Object.values(observation)[0].subject,
+                DataFactory.namedNode(
+                    'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+                ),
+                DataFactory.namedNode(
+                    `${config.ontologyPrefixIri}${observationType}`,
+                ),
+            );
+
+            // Actual observation properties
+            for (const quad of Object.values(observation)) {
+                writer.addQuad(quad);
+            }
+        }
+    }
+    writer.end();
+}
+
+/**
+ * Parse observations saved in a file at `filePath`:
+ *
+ * ```
+ * const observations = readObservationsFromFile('fooFolder/barFile.ttl', config);
+ * ```
+ *
+ * You may want to use reading and writing observations to a file in case you want
+ * to somehow modify them before using them for model parsing.
+ *
+ * TODO: add example to docs of how to load observations and continue
+ */
+export function readObservationsFromFile(
+    filePath: string,
+    config: ObservationConfig,
+    format = 'Turtle',
+): Observations {
+    const fileContents = readFileSync(filePath);
+    const parser = new Parser({ format: format });
+    const quads = parser.parse(fileContents.toString());
+    return groupObservations(quads, config);
 }
 
 function getOntologyClassForQuads(

@@ -1,4 +1,4 @@
-# SPARQL2GrahpQL
+# SPARQL2GrahphQL
 
 Many government and non-government organizations today publish various datasets using Linked Data through SPARQL endpoints.
 These datasets are often also available as JSON or RDF dumps, but having to write code to explore and query them can be cumbersome.
