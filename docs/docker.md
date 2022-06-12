@@ -24,6 +24,9 @@ docker run \
     sparqless:local
 ```
 
+**WARNING**: avoid reusing the same container for multiple SPARQL endpoints,
+unless you understand the 'Mounting Artifacts' section below.
+
 The `docker run` command warrants a bit of explaining:
 
 - `-it` and `--init` options are used as per the
@@ -89,3 +92,5 @@ to read or write these files.
 mounted folder if you start the container again with a different SPARQL
 endpoint! This will result in the old model being used for the new
 SPARQL endpoint, which is no good.
+If you are not mounting a volume in the `/app/data` folder, you should
+never reuse the same container for multiple SPARQL endpoints.

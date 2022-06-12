@@ -5,6 +5,7 @@ repo_url: https://github.com/mff-uk/sparqless
 nav:
   - Home: 'index.md'
   - 'User Guide':
+    - Docker: 'docker.md'
     - Usage: 'usage.md'
     - Configuration: 'configuration.md'
   - 'How it works':
