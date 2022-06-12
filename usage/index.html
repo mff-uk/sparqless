@@ -4,9 +4,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://yawnston.github.io/sparql2graphql/usage/" rel="canonical"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://mff-uk.github.io/sparqless/usage/" rel="canonical"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>Usage - SPARQL2GraphQL</title>
+<title>Usage - SPARQLess</title>
 <link href="../css/theme.css" rel="stylesheet"/>
 <link href="../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
@@ -14,7 +14,7 @@
         // Current page data
         var mkdocs_page_name = "Usage";
         var mkdocs_page_input_path = "usage.md";
-        var mkdocs_page_url = "/sparql2graphql/usage/";
+        var mkdocs_page_url = "/sparqless/usage/";
       </script>
 <script defer="" src="../js/jquery-3.6.0.min.js"></script>
 <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
 <nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
 <div class="wy-side-scroll">
 <div class="wy-side-nav-search">
-<a class="icon icon-home" href=".."> SPARQL2GraphQL
+<a class="icon icon-home" href=".."> SPARQLess
         </a>
 </div>
 <div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
@@ -75,7 +75,7 @@
 <section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
 <nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
 <i class="fa fa-bars" data-toggle="wy-nav-top"></i>
-<a href="..">SPARQL2GraphQL</a>
+<a href="..">SPARQLess</a>
 </nav>
 <div class="wy-nav-content">
 <div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
@@ -83,7 +83,7 @@
 <li><a alt="Docs" class="icon icon-home" href=".."></a> »</li>
 <li>User Guide »</li><li>Usage</li>
 <li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/yawnston/sparql2graphql/edit/master/docs/usage.md"> Edit on GitHub</a>
+<a class="icon icon-github" href="https://github.com/mff-uk/sparqless/edit/master/docs/usage.md"> Edit on GitHub</a>
 </li>
 </ul>
 <hr/>
@@ -91,7 +91,7 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <h1 id="usage-guide">Usage guide</h1>
-<p>This page will explain how to set up SPARQL2GraphQL for a given SPARQL endpoint, step-by-step.</p>
+<p>This page will explain how to set up SPARQLess for a given SPARQL endpoint, step-by-step.</p>
 <h2 id="installing-dependencies">Installing dependencies</h2>
 <p>The project is written in TypeScript and uses Node.js as its runtime.</p>
 <p>You will need to have the following installed before you proceed with usage:</p>
@@ -102,22 +102,22 @@
 <p>Once you have installed them, run <code>npm install</code> in the project root directory to install
 all required dependencies with npm.</p>
 <h2 id="library-interface">Library interface</h2>
-<p>The main functionality is encapsulated by the <code>SPARQL2GraphQL</code> class in <code>src/api/index.ts</code>.
+<p>The main functionality is encapsulated by the <code>SPARQLess</code> class in <code>src/api/index.ts</code>.
 This class contains functions for the main tasks users may want to perform.</p>
 <p>Most notably, the <code>buildSchemaAndRunEndpoint</code> functions is provided for users
 who want the least configuration necessary. It is enough to simply set up a <code>Config</code>
-as shown in the next section, and run SPARQL2GraphQL like so:</p>
+as shown in the next section, and run SPARQLess like so:</p>
 <pre><code class="language-ts">const config = {
     ...
 };
 
-const sparql2graphql = new SPARQL2GraphQL();
+const sparqless = new SPARQLess();
 
 // This method returns a Promise, so you should await it
 // if you want to do something after the server has started.
-sparql2graphql.buildSchemaAndRunEndpoint(config);
+sparqless.buildSchemaAndRunEndpoint(config);
 </code></pre>
-<p>The <code>SPARQL2GraphQL</code> class also contains other functions which perform
+<p>The <code>SPARQLess</code> class also contains other functions which perform
 smaller parts of the whole algorithm, which you may want to use if your
 task is more complex than <em>convert this SPARQL endpoint into a GraphQL endpoint</em>.
 For example, the <code>observeAndBuildSchema</code> function performs all the steps up to
@@ -127,7 +127,7 @@ starting a GraphQL endpoint.</p>
 <h2 id="edit-configuration">Edit configuration</h2>
 <p>There is one required configuration step before you run the library - configuring
 the SPARQL endpoint you want to run. This is done by creating a <code>Config</code> object,
-which you will pass to SPARQL2GraphQL functions. There is a pre-defined list of known
+which you will pass to SPARQLess functions. There is a pre-defined list of known
 online and working endpoints in <code>src/observation/endpoints.ts</code> in case you just want
 to try the project without having a specific SPARQL endpoint in mind, but you can
 easily define your own.</p>
@@ -154,9 +154,9 @@ more about additional configuration options, you can refer to the
 <a href="../configuration/">configuration guide</a>. Alternatively, you can examine
 their definition in the code, where they are also documented.</p>
 <h2 id="run-it">Run it</h2>
-<p>Putting together the above code examples is enough to start a SPARQL2GraphQL instance,
+<p>Putting together the above code examples is enough to start a SPARQLess instance,
 which will observe the configured SPARQL endpoint and convert it to a GraphQL one.
-Alternatively, if you are running SPARQL2GraphQL from this repository,
+Alternatively, if you are running SPARQLess from this repository,
 you can run <code>npm start</code>, which will run <code>src/main.ts</code>, which is an entrypoint
 meant for starting the server from withing this repository.
 In that case, edit your configuration there.</p>
@@ -184,7 +184,7 @@ dataset in the endpoint may take a long time, the initial observations are limit
 by the default configuration - observation will only count up to 1000 occurences
 for each property in the dataset.</p>
 <p>After the server has started, it's fully available and functional for purposes of
-schema exploration and querying. In the background, SPARQL2GraphQL continues
+schema exploration and querying. In the background, SPARQLess continues
 to make more detailed observations, and seamlessly updating the GraphQL
 schema in the GraphQL endpoint.</p>
 <p>You can read more about hot reloading <a href="../hot_reloading/">here</a>.</p>
@@ -219,7 +219,7 @@ field as shown in the image above.</p>
 <div aria-label="Versions" class="rst-versions" role="note">
 <span class="rst-current-version" data-toggle="rst-current-version">
 <span>
-<a class="fa fa-github" href="https://github.com/yawnston/sparql2graphql" style="color: #fcfcfc"> GitHub</a>
+<a class="fa fa-github" href="https://github.com/mff-uk/sparqless" style="color: #fcfcfc"> GitHub</a>
 </span>
 <span><a href=".." style="color: #fcfcfc">« Previous</a></span>
 <span><a href="../configuration/" style="color: #fcfcfc">Next »</a></span>

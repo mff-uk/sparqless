@@ -4,9 +4,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://yawnston.github.io/sparql2graphql/hot_reloading/" rel="canonical"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://mff-uk.github.io/sparqless/hot_reloading/" rel="canonical"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>Hot Reloading - SPARQL2GraphQL</title>
+<title>Hot Reloading - SPARQLess</title>
 <link href="../css/theme.css" rel="stylesheet"/>
 <link href="../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
@@ -14,7 +14,7 @@
         // Current page data
         var mkdocs_page_name = "Hot Reloading";
         var mkdocs_page_input_path = "hot_reloading.md";
-        var mkdocs_page_url = "/sparql2graphql/hot_reloading/";
+        var mkdocs_page_url = "/sparqless/hot_reloading/";
       </script>
 <script defer="" src="../js/jquery-3.6.0.min.js"></script>
 <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
 <nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
 <div class="wy-side-scroll">
 <div class="wy-side-nav-search">
-<a class="icon icon-home" href=".."> SPARQL2GraphQL
+<a class="icon icon-home" href=".."> SPARQLess
         </a>
 </div>
 <div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
@@ -75,7 +75,7 @@
 <section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
 <nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
 <i class="fa fa-bars" data-toggle="wy-nav-top"></i>
-<a href="..">SPARQL2GraphQL</a>
+<a href="..">SPARQLess</a>
 </nav>
 <div class="wy-nav-content">
 <div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
@@ -83,7 +83,7 @@
 <li><a alt="Docs" class="icon icon-home" href=".."></a> »</li>
 <li>How it works »</li><li>Hot Reloading</li>
 <li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/yawnston/sparql2graphql/edit/master/docs/hot_reloading.md"> Edit on GitHub</a>
+<a class="icon icon-github" href="https://github.com/mff-uk/sparqless/edit/master/docs/hot_reloading.md"> Edit on GitHub</a>
 </li>
 </ul>
 <hr/>
@@ -102,7 +102,7 @@ More in-depth observations (i.e. accurate property counts)
 are then performed in the background, once the server is already
 running, and the user is able to query it.</p>
 <p>The schema is then seamlessly updated, and if the user is using
-the default playground which is started with SPARQL2GraphQL,
+the default playground which is started with SPARQLess,
 they don't even need to refresh their browser window to see
 the new schema - it refreshes itself automatically.</p>
 <p>In the following diagram, you can see how the GraphQL
@@ -111,7 +111,7 @@ the user is free to explore and query the endpoint:</p>
 <p><img alt="hot reloading diagram" src="../img/hot_reloading_diagram.png"/></p>
 <h2 id="how-it-works">How it works</h2>
 <p>After the server starts, the <code>hotReloadServerSchema</code> function of the
-<code>SPARQL2GraphQL</code> class can be used to run hot reloading. Firstly,
+<code>SPARQLess</code> class can be used to run hot reloading. Firstly,
 hot reloading must be configured in the <code>Config</code>. It is enabled
 by default, and the default configuration looks like this:</p>
 <pre><code class="language-ts">hotReload: {
@@ -191,7 +191,7 @@ stops for good.</p>
 <div aria-label="Versions" class="rst-versions" role="note">
 <span class="rst-current-version" data-toggle="rst-current-version">
 <span>
-<a class="fa fa-github" href="https://github.com/yawnston/sparql2graphql" style="color: #fcfcfc"> GitHub</a>
+<a class="fa fa-github" href="https://github.com/mff-uk/sparqless" style="color: #fcfcfc"> GitHub</a>
 </span>
 <span><a href="../model_checkpointing/" style="color: #fcfcfc">« Previous</a></span>
 <span><a href="../development/" style="color: #fcfcfc">Next »</a></span>

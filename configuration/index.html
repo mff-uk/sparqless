@@ -4,9 +4,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://yawnston.github.io/sparql2graphql/configuration/" rel="canonical"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://mff-uk.github.io/sparqless/configuration/" rel="canonical"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>Configuration - SPARQL2GraphQL</title>
+<title>Configuration - SPARQLess</title>
 <link href="../css/theme.css" rel="stylesheet"/>
 <link href="../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
@@ -14,7 +14,7 @@
         // Current page data
         var mkdocs_page_name = "Configuration";
         var mkdocs_page_input_path = "configuration.md";
-        var mkdocs_page_url = "/sparql2graphql/configuration/";
+        var mkdocs_page_url = "/sparqless/configuration/";
       </script>
 <script defer="" src="../js/jquery-3.6.0.min.js"></script>
 <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
 <nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
 <div class="wy-side-scroll">
 <div class="wy-side-nav-search">
-<a class="icon icon-home" href=".."> SPARQL2GraphQL
+<a class="icon icon-home" href=".."> SPARQLess
         </a>
 </div>
 <div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
@@ -75,7 +75,7 @@
 <section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
 <nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
 <i class="fa fa-bars" data-toggle="wy-nav-top"></i>
-<a href="..">SPARQL2GraphQL</a>
+<a href="..">SPARQLess</a>
 </nav>
 <div class="wy-nav-content">
 <div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
@@ -83,7 +83,7 @@
 <li><a alt="Docs" class="icon icon-home" href=".."></a> »</li>
 <li>User Guide »</li><li>Configuration</li>
 <li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/yawnston/sparql2graphql/edit/master/docs/configuration.md"> Edit on GitHub</a>
+<a class="icon icon-github" href="https://github.com/mff-uk/sparqless/edit/master/docs/configuration.md"> Edit on GitHub</a>
 </li>
 </ul>
 <hr/>
@@ -91,9 +91,9 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <h1 id="configuration">Configuration</h1>
-<p>This page reviews and explains all available configuration options in SPARQL2GraphQL. Before you explore the individual
+<p>This page reviews and explains all available configuration options in SPARQLess. Before you explore the individual
 configuration options, it is recommended that you familiarize
-yourself with the basic concepts in SPARQL2GraphQL described
+yourself with the basic concepts in SPARQLess described
 <a href="../overview/">here</a>.</p>
 <h2 id="general-configuration">General configuration</h2>
 <p>The root configuration type is <code>Config</code>, which exposes the following properties:</p>
@@ -109,7 +109,7 @@ yourself with the basic concepts in SPARQL2GraphQL described
 }
 </code></pre>
 <p>Only the <code>endpoint</code> property is mandatory, since it contains the SPARQL endpoint
-which you want SPARQL2GraphQL to run against. An endpoint looks like this:</p>
+which you want SPARQLess to run against. An endpoint looks like this:</p>
 <pre><code class="language-ts">{
     url: 'https://dev.nkod.opendata.cz/sparql',
     name: 'NKOD',
@@ -120,14 +120,14 @@ very helpful to know what exactly is happening, since the bootstrapping
 process can take a very long time. The logging framework of choice
 is <a href="https://github.com/winstonjs/winston">winston</a>, so you are free to
 pass in any winston logger. However, if you want a sensible default,
-you can use the <code>DEFAULT_LOGGER</code> exposed by SPARQL2GraphQL.</p>
+you can use the <code>DEFAULT_LOGGER</code> exposed by SPARQLess.</p>
 <h2 id="specialized-configuration">Specialized configuration</h2>
 <p>The remaining configuration values are more specialized,
-and they affect individual components of SPARQL2GraphQL.</p>
+and they affect individual components of SPARQLess.</p>
 <p>All of these options have sane default values, so it is
 recommended to first try not defining them (and thereby
 using the defaults). If you find that you want to adjust
-the behavior of SPARQL2GraphQL afterwards, then you can
+the behavior of SPARQLess afterwards, then you can
 look into modifying these values.</p>
 <h3 id="observation">Observation</h3>
 <p>The <code>observation</code> property of <code>Config</code> modified the endpoint observation phase,
@@ -219,7 +219,7 @@ endpoint will be available.</p>
 <div aria-label="Versions" class="rst-versions" role="note">
 <span class="rst-current-version" data-toggle="rst-current-version">
 <span>
-<a class="fa fa-github" href="https://github.com/yawnston/sparql2graphql" style="color: #fcfcfc"> GitHub</a>
+<a class="fa fa-github" href="https://github.com/mff-uk/sparqless" style="color: #fcfcfc"> GitHub</a>
 </span>
 <span><a href="../usage/" style="color: #fcfcfc">« Previous</a></span>
 <span><a href="../overview/" style="color: #fcfcfc">Next »</a></span>

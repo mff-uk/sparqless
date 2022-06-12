@@ -4,9 +4,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://yawnston.github.io/sparql2graphql/model_checkpointing/" rel="canonical"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://mff-uk.github.io/sparqless/model_checkpointing/" rel="canonical"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>Model Checkpointing - SPARQL2GraphQL</title>
+<title>Model Checkpointing - SPARQLess</title>
 <link href="../css/theme.css" rel="stylesheet"/>
 <link href="../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
@@ -14,7 +14,7 @@
         // Current page data
         var mkdocs_page_name = "Model Checkpointing";
         var mkdocs_page_input_path = "model_checkpointing.md";
-        var mkdocs_page_url = "/sparql2graphql/model_checkpointing/";
+        var mkdocs_page_url = "/sparqless/model_checkpointing/";
       </script>
 <script defer="" src="../js/jquery-3.6.0.min.js"></script>
 <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
 <nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
 <div class="wy-side-scroll">
 <div class="wy-side-nav-search">
-<a class="icon icon-home" href=".."> SPARQL2GraphQL
+<a class="icon icon-home" href=".."> SPARQLess
         </a>
 </div>
 <div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
@@ -75,7 +75,7 @@
 <section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
 <nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
 <i class="fa fa-bars" data-toggle="wy-nav-top"></i>
-<a href="..">SPARQL2GraphQL</a>
+<a href="..">SPARQLess</a>
 </nav>
 <div class="wy-nav-content">
 <div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
@@ -83,7 +83,7 @@
 <li><a alt="Docs" class="icon icon-home" href=".."></a> »</li>
 <li>How it works »</li><li>Model Checkpointing</li>
 <li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/yawnston/sparql2graphql/edit/master/docs/model_checkpointing.md"> Edit on GitHub</a>
+<a class="icon icon-github" href="https://github.com/mff-uk/sparqless/edit/master/docs/model_checkpointing.md"> Edit on GitHub</a>
 </li>
 </ul>
 <hr/>
@@ -95,7 +95,7 @@
 is undesirable to have to wait for the entire observation
 phase to happen again every time you want to start the GraphQL
 endpoint.</p>
-<p>Therefore SPARQL2GraphQL allows you to use the following
+<p>Therefore SPARQLess allows you to use the following
 options to save the generated data model to disk,
 and then later reuse it instead of carrying out observations
 again.</p>
@@ -114,7 +114,7 @@ to the configured file after it is built from the observations.
 If the file already exists and <code>overwriteFile</code> is set to <code>false</code>,
 the file will not be overwritten by the new checkpoint.</p>
 <p>If <code>loadModelFromCheckpoint</code> is set to <code>true</code>, at startup,
-SPARQL2GraphQL will check whether the checkpoint exists.
+SPARQLess will check whether the checkpoint exists.
 If it does, then it will use the model checkpoint rather than
 carrying out observations again.</p>
 </div>
@@ -137,7 +137,7 @@ carrying out observations again.</p>
 <div aria-label="Versions" class="rst-versions" role="note">
 <span class="rst-current-version" data-toggle="rst-current-version">
 <span>
-<a class="fa fa-github" href="https://github.com/yawnston/sparql2graphql" style="color: #fcfcfc"> GitHub</a>
+<a class="fa fa-github" href="https://github.com/mff-uk/sparqless" style="color: #fcfcfc"> GitHub</a>
 </span>
 <span><a href="../querying/" style="color: #fcfcfc">« Previous</a></span>
 <span><a href="../hot_reloading/" style="color: #fcfcfc">Next »</a></span>
