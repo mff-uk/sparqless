@@ -23,7 +23,7 @@ export interface SPARQLEndpointDefinition {
 export const ENDPOINTS: SPARQLEndpointDefinition[] = [
     {
         url: 'https://dev.nkod.opendata.cz/sparql',
-        name: 'NKOD',
+        name: 'NKOD dev',
     },
     {
         url: 'https://linked.opendata.cz/sparql',

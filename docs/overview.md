@@ -1,6 +1,6 @@
 # Overview of how it all works
 
-This page will explain the process used by SPARQL2GraphQL when creating
+This page will explain the process used by SPARQLess when creating
 a GraphQL endpoint from the SPARQL endpoint.
 
 ## Bootstrapping flow
@@ -9,7 +9,7 @@ First of all, the user should configure the application. The most basic configur
 is to configure the SPARQL endpoint to observe. You can read more about
 configuration [here](configuration.md).
 
-The bootstrapping phase of SPARQL2GraphQL is divided into four distinct phases:
+The bootstrapping phase of SPARQLess is divided into four distinct phases:
 
 1. [**Observation**](observation.md)
 2. [**Model Parsing**](model_parsing.md)
@@ -22,7 +22,7 @@ in the endpoint. There are many kinds of observations,
 but the most basic ones are along the lines of
 `X is a class with N instances` or `Y is a property of class X`.
 These observations are in the form of RDF data conforming
-to an ontology defined by SPARQL2GraphQL. This phase
+to an ontology defined by SPARQLess. This phase
 can take up to tens of minutes to execute if the SPARQL
 endpoint contains a large amount of data.
 
@@ -58,7 +58,7 @@ and querying.
 
 ## Querying flow
 
-SPARQL2GraphQL utilizes a query translation approach, whereby incoming
+SPARQLess utilizes a query translation approach, whereby incoming
 GraphQL queries are translated into SPARQL queries, executed on the
 SPARQL endpoint, and their results are aggregated into a JSON
 response returned by the GraphQL endpoint.
@@ -79,7 +79,7 @@ book {
 
 then a resolver will be called for the `books` field, and when that
 resolver returns an object, resolvers for the `author` and `title`
-fields will be run. SPARQL2GraphQL resolvers effectively translate
+fields will be run. SPARQLess resolvers effectively translate
 each field query into a SPARQL query if the queried field contains
 a non-scalar value. Scalar values are fetched with the parent object's
 query.

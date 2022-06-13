@@ -4,7 +4,7 @@
 given in the [overview](overview.md). If you have already read it,
 you may skip to the other subsections of this article.
 
-SPARQL2GraphQL utilizes a query translation approach, whereby incoming
+SPARQLess utilizes a query translation approach, whereby incoming
 GraphQL queries are translated into SPARQL queries, executed on the
 SPARQL endpoint, and their results are aggregated into a JSON
 response returned by the GraphQL endpoint.
@@ -25,7 +25,7 @@ book {
 
 then a resolver will be called for the `books` field, and when that
 resolver returns an object, resolvers for the `author` and `title`
-fields will be run. SPARQL2GraphQL resolvers effectively translate
+fields will be run. SPARQLess resolvers effectively translate
 each field query into a SPARQL query if the queried field contains
 a non-scalar value. Scalar values are fetched with the parent object's
 query.

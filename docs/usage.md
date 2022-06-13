@@ -1,6 +1,8 @@
 # Usage guide
 
-This page will explain how to set up SPARQL2GraphQL for a given SPARQL endpoint, step-by-step.
+This page will explain how to set up SPARQLess for a given SPARQL endpoint, step-by-step.
+If you want to use SPARQLess as a black box, you may prefer to use
+the Docker image instead, as described [here](docker.md).
 
 ## Installing dependencies
 
@@ -16,26 +18,26 @@ all required dependencies with npm.
 
 ## Library interface
 
-The main functionality is encapsulated by the `SPARQL2GraphQL` class in `src/api/index.ts`.
+The main functionality is encapsulated by the `SPARQLess` class in `src/api/library.ts`.
 This class contains functions for the main tasks users may want to perform.
 
 Most notably, the `buildSchemaAndRunEndpoint` functions is provided for users
 who want the least configuration necessary. It is enough to simply set up a `Config`
-as shown in the next section, and run SPARQL2GraphQL like so:
+as shown in the next section, and run SPARQLess like so:
 
 ```ts
-const config = {
-    ...
-};
+const config = new SPARQLessConfigBuilder()
+    .sparqlEndpoint('https://data.gov.cz/sparql')
+    .build();
 
-const sparql2graphql = new SPARQL2GraphQL();
+const sparqless = new SPARQLess();
 
 // This method returns a Promise, so you should await it
 // if you want to do something after the server has started.
-sparql2graphql.buildSchemaAndRunEndpoint(config);
+sparqless.buildSchemaAndRunEndpoint(config);
 ```
 
-The `SPARQL2GraphQL` class also contains other functions which perform
+The `SPARQLess` class also contains other functions which perform
 smaller parts of the whole algorithm, which you may want to use if your
 task is more complex than *convert this SPARQL endpoint into a GraphQL endpoint*.
 For example, the `observeAndBuildSchema` function performs all the steps up to
@@ -47,7 +49,7 @@ starting a GraphQL endpoint.
 
 There is one required configuration step before you run the library - configuring
 the SPARQL endpoint you want to run. This is done by creating a `Config` object,
-which you will pass to SPARQL2GraphQL functions. There is a pre-defined list of known
+which you will pass to SPARQLess functions. There is a pre-defined list of known
 online and working endpoints in `src/observation/endpoints.ts` in case you just want
 to try the project without having a specific SPARQL endpoint in mind, but you can
 easily define your own.
@@ -55,25 +57,19 @@ easily define your own.
 A very basic configuration can look like this:
 
 ```ts
-import { Config, SIMPLE_LOGGER } from './api/config';
-
-const config: Config = {
-    endpoint: {
-        url: 'https://data.gov.cz/sparql',
-        name: 'CZ Government Open Data',
-    },
-    logger: SIMPLE_LOGGER,
-};
+const config = new SPARQLessConfigBuilder()
+    .sparqlEndpoint('https://data.gov.cz/sparql')
+    .build();
 ```
 
-The endpoint `name` can be whatever you want, it's just an easily readable
-identifier used in logs. The `logger` property is not mandatory,
-but it is very helpful to specify a logger in order to see what's
-going on. Any [winston](https://github.com/winstonjs/winston) logger will do,
-but the `SIMPLE_LOGGER` defined in `src/api/config.ts` defines a sane default
-logger which logs the most important messages to the console.
+As you can see, the only required configuration value when using the builder
+is specifying the SPARQL endpoint.
+This example uses the `SPARQLessConfigBuilder` to build the configuration.
+You may of course create the `Config` object manually, but using the builder
+lets you make use of pre-defined sane defaults, allowing you to only
+specify the configuration values you care about.
 
-There are other configuration values in `Config` which you are free to modify, but they have
+There are other configuration values which you are free to modify, but they have
 sensible defaults in case you just want to get started. If you want to find out
 more about additional configuration options, you can refer to the
 [configuration guide](configuration.md). Alternatively, you can examine
@@ -81,9 +77,9 @@ their definition in the code, where they are also documented.
 
 ## Run it
 
-Putting together the above code examples is enough to start a SPARQL2GraphQL instance,
+Putting together the above code examples is enough to start a SPARQLess instance,
 which will observe the configured SPARQL endpoint and convert it to a GraphQL one.
-Alternatively, if you are running SPARQL2GraphQL from this repository,
+Alternatively, if you are running SPARQLess from this repository,
 you can run `npm start`, which will run `src/main.ts`, which is an entrypoint
 meant for starting the server from withing this repository.
 In that case, edit your configuration there.
@@ -121,7 +117,7 @@ by the default configuration - observation will only count up to 1000 occurences
 for each property in the dataset.
 
 After the server has started, it's fully available and functional for purposes of
-schema exploration and querying. In the background, SPARQL2GraphQL continues
+schema exploration and querying. In the background, SPARQLess continues
 to make more detailed observations, and seamlessly updating the GraphQL
 schema in the GraphQL endpoint.
 

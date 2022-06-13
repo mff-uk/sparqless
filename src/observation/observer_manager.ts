@@ -1,8 +1,4 @@
-import {
-    Config,
-    DEFAULT_OBSERVATION_CONFIG,
-    ObservationConfig,
-} from '../api/config';
+import { Config, ObservationConfig } from '../api/config';
 import { InitEndpointObserver, EndpointObserver } from './observer';
 import { Observations, OntologyObservation } from './ontology';
 
@@ -32,8 +28,7 @@ export class ObserverManager {
     private readonly observationConfig: ObservationConfig;
 
     constructor(private config: Config) {
-        this.observationConfig =
-            config.observation ?? DEFAULT_OBSERVATION_CONFIG;
+        this.observationConfig = config.observation;
     }
 
     private subscribedObservers: Partial<
@@ -142,6 +137,10 @@ export class ObserverManager {
         newObservation: Observations,
     ): Promise<void> {
         for (const [event, quads] of Object.entries(newObservation)) {
+            if (quads.length === 0) {
+                continue; // Don't trigger dependent observers if there are no observations
+            }
+
             accumulatedObservations[event as OntologyObservation]!.push(
                 ...quads,
             );

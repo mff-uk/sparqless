@@ -1,0 +1,25 @@
+@startuml
+
+(*) -right-> "Observation"
+note bottom
+  Collect observations by
+  querying SPARQL endpoint
+end note
+
+-right->[RDF Observations] "Model Parsing"
+note bottom
+  Parse observations
+  into data model
+end note
+
+-right->[Model Descriptors] "Schema Generation"
+note bottom
+  Generate GraphQL schema
+end note
+
+-right->[GraphQL Schema] (*)
+note bottom
+  Start GraphQL server
+end note
+
+@enduml

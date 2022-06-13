@@ -1,7 +1,4 @@
-import {
-    DEFAULT_POSTPROCESSING_CONFIG,
-    PostprocessingConfig,
-} from '../api/config';
+import { PostprocessingConfig } from '../api/config';
 import { DataModel } from '../models/data_model';
 import { ResourceDescriptor } from '../models/resource';
 import { PostprocessingHook } from './hook_types';
@@ -22,8 +19,8 @@ export class DescriptorPostprocessor {
      * @param model Data model describing the whole schema.
      * @param config Postprocessing configuration, including hooks to run.
      */
-    postprocess(model: DataModel, config?: PostprocessingConfig): void {
-        const hooks = config?.hooks ?? DEFAULT_POSTPROCESSING_CONFIG.hooks;
+    postprocess(model: DataModel, config: PostprocessingConfig): void {
+        const hooks = config.hooks;
         const descriptors = model.descriptors;
         this.runHooks(descriptors, hooks.resource);
         this.runHooks(descriptors, hooks.class);

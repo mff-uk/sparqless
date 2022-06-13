@@ -1,10 +1,11 @@
-site_name: SPARQL2GraphQL
-site_url: https://yawnston.github.io/sparql2graphql/
-repo_url: https://github.com/yawnston/sparql2graphql
+site_name: SPARQLess
+site_url: https://mff-uk.github.io/sparqless/
+repo_url: https://github.com/mff-uk/sparqless
 
 nav:
   - Home: 'index.md'
   - 'User Guide':
+    - Docker: 'docker.md'
     - Usage: 'usage.md'
     - Configuration: 'configuration.md'
   - 'How it works':
@@ -29,5 +30,5 @@ plugins:
   - with-pdf:
       author: Daniel Crha
       copyright: Charles University
-      cover_subtitle: Bringing RDF datasets to all developers
+      cover_subtitle: SPARQL-less access to datasets in SPARQL endpoints
       output_path: pdf/documentation.pdf

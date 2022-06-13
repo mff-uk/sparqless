@@ -1,5 +1,5 @@
 {
-  "name": "@yawnston/sparql2graphql",
+  "name": "@mff-uk/sparqless",
   "version": "0.0.1",
   "description": "Seamlessly create a GraphQL endpoint facade for a SPARQL endpoint, no RDF knowledge required.",
   "main": "src/main.js",
@@ -12,13 +12,12 @@
     "lint": "eslint \"src/**\"",
     "format": "eslint --fix \"src/**\"",
     "test": "jest",
-    "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run build",
     "preversion": "npm run lint"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yawnston/sparql2graphql.git"
+    "url": "git+https://github.com/mff-uk/sparqless.git"
   },
   "keywords": [
     "graphql",
@@ -27,14 +26,14 @@
     "linked-data",
     "open-data",
     "linked-open-data",
-    "sparql2graphql"
+    "sparqless"
   ],
-  "author": "Daniel Crha",
+  "author": "Daniel Crha (github.com/yawnston)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/yawnston/sparql2graphql/issues"
+    "url": "https://github.com/mff-uk/sparqless/issues"
   },
-  "homepage": "https://yawnston.github.io/sparql2graphql/",
+  "homepage": "https://mff-uk.github.io/sparqless/",
   "devDependencies": {
     "@babel/preset-env": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
@@ -44,6 +43,7 @@
     "@types/graphql": "^14.5.0",
     "@types/jest": "^27.0.2",
     "@types/lodash": "^4.14.181",
+    "@types/n3": "^1.10.4",
     "@types/node": "^17.0.32",
     "@types/nunjucks": "^3.2.1",
     "@types/sparql-http-client": "^2.2.7",
@@ -55,6 +55,7 @@
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "get-graphql-schema": "^2.1.2",
     "jest": "^27.3.1",
     "prettier": "^2.4.1",
     "ts-node": "^10.4.0",
@@ -64,12 +65,14 @@
     "@graphql-tools/utils": "^8.6.5",
     "@rdfjs/data-model": "^2.0.1",
     "apollo-server": "^3.6.7",
+    "apollo-server-core": "^3.8.1",
     "arrayify-stream": "^2.0.0",
     "fetch-sparql-endpoint": "^2.4.0",
     "glob": "^7.2.0",
     "graphql": "^15.4.0",
     "graphql-parse-resolve-info": "^4.12.0",
     "lodash": "^4.17.21",
+    "n3": "^1.16.2",
     "nexus": "^1.3.0",
     "nunjucks": "^3.2.3",
     "rdf-data-factory": "^1.1.0",

@@ -13,7 +13,7 @@ are then performed in the background, once the server is already
 running, and the user is able to query it.
 
 The schema is then seamlessly updated, and if the user is using
-the default playground which is started with SPARQL2GraphQL,
+the default playground which is started with SPARQLess,
 they don't even need to refresh their browser window to see
 the new schema - it refreshes itself automatically.
 
@@ -26,7 +26,7 @@ the user is free to explore and query the endpoint:
 ## How it works
 
 After the server starts, the `hotReloadServerSchema` function of the
-`SPARQL2GraphQL` class can be used to run hot reloading. Firstly,
+`SPARQLess` class can be used to run hot reloading. Firstly,
 hot reloading must be configured in the `Config`. It is enabled
 by default, and the default configuration looks like this:
 

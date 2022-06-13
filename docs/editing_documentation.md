@@ -3,7 +3,7 @@
 This documentation is generated using [mkdocs](https://www.mkdocs.org/) from the Markdown files
 in the `docs` directory, and manually deployed to GitHub Pages with `mkdocs gh-deploy`.
 The URL for the deployed documentation is
-[https://yawnston.github.io/sparql2graphql/](https://yawnston.github.io/sparql2graphql/).
+[https://mff-uk.github.io/sparqless/](https://mff-uk.github.io/sparqless/).
 
 If you want to modify the documentation, simply modify the Markdown source
 of whichever documentation you wish. If you create a new documentation page,
@@ -59,6 +59,6 @@ The source files for all diagrams contained in this documentation are in the `di
 
 If you want to deploy the documentation to GitHub Pages, run `mkdocs gh-deploy`,
 and the updated documentation should be available at
-[https://yawnston.github.io/sparql2graphql/](https://yawnston.github.io/sparql2graphql/)
+[https://mff-uk.github.io/sparqless/](https://mff-uk.github.io/sparqless/)
 within a few minutes. Note that you may need to refresh the page without caching in order
 to see the changes (`Ctrl` + `F5` or `Shift` + `F5` in Google Chrome).

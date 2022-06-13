@@ -1,27 +1,34 @@
 import path from 'path';
-import { SPARQL2GraphQL } from './api';
-import { Config, SIMPLE_LOGGER } from './api/config';
+import { SPARQLess, SPARQLessConfigBuilder } from './api';
 import { ENDPOINTS } from './observation/endpoints';
 
-const config: Config = {
-    endpoint: ENDPOINTS[0],
-    logger: SIMPLE_LOGGER,
-    schema: {
+// Run this file if you want to run SPARQLess locally and tinker with the code.
+// Feel free to modify any of the config.
+
+const config = new SPARQLessConfigBuilder()
+    .sparqlEndpoint(ENDPOINTS[0])
+    .observation({
+        observationsOutputPath: path.join(__dirname, '../../observations.ttl'),
+    })
+    .schema({
         graphqlSchemaOutputPath: path.join(
             __dirname,
             '../../generated-schema.graphql',
         ),
-    },
-    modelCheckpoint: {
-        loadModelFromCheckpoint: true,
-        saveModelToFile: true,
+    })
+    .modelCheckpoint({
+        loadModelFromCheckpoint: false,
+        saveModelToFile: false,
         overwriteFile: true,
         checkpointFilePath: path.join(__dirname, '../../model-checkpoint.json'),
-    },
-};
+    })
+    .hotReload({
+        isEnabled: false,
+    })
+    .build();
 
-const sparql2graphql = new SPARQL2GraphQL();
+const sparqless = new SPARQLess();
 
 // This method returns a Promise, so you should await it
 // if you want to do something after the server has started.
-sparql2graphql.buildSchemaAndRunEndpoint(config);
+sparqless.buildSchemaAndRunEndpoint(config);

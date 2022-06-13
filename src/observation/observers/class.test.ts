@@ -15,7 +15,7 @@ test('class observer gathers class observations', async () => {
     const observations = await observer.observeEndpoint(endpoint, config);
 
     expect(observations.ClassObservation).not.toBe(undefined);
-    expect(observations.ClassObservation!.length).toBeGreaterThan(90);
+    expect(observations.ClassObservation!.length).toBeGreaterThan(60);
     expect(
         observations.ClassObservation!.every(
             (x) =>
