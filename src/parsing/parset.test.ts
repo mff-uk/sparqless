@@ -26,9 +26,7 @@ test('parser creates single class descriptor', () => {
         PropertyIsAPartialFunctionObservation: [],
     };
 
-    const parser = new ObservationParser({
-        endpoint: { url: 'PLACEHOLDER', name: 'PLACEHOLDER' },
-    });
+    const parser = new ObservationParser();
     const model = parser.buildEndpointModel(observations);
 
     expect(model.descriptors.length).toBe(1);
@@ -84,9 +82,7 @@ test('parser creates attribute descriptors', () => {
         PropertyIsAPartialFunctionObservation: [],
     };
 
-    const parser = new ObservationParser({
-        endpoint: { url: 'PLACEHOLDER', name: 'PLACEHOLDER' },
-    });
+    const parser = new ObservationParser();
     const model = parser.buildEndpointModel(observations);
 
     expect(model.descriptors.length).toBe(1);
@@ -157,9 +153,7 @@ test('parser creates association descriptors', () => {
         PropertyIsAPartialFunctionObservation: [],
     };
 
-    const parser = new ObservationParser({
-        endpoint: { url: 'PLACEHOLDER', name: 'PLACEHOLDER' },
-    });
+    const parser = new ObservationParser();
     const model = parser.buildEndpointModel(observations);
 
     expect(model.descriptors.length).toBe(2);
@@ -246,9 +240,7 @@ test('parser adds property counts to property descriptors', () => {
         PropertyIsAPartialFunctionObservation: [],
     };
 
-    const parser = new ObservationParser({
-        endpoint: { url: 'PLACEHOLDER', name: 'PLACEHOLDER' },
-    });
+    const parser = new ObservationParser();
     const model = parser.buildEndpointModel(observations);
 
     expect(model.descriptors.length).toBe(1);
@@ -340,9 +332,7 @@ test('parser flags property descriptors as partial functions', () => {
         ],
     };
 
-    const parser = new ObservationParser({
-        endpoint: { url: 'PLACEHOLDER', name: 'PLACEHOLDER' },
-    });
+    const parser = new ObservationParser();
     const model = parser.buildEndpointModel(observations);
 
     expect(model.descriptors.length).toBe(1);

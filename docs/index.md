@@ -42,6 +42,8 @@ You can learn more about using SPARQLess in a Docker container [here](docker.md)
 Alternatively, you may wish to use SPARQLess as a JavaScript/TypeScript library.
 SPARQLess aims to be both simple to use and extensible. A minimal usage looks like this:
 
+__TODO__: ADD DOCUMENTATION FOR THE NEW CONFIG BUILDER
+
 ```ts
 const config: Config = {
     endpoint: {

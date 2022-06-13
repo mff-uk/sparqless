@@ -20,6 +20,7 @@ test('class resolver returns instance of object with requested IRI', async () =>
         associations: [],
         numberOfInstances: 42,
     };
+    // @ts-ignore
     const config: Config = {
         endpoint: {
             url: 'https://data.gov.cz/sparql',

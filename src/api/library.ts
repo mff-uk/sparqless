@@ -83,7 +83,7 @@ export class SPARQLess {
             const observations = await this.observe(config);
 
             config.logger?.info('Building object model...');
-            const parser = new ObservationParser(config);
+            const parser = new ObservationParser(config.logger);
             model = parser.buildEndpointModel(observations);
 
             // Create checkpoint if enabled

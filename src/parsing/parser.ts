@@ -1,6 +1,6 @@
 import { Literal } from '@rdfjs/types';
 import { uniq } from 'lodash';
-import { Config } from '../api/config';
+import { Logger } from 'winston';
 import { ClassDescriptor } from '../models/class';
 import { DataModel } from '../models/data_model';
 import {
@@ -13,7 +13,7 @@ import {
  * Class handling the parsing of SPARQL endpoint observations into an object model.
  */
 export class ObservationParser {
-    constructor(private config: Config) {}
+    constructor(private logger?: Logger) {}
 
     /**
      * Build the class model using the provided observations.
@@ -218,7 +218,7 @@ export class ObservationParser {
             if (descriptor) {
                 descriptor.count = parseInt(numInstancesQuad.object.value);
             } else {
-                this.config.logger?.warn(
+                this.logger?.warn(
                     `Missing descriptor for ${classDescriptor.iri}: ${propertyQuad.object.value}.`,
                 );
             }

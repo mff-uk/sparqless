@@ -1,11 +1,6 @@
 import { existsSync, mkdirSync } from 'fs';
 import path from 'path';
-import { SPARQLess } from './api';
-import {
-    Config,
-    DEFAULT_OBSERVATION_CONFIG,
-    SIMPLE_LOGGER,
-} from './api/config';
+import { SPARQLess, SPARQLessConfigBuilder } from './api';
 
 // This file is the entrypoint for the Docker image. For local development, use `main.ts`.
 
@@ -18,35 +13,31 @@ if (endpointUrl === undefined) {
     );
 }
 
-// Observations, the model and the GraphQL schema will be written to this directory
+// Observations, the model and the GraphQL schema will be written to this directory.
+// You can create a bind mount at this path (/app/data) to have access to them.
 const dataDirPath = path.join(__dirname, '../../data');
 if (!existsSync(dataDirPath)) {
     mkdirSync(dataDirPath, { recursive: true });
 }
 
-const config: Config = {
-    endpoint: {
-        url: endpointUrl,
-        name: endpointUrl,
-    },
-    logger: SIMPLE_LOGGER,
-    observation: {
-        ...DEFAULT_OBSERVATION_CONFIG,
+const config = new SPARQLessConfigBuilder()
+    .sparqlEndpoint(endpointUrl)
+    .observation({
         observationsOutputPath: path.join(dataDirPath, 'observations.ttl'),
-    },
-    schema: {
+    })
+    .schema({
         graphqlSchemaOutputPath: path.join(
             dataDirPath,
             'generated-schema.graphql',
         ),
-    },
-    modelCheckpoint: {
+    })
+    .modelCheckpoint({
         loadModelFromCheckpoint: true,
         saveModelToFile: true,
         overwriteFile: true,
         checkpointFilePath: path.join(dataDirPath, 'model-checkpoint.json'),
-    },
-};
+    })
+    .build();
 
 const sparqless = new SPARQLess();
 sparqless.buildSchemaAndRunEndpoint(config);

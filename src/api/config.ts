@@ -38,10 +38,10 @@ export interface Config {
      */
     logger?: winston.Logger;
 
-    observation?: ObservationConfig;
-    postprocessing?: PostprocessingConfig;
+    observation: ObservationConfig;
+    postprocessing: PostprocessingConfig;
     schema?: SchemaConfig;
-    server?: ServerConfig;
+    server: ServerConfig;
 
     /**
      * Configuration of hot reloading, which happen after the initial
@@ -57,7 +57,7 @@ export interface Config {
      * the hot reloading should continue in another iteration, or whether
      * it should stop.
      */
-    hotReload?: HotReloadConfig;
+    hotReload: HotReloadConfig;
 
     /**
      * Configuration of model checkpointing. Without checkpointing, every time
@@ -230,6 +230,9 @@ export interface HotReloadConfig {
     ) => boolean;
 }
 
+/**
+ * A sane default logger which prints messages to the console.
+ */
 export const SIMPLE_LOGGER = winston.createLogger({
     levels: winston.config.npm.levels,
     level: 'debug',

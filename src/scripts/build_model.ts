@@ -1,5 +1,6 @@
 import path from 'path';
-import { Config, SIMPLE_LOGGER } from '../api/config';
+import { SPARQLessConfigBuilder } from '../api';
+import { Config } from '../api/config';
 import { ENDPOINTS } from '../observation/endpoints';
 import { AssociationObserver } from '../observation/observers/association';
 import { AttributeObserver } from '../observation/observers/attribute';
@@ -12,26 +13,21 @@ import { ObservationParser } from '../parsing/parser';
 
 // Debug script for testing observations and parsing
 
-const config: Config = {
-    endpoint: ENDPOINTS[0],
-    logger: SIMPLE_LOGGER,
-    observation: {
+const config: Config = new SPARQLessConfigBuilder()
+    .sparqlEndpoint(ENDPOINTS[0])
+    .observation({
         maxPropertyCount: 1000,
         propertySampleSize: 1000,
-        ontologyPrefixIri: 'http://skodapetr.eu/ontology/sparql-endpoint/',
         shouldCountProperties: true,
         shouldDetectNonArrayProperties: true,
-    },
-    schema: {
+    })
+    .schema({
         graphqlSchemaOutputPath: path.join(
             __dirname,
             '../../../generated-schema.graphql',
         ),
-    },
-    server: {
-        port: 4000,
-    },
-};
+    })
+    .build();
 
 const observerManager = new ObserverManager(config);
 observerManager.subscribeInit(new ClassObserver());
@@ -42,7 +38,7 @@ observerManager.subscribe(new AssociationObserver());
 observerManager.subscribe(new PropertyCountObserver());
 
 observerManager.runObservers().then((observations) => {
-    const parser = new ObservationParser(config);
+    const parser = new ObservationParser(config.logger);
     const model = parser.buildEndpointModel(observations);
     config.logger?.info(
         `Done! Model has ${model.descriptors.length} class descriptors.`,
