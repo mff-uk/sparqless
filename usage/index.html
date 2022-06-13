@@ -93,7 +93,9 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <h1 id="usage-guide">Usage guide</h1>
-<p>This page will explain how to set up SPARQLess for a given SPARQL endpoint, step-by-step.</p>
+<p>This page will explain how to set up SPARQLess for a given SPARQL endpoint, step-by-step.
+If you want to use SPARQLess as a black box, you may prefer to use
+the Docker image instead, as described <a href="../docker/">here</a>.</p>
 <h2 id="installing-dependencies">Installing dependencies</h2>
 <p>The project is written in TypeScript and uses Node.js as its runtime.</p>
 <p>You will need to have the following installed before you proceed with usage:</p>
@@ -104,14 +106,14 @@
 <p>Once you have installed them, run <code>npm install</code> in the project root directory to install
 all required dependencies with npm.</p>
 <h2 id="library-interface">Library interface</h2>
-<p>The main functionality is encapsulated by the <code>SPARQLess</code> class in <code>src/api/index.ts</code>.
+<p>The main functionality is encapsulated by the <code>SPARQLess</code> class in <code>src/api/library.ts</code>.
 This class contains functions for the main tasks users may want to perform.</p>
 <p>Most notably, the <code>buildSchemaAndRunEndpoint</code> functions is provided for users
 who want the least configuration necessary. It is enough to simply set up a <code>Config</code>
 as shown in the next section, and run SPARQLess like so:</p>
-<pre><code class="language-ts">const config = {
-    ...
-};
+<pre><code class="language-ts">const config = new SPARQLessConfigBuilder()
+    .sparqlEndpoint('https://data.gov.cz/sparql')
+    .build();
 
 const sparqless = new SPARQLess();
 
@@ -134,23 +136,17 @@ online and working endpoints in <code>src/observation/endpoints.ts</code> in cas
 to try the project without having a specific SPARQL endpoint in mind, but you can
 easily define your own.</p>
 <p>A very basic configuration can look like this:</p>
-<pre><code class="language-ts">import { Config, SIMPLE_LOGGER } from './api/config';
-
-const config: Config = {
-    endpoint: {
-        url: 'https://data.gov.cz/sparql',
-        name: 'CZ Government Open Data',
-    },
-    logger: SIMPLE_LOGGER,
-};
+<pre><code class="language-ts">const config = new SPARQLessConfigBuilder()
+    .sparqlEndpoint('https://data.gov.cz/sparql')
+    .build();
 </code></pre>
-<p>The endpoint <code>name</code> can be whatever you want, it's just an easily readable
-identifier used in logs. The <code>logger</code> property is not mandatory,
-but it is very helpful to specify a logger in order to see what's
-going on. Any <a href="https://github.com/winstonjs/winston">winston</a> logger will do,
-but the <code>SIMPLE_LOGGER</code> defined in <code>src/api/config.ts</code> defines a sane default
-logger which logs the most important messages to the console.</p>
-<p>There are other configuration values in <code>Config</code> which you are free to modify, but they have
+<p>As you can see, the only required configuration value when using the builder
+is specifying the SPARQL endpoint.
+This example uses the <code>SPARQLessConfigBuilder</code> to build the configuration.
+You may of course create the <code>Config</code> object manually, but using the builder
+lets you make use of pre-defined sane defaults, allowing you to only
+specify the configuration values you care about.</p>
+<p>There are other configuration values which you are free to modify, but they have
 sensible defaults in case you just want to get started. If you want to find out
 more about additional configuration options, you can refer to the
 <a href="../configuration/">configuration guide</a>. Alternatively, you can examine

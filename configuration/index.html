@@ -97,16 +97,36 @@
 configuration options, it is recommended that you familiarize
 yourself with the basic concepts in SPARQLess described
 <a href="../overview/">here</a>.</p>
+<h2 id="using-the-builder">Using the builder</h2>
+<p>The easiest way of building the SPARQLess <code>Config</code> object is by using the builder:</p>
+<pre><code class="language-ts">const config = new SPARQLessConfigBuilder()
+    .sparqlEndpoint('https://data.gov.cz/sparql')
+    .observation({
+        observationsOutputPath: path.join(__dirname, '../../observations.ttl'),
+    })
+    .server({
+        port: 4242,
+    })
+    .build();
+</code></pre>
+<p>You may of course create the <code>Config</code> object manually, but using the builder
+lets you make use of pre-defined sane defaults, allowing you to only
+specify the configuration values you care about.</p>
+<p>The defaults specify a console logger and configure the server to run on port <code>4000</code>.
+They also set many other settings to values deemed valuable for general use, such
+as enabling <a href="../hot_reloading/">hot reloading</a>.</p>
+<p>The rest of this document describes the values as present in the <code>Config</code> type,
+but all of the information is also applicable to the builder.</p>
 <h2 id="general-configuration">General configuration</h2>
 <p>The root configuration type is <code>Config</code>, which exposes the following properties:</p>
 <pre><code class="language-ts">interface Config {
     endpoint: SPARQLEndpointDefinition;
     logger?: winston.Logger;
-    observation?: ObservationConfig;
-    postprocessing?: PostprocessingConfig;
+    observation: ObservationConfig;
+    postprocessing: PostprocessingConfig;
     schema?: SchemaConfig;
-    server?: ServerConfig;
-    hotReload?: HotReloadConfig;
+    server: ServerConfig;
+    hotReload: HotReloadConfig;
     modelCheckpoint?: ModelCheckpointConfig;
 }
 </code></pre>
@@ -200,7 +220,10 @@ the created GraphQL endpoint.</p>
 }
 </code></pre>
 <p>The <code>port</code> option will configure the port where the GraphQL
-endpoint will be available.</p>
+endpoint will be available. The default value is 4000.
+If you visit this port in the browser, you will get access
+to an instance of Apollo Studio Explorer, which will let you
+visually build GraphQL queries and examine the GraphQL schema.</p>
 <h3 id="model-checkpointing">Model Checkpointing</h3>
 <p>Read more about model checkpointing
 <a href="../model_checkpointing/">here</a>.</p>

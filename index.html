@@ -124,13 +124,9 @@ your new GraphQL endpoint!</p>
 <h2 id="using-the-library-in-code">Using the library in code</h2>
 <p>Alternatively, you may wish to use SPARQLess as a JavaScript/TypeScript library.
 SPARQLess aims to be both simple to use and extensible. A minimal usage looks like this:</p>
-<pre><code class="language-ts">const config: Config = {
-    endpoint: {
-        url: 'https://data.gov.cz/sparql',
-        name: 'CZ Government Open Data',
-    },
-    logger: SIMPLE_LOGGER,
-};
+<pre><code class="language-ts">const config = new SPARQLessConfigBuilder()
+    .sparqlEndpoint('https://data.gov.cz/sparql')
+    .build();
 
 const sparqless = new SPARQLess();
 await sparqless.buildSchemaAndRunEndpoint(config);
@@ -175,5 +171,5 @@ handbook.</p>
 </html>
 <!--
 MkDocs version : 1.3.0
-Build Date UTC : 2022-06-12 21:15:00.825028+00:00
+Build Date UTC : 2022-06-13 13:00:07.626268+00:00
 -->
