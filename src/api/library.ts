@@ -7,13 +7,7 @@ import { PropertyCountObserver } from '../observation/observers/property_count';
 import { ObserverManager } from '../observation/observer_manager';
 import { ObservationParser } from '../parsing/parser';
 import { DescriptorPostprocessor } from '../postprocessing/postprocessor';
-import {
-    Config,
-    DEFAULT_HOT_RELOAD_CONFIG,
-    DEFAULT_OBSERVATION_CONFIG,
-    DEFAULT_SERVER_CONFIG,
-    ModelCheckpointConfig,
-} from './config';
+import { Config, ModelCheckpointConfig } from './config';
 import { createSchema } from '../schema/schema';
 import { set } from 'lodash';
 import { Observations } from '../observation/ontology';
@@ -119,13 +113,11 @@ export class SPARQLess {
         );
         const observations: Observations = await observerManager.runObservers();
 
-        const observationConfig =
-            config.observation ?? DEFAULT_OBSERVATION_CONFIG;
-        if (observationConfig.observationsOutputPath) {
+        if (config.observation.observationsOutputPath) {
             writeObservationsToFile(
                 observations,
-                observationConfig.observationsOutputPath,
-                observationConfig,
+                config.observation.observationsOutputPath,
+                config.observation,
             );
         }
         return observations;
@@ -142,8 +134,7 @@ export class SPARQLess {
         schema: NexusGraphQLSchema,
         config: Config,
     ): Promise<ApolloServer> {
-        const hotReloadConfig = config.hotReload ?? DEFAULT_HOT_RELOAD_CONFIG;
-        this.updateSchemaDescription(schema, 0, hotReloadConfig.isEnabled);
+        this.updateSchemaDescription(schema, 0, config.hotReload.isEnabled);
         config.logger?.info('Starting GraphQL server...');
         const server = new ApolloServer({
             schema,
@@ -157,8 +148,7 @@ export class SPARQLess {
             ],
         });
 
-        const serverConfig = config.server ?? DEFAULT_SERVER_CONFIG;
-        const { url } = await server.listen({ port: serverConfig.port });
+        const { url } = await server.listen({ port: config.server.port });
         config.logger?.info(`🚀 SPARQLess server ready at ${url}`);
 
         return server;
@@ -183,16 +173,15 @@ export class SPARQLess {
         model: DataModel,
         server: ApolloServer,
     ): Promise<void> {
-        const hotReloadConfig = config.hotReload ?? DEFAULT_HOT_RELOAD_CONFIG;
-        if (hotReloadConfig.isEnabled) {
+        if (config.hotReload.isEnabled) {
             config.logger?.info('Schema hot reload is enabled.');
-            if (!hotReloadConfig.configIterator) {
+            if (!config.hotReload.configIterator) {
                 config.logger?.error(
                     'The configIterator function must be specified in order for hot reloading to work.',
                 );
                 return;
             }
-            if (!hotReloadConfig.shouldIterate) {
+            if (!config.hotReload.shouldIterate) {
                 config.logger?.error(
                     'The shouldIterate function must be specified in order for hot reloading to work.',
                 );
@@ -200,8 +189,7 @@ export class SPARQLess {
             }
 
             let previousModel = model;
-            let currentObservationConfig =
-                config.observation ?? DEFAULT_OBSERVATION_CONFIG;
+            let currentObservationConfig = config.observation;
             let iteration = 0;
 
             while (true) {
@@ -209,7 +197,7 @@ export class SPARQLess {
                 config.logger?.info(
                     `Generating new GraphQL schema - iteration ${iteration}...`,
                 );
-                currentObservationConfig = hotReloadConfig.configIterator(
+                currentObservationConfig = config.hotReload.configIterator(
                     currentObservationConfig,
                     previousModel,
                 );
@@ -230,7 +218,7 @@ export class SPARQLess {
                             modelCheckpoint: checkpointConfig,
                         });
 
-                    const shouldContinue = hotReloadConfig.shouldIterate(
+                    const shouldContinue = config.hotReload.shouldIterate(
                         currentObservationConfig,
                         previousModel,
                         newModel,

@@ -1,6 +1,8 @@
 # Usage guide
 
 This page will explain how to set up SPARQLess for a given SPARQL endpoint, step-by-step.
+If you want to use SPARQLess as a black box, you may prefer to use
+the Docker image instead, as described [here](docker.md).
 
 ## Installing dependencies
 
@@ -16,7 +18,7 @@ all required dependencies with npm.
 
 ## Library interface
 
-The main functionality is encapsulated by the `SPARQLess` class in `src/api/index.ts`.
+The main functionality is encapsulated by the `SPARQLess` class in `src/api/library.ts`.
 This class contains functions for the main tasks users may want to perform.
 
 Most notably, the `buildSchemaAndRunEndpoint` functions is provided for users
@@ -24,9 +26,9 @@ who want the least configuration necessary. It is enough to simply set up a `Con
 as shown in the next section, and run SPARQLess like so:
 
 ```ts
-const config = {
-    ...
-};
+const config = new SPARQLessConfigBuilder()
+    .sparqlEndpoint('https://data.gov.cz/sparql')
+    .build();
 
 const sparqless = new SPARQLess();
 
@@ -55,25 +57,19 @@ easily define your own.
 A very basic configuration can look like this:
 
 ```ts
-import { Config, SIMPLE_LOGGER } from './api/config';
-
-const config: Config = {
-    endpoint: {
-        url: 'https://data.gov.cz/sparql',
-        name: 'CZ Government Open Data',
-    },
-    logger: SIMPLE_LOGGER,
-};
+const config = new SPARQLessConfigBuilder()
+    .sparqlEndpoint('https://data.gov.cz/sparql')
+    .build();
 ```
 
-The endpoint `name` can be whatever you want, it's just an easily readable
-identifier used in logs. The `logger` property is not mandatory,
-but it is very helpful to specify a logger in order to see what's
-going on. Any [winston](https://github.com/winstonjs/winston) logger will do,
-but the `SIMPLE_LOGGER` defined in `src/api/config.ts` defines a sane default
-logger which logs the most important messages to the console.
+As you can see, the only required configuration value when using the builder
+is specifying the SPARQL endpoint.
+This example uses the `SPARQLessConfigBuilder` to build the configuration.
+You may of course create the `Config` object manually, but using the builder
+lets you make use of pre-defined sane defaults, allowing you to only
+specify the configuration values you care about.
 
-There are other configuration values in `Config` which you are free to modify, but they have
+There are other configuration values which you are free to modify, but they have
 sensible defaults in case you just want to get started. If you want to find out
 more about additional configuration options, you can refer to the
 [configuration guide](configuration.md). Alternatively, you can examine

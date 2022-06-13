@@ -5,6 +5,32 @@ configuration options, it is recommended that you familiarize
 yourself with the basic concepts in SPARQLess described
 [here](overview.md).
 
+## Using the builder
+
+The easiest way of building the SPARQLess `Config` object is by using the builder:
+
+```ts
+const config = new SPARQLessConfigBuilder()
+    .sparqlEndpoint('https://data.gov.cz/sparql')
+    .observation({
+        observationsOutputPath: path.join(__dirname, '../../observations.ttl'),
+    })
+    .server({
+        port: 4242,
+    })
+    .build();
+```
+You may of course create the `Config` object manually, but using the builder
+lets you make use of pre-defined sane defaults, allowing you to only
+specify the configuration values you care about.
+
+The defaults specify a console logger and configure the server to run on port `4000`.
+They also set many other settings to values deemed valuable for general use, such
+as enabling [hot reloading](hot_reloading.md).
+
+The rest of this document describes the values as present in the `Config` type,
+but all of the information is also applicable to the builder.
+
 ## General configuration
 
 The root configuration type is `Config`, which exposes the following properties:
@@ -13,11 +39,11 @@ The root configuration type is `Config`, which exposes the following properties:
 interface Config {
     endpoint: SPARQLEndpointDefinition;
     logger?: winston.Logger;
-    observation?: ObservationConfig;
-    postprocessing?: PostprocessingConfig;
+    observation: ObservationConfig;
+    postprocessing: PostprocessingConfig;
     schema?: SchemaConfig;
-    server?: ServerConfig;
-    hotReload?: HotReloadConfig;
+    server: ServerConfig;
+    hotReload: HotReloadConfig;
     modelCheckpoint?: ModelCheckpointConfig;
 }
 ```
@@ -141,7 +167,10 @@ interface ServerConfig {
 ```
 
 The `port` option will configure the port where the GraphQL
-endpoint will be available.
+endpoint will be available. The default value is 4000.
+If you visit this port in the browser, you will get access
+to an instance of Apollo Studio Explorer, which will let you
+visually build GraphQL queries and examine the GraphQL schema.
 
 ### Model Checkpointing
 

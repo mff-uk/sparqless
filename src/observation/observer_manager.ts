@@ -1,8 +1,4 @@
-import {
-    Config,
-    DEFAULT_OBSERVATION_CONFIG,
-    ObservationConfig,
-} from '../api/config';
+import { Config, ObservationConfig } from '../api/config';
 import { InitEndpointObserver, EndpointObserver } from './observer';
 import { Observations, OntologyObservation } from './ontology';
 
@@ -32,8 +28,7 @@ export class ObserverManager {
     private readonly observationConfig: ObservationConfig;
 
     constructor(private config: Config) {
-        this.observationConfig =
-            config.observation ?? DEFAULT_OBSERVATION_CONFIG;
+        this.observationConfig = config.observation;
     }
 
     private subscribedObservers: Partial<
