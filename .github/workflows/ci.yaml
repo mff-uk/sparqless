@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - "master"
+      - "feature/add-docker-image-to-ci"  # TODO: remove the test branch
   pull_request:
 
 jobs:
