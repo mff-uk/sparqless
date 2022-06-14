@@ -8,7 +8,7 @@ on:
 
 env:
   DOCKER_REGISTRY: ghcr.io
-  DOCKER_IMAGE_NAME: {{ github.repository }}
+  DOCKER_IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   check-and-test:
