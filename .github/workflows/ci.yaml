@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - "master"
-      - "feature/add-docker-image-to-ci"  # TODO: remove the test branch
   pull_request:
 
 env:
@@ -48,7 +47,7 @@ jobs:
             # Set branch tag, i.e. 'master' for 'master'
             type=raw,value={{branch}}
             # Set 'latest' tag if the branch is 'master'
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'feature/add-docker-image-to-ci') }}  # TODO: set to master
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
