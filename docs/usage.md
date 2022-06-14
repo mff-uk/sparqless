@@ -41,14 +41,14 @@ The `SPARQLess` class also contains other functions which perform
 smaller parts of the whole algorithm, which you may want to use if your
 task is more complex than *convert this SPARQL endpoint into a GraphQL endpoint*.
 For example, the `observeAndBuildSchema` function performs all the steps up to
-and including schema building, meaning one could use it to simply save the
-GraphQL schema into a file and do something else with it, rather than
-starting a GraphQL endpoint.
+and including schema building, meaning one could use it to perform some
+other operations on the generated GraphQL schema, rather than
+starting a GraphQL server immediately.
 
 ## Edit configuration
 
 There is one required configuration step before you run the library - configuring
-the SPARQL endpoint you want to run. This is done by creating a `Config` object,
+the SPARQL endpoint you want SPARQLess to run against. This is done by creating a `Config` object,
 which you will pass to SPARQLess functions. There is a pre-defined list of known
 online and working endpoints in `src/observation/endpoints.ts` in case you just want
 to try the project without having a specific SPARQL endpoint in mind, but you can

@@ -48,7 +48,7 @@ interface Config {
 }
 ```
 
-Only the `endpoint` property is mandatory, since it contains the SPARQL endpoint
+The `endpoint` property is mandatory, since it contains the SPARQL endpoint
 which you want SPARQLess to run against. An endpoint looks like this:
 
 ```ts
@@ -58,19 +58,27 @@ which you want SPARQLess to run against. An endpoint looks like this:
 }
 ```
 
+There are other mandatory options, and so the recommended usage
+is with the `SPARQLessConfigBuilder`, which specifies sane defaults.
+You can then use the builder to configure individual options
+as required, allowing you to leave some mandatory options
+as their defaults.
+
 It is also very highly recommended to configure a `logger`, since it is
 very helpful to know what exactly is happening, since the bootstrapping
 process can take a very long time. The logging framework of choice
 is [winston](https://github.com/winstonjs/winston), so you are free to
 pass in any winston logger. However, if you want a sensible default,
 you can use the `DEFAULT_LOGGER` exposed by SPARQLess.
+Again, the `SPARQLessConfigBuilder` uses this default logger automatically.
 
 ## Specialized configuration
 
 The remaining configuration values are more specialized,
 and they affect individual components of SPARQLess.
 
-All of these options have sane default values, so it is
+All of these options have sane default values when used with
+the `SPARQLessConfigBuilder`, so it is
 recommended to first try not defining them (and thereby
 using the defaults). If you find that you want to adjust
 the behavior of SPARQLess afterwards, then you can

@@ -2,10 +2,14 @@
 
 Build, lint and test are automatically run in GitHub Actions.
 They are required to pass for every PR and commit to `master`.
+For every commit to `master`, a new Docker image is also built
+and pushed to the GitHub Container Registry.
 
 Contributions should be in the form of PRs opened against `master`, containing a comprehensive
 description of what was changed and why. Bonus points if you include a video or screenshot
 showcasing the functionality. Tests should also be included with contributions.
+If your PR is not addressing an existing issue, please first raise an issue
+on GitHub and discuss the implementation with the maintainers.
 
 Development should follow [GitHub Flow](https://githubflow.github.io/) and commit messages
 should follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) spec.
