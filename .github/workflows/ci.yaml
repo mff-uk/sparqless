@@ -6,6 +6,10 @@ on:
       - "feature/add-docker-image-to-ci"  # TODO: remove the test branch
   pull_request:
 
+env:
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_IMAGE_NAME: {{ github.repository }}
+
 jobs:
   check-and-test:
     runs-on: ubuntu-20.04
@@ -19,3 +23,37 @@ jobs:
       - run: npm run build
       - run: npm run lint
       - run: npm test
+  
+  docker-build-and-push:
+    needs: [check-and-test]
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Compile Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            # Set branch tag, i.e. 'master' for 'master'
+            type=raw,value={{branch}}
+            # Set 'latest' tag if the branch is 'master'
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'feature/add-docker-image-to-ci') }}  # TODO: set to master
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
