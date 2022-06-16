@@ -106,7 +106,7 @@ and it can be easily modified or extended. You can even easily add your own
 implementation as a new postprocessing hook, and switch it with the default
 implementation as needed.</p>
 <h2 id="hooks">Hooks</h2>
-<p>Postprocessing hooks are functions which are assignable to the <code>PostprocessingHook</code> interface:</p>
+<p>Postprocessing hooks are functions which are assignable to the <code>PostprocessingHook</code> type:</p>
 <pre><code class="language-ts">export type PostprocessingHook&lt;TDescriptor extends EntityDescriptor&gt; = (
     descriptors: TDescriptor[],
 ) =&gt; void;

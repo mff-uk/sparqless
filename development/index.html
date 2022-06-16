@@ -94,10 +94,14 @@
 <div class="section" itemprop="articleBody">
 <h1 id="development">Development</h1>
 <p>Build, lint and test are automatically run in GitHub Actions.
-They are required to pass for every PR and commit to <code>master</code>.</p>
+They are required to pass for every PR and commit to <code>master</code>.
+For every commit to <code>master</code>, a new Docker image is also built
+and pushed to the GitHub Container Registry.</p>
 <p>Contributions should be in the form of PRs opened against <code>master</code>, containing a comprehensive
 description of what was changed and why. Bonus points if you include a video or screenshot
-showcasing the functionality. Tests should also be included with contributions.</p>
+showcasing the functionality. Tests should also be included with contributions.
+If your PR is not addressing an existing issue, please first raise an issue
+on GitHub and discuss the implementation with the maintainers.</p>
 <p>Development should follow <a href="https://githubflow.github.io/">GitHub Flow</a> and commit messages
 should follow the <a href="https://www.conventionalcommits.org/en/v1.0.0/">Conventional Commits</a> spec.</p>
 <h2 id="useful-commands">Useful commands</h2>

@@ -99,10 +99,7 @@ There is virtually no configuration required (or allowed) when using
 the Docker image, the only configuration value is the SPARQL endpoint
 URL.</p>
 <p>The most basic usage scenario looks like this:</p>
-<pre><code class="language-bash"># Build the Docker image and name it `sparqless:local`.
-docker build -t sparqless:local .
-
-# Use the `sparqless:local` image to run a Docker container named `sparqless`.
+<pre><code class="language-bash"># Pull the Docker image from GitHub Container Registry to run a Docker container named `sparqless`.
 # The `-p` option binds port 4000 on the container to port 4000 on the local machine.
 # This is the port which the created GraphQL server will run on.
 # You can add the `-d` option to run the container detached from your terminal.
@@ -111,7 +108,7 @@ docker run \
     --name sparqless \
     -p 4000:4000 \
     -e SPARQL_ENDPOINT="https://data.gov.cz/sparql" \
-    sparqless:local
+    ghcr.io/mff-uk/sparqless:latest
 </code></pre>
 <p><strong>WARNING</strong>: avoid reusing the same container for multiple SPARQL endpoints,
 unless you understand the 'Mounting Artifacts' section below.</p>
@@ -161,7 +158,7 @@ This can be done by adding the following arguments:</p>
     -p 4000:4000 \
     -e SPARQL_ENDPOINT="https://data.gov.cz/sparql" \
     --mount type=bind,source="$(pwd)/containerdata",target=/app/data \
-    sparqless:local
+    ghcr.io/mff-uk/sparqless:latest
 </code></pre>
 <p>By doing this, the <code>containerdata</code> folder in your working directory
 will be mounted as <code>/app/data</code> inside the Docker container, and the artifacts

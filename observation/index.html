@@ -109,7 +109,7 @@ of previous queries. As an example, we cannot observe the existence
 of properties on some class, before we even know about the class'
 existence.</p>
 <p>Therefore the observation logic is split up into observer classes,
-namely <code>EndpointObserver</code> and <code>InitEndpointObserver</code>. These observers
+namely <code>EndpointObserver</code>s and <code>InitEndpointObserver</code>s. These observers
 each collect a specific set of observations. <code>EndpointObserver</code>s may
 declare dependencies on observations produced by other observers.
 <code>InitEndpointObserver</code>s do not required any previous observations to
@@ -158,11 +158,13 @@ the existence of class instances. <em>(currently unused)</em></li>
 <h2 id="observation-speed">Observation speed</h2>
 <p>Essential observations for constructing the GraphQL schema are <code>ClassObservation</code>,
 <code>PropertyExistenceObservation</code>, <code>AttributeObservation</code> and <code>AssociationObservation</code>.
-Other observations are unnecessary, and they just enhance the schema further.
+Other observations are optional, and they just enhance the schema further.
 If the fastest startup time is desired, you may want to consider disabling
 non-required observations, and configuring <a href="../hot_reloading/">hot reloading</a>
 to perform these additional observations in the background while
-the GraphQL endpoint is already functional.</p>
+the GraphQL endpoint is already functional.
+In fact, the default configuration used by <code>SPARQLessConfigBuilder</code> does
+exactly that.</p>
 <p>An interesting bit of information about observation query performance is the fact
 that in SPARQL endpoints with multiple graphs, adding a <code>GRAPH ?g { ... }</code> clause
 around the query body led to significant performance improvements on certain queries.

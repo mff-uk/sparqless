@@ -130,23 +130,30 @@ but all of the information is also applicable to the builder.</p>
     modelCheckpoint?: ModelCheckpointConfig;
 }
 </code></pre>
-<p>Only the <code>endpoint</code> property is mandatory, since it contains the SPARQL endpoint
+<p>The <code>endpoint</code> property is mandatory, since it contains the SPARQL endpoint
 which you want SPARQLess to run against. An endpoint looks like this:</p>
 <pre><code class="language-ts">{
     url: 'https://dev.nkod.opendata.cz/sparql',
     name: 'NKOD',
 }
 </code></pre>
+<p>There are other mandatory options, and so the recommended usage
+is with the <code>SPARQLessConfigBuilder</code>, which specifies sane defaults.
+You can then use the builder to configure individual options
+as required, allowing you to leave some mandatory options
+as their defaults.</p>
 <p>It is also very highly recommended to configure a <code>logger</code>, since it is
 very helpful to know what exactly is happening, since the bootstrapping
 process can take a very long time. The logging framework of choice
 is <a href="https://github.com/winstonjs/winston">winston</a>, so you are free to
 pass in any winston logger. However, if you want a sensible default,
-you can use the <code>DEFAULT_LOGGER</code> exposed by SPARQLess.</p>
+you can use the <code>DEFAULT_LOGGER</code> exposed by SPARQLess.
+Again, the <code>SPARQLessConfigBuilder</code> uses this default logger automatically.</p>
 <h2 id="specialized-configuration">Specialized configuration</h2>
 <p>The remaining configuration values are more specialized,
 and they affect individual components of SPARQLess.</p>
-<p>All of these options have sane default values, so it is
+<p>All of these options have sane default values when used with
+the <code>SPARQLessConfigBuilder</code>, so it is
 recommended to first try not defining them (and thereby
 using the defaults). If you find that you want to adjust
 the behavior of SPARQLess afterwards, then you can
