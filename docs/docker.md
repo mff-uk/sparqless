@@ -9,10 +9,7 @@ URL.
 The most basic usage scenario looks like this:
 
 ```bash
-# Build the Docker image and name it `sparqless:local`.
-docker build -t sparqless:local .
-
-# Use the `sparqless:local` image to run a Docker container named `sparqless`.
+# Pull the Docker image from GitHub Container Registry to run a Docker container named `sparqless`.
 # The `-p` option binds port 4000 on the container to port 4000 on the local machine.
 # This is the port which the created GraphQL server will run on.
 # You can add the `-d` option to run the container detached from your terminal.
@@ -21,7 +18,7 @@ docker run \
     --name sparqless \
     -p 4000:4000 \
     -e SPARQL_ENDPOINT="https://data.gov.cz/sparql" \
-    sparqless:local
+    ghcr.io/mff-uk/sparqless:latest
 ```
 
 **WARNING**: avoid reusing the same container for multiple SPARQL endpoints,
@@ -77,7 +74,7 @@ docker run \
     -p 4000:4000 \
     -e SPARQL_ENDPOINT="https://data.gov.cz/sparql" \
     --mount type=bind,source="$(pwd)/containerdata",target=/app/data \
-    sparqless:local
+    ghcr.io/mff-uk/sparqless:latest
 ```
 
 By doing this, the `containerdata` folder in your working directory

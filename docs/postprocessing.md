@@ -17,7 +17,7 @@ implementation as needed.
 
 ## Hooks
 
-Postprocessing hooks are functions which are assignable to the `PostprocessingHook` interface:
+Postprocessing hooks are functions which are assignable to the `PostprocessingHook` type:
 
 ```ts
 export type PostprocessingHook<TDescriptor extends EntityDescriptor> = (

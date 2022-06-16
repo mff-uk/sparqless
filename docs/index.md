@@ -5,20 +5,25 @@ These datasets are often also available as JSON or RDF dumps, but having to writ
 SPARQLess (/_spark less_/) aims to make it easier to use these datasets by providing a tool which will give developers a more
 friendly interface which they likely already know how to use - [GraphQL](https://graphql.org/learn/).
 
+SPARQLess is a library which is able to discover the schema of data within a SPARQL endpoint,
+and subsequently construct an equivalent GraphQL schema.
+This schema discovery works even in the absence of explicit metadata like RDFS or OWL,
+and so it is relevant for most RDF datasets.
+It then uses the generated GraphQL schema to host a GraphQL server, which processes incoming
+queries by translating them into SPARQL queries and querying the underlying SPARQL endpoint.
+SPARQLess does not currently support mutations, it provides a read-only view of the data.
+
 Simply configure SPARQLess with the URL of a SPARQL endpoint which has some data which interests you, and
 let it do its magic. Soon, you will have a GraphQL instance which you can use to painlessly explore and query the data.
 
 ## Running it in Docker
 
-The easiest way to use SPARQLess is to use the provided Dockerfile to run it as a Docker container.
+The easiest way to use SPARQLess is to use the provided Docker image.
 This method lets you use SPARQLess as a black box which magically converts your SPARQL
 endpoint into a GraphQL one.
 
 ```bash
-# Build the Docker image and name it `sparqless:local`.
-docker build -t sparqless:local .
-
-# Use the `sparqless:local` image to run a Docker container named `sparqless`.
+# Pull the Docker image from GitHub Container Registry to run a Docker container named `sparqless`.
 # The `-p` option binds port 4000 on the container to port 4000 on the local machine.
 # This is the port which the created GraphQL server will run on.
 # You can add the `-d` option to run the container detached from your terminal.
@@ -27,7 +32,7 @@ docker run \
     --name sparqless \
     -p 4000:4000 \
     -e SPARQL_ENDPOINT="https://data.gov.cz/sparql" \
-    sparqless:local
+    ghcr.io/mff-uk/sparqless:latest
 ```
 
 The created container could take up to tens of minutes to do its job on large datasets.
