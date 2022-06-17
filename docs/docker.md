@@ -13,6 +13,8 @@ The most basic usage scenario looks like this:
 # The `-p` option binds port 4000 on the container to port 4000 on the local machine.
 # This is the port which the created GraphQL server will run on.
 # You can add the `-d` option to run the container detached from your terminal.
+# If you are on Windows, you can substitute the '\' characters for '`' (backtick)
+# characters to get a Powershell equivalent command.
 docker run \
     -it --init \
     --name sparqless \
@@ -83,7 +85,9 @@ will be stored inside this folder.
 
 **NOTE**: make sure that the mounted folder has write permissions for
 all users. Otherwise the container's runtime user will not be able
-to read or write these files.
+to read or write these files. If you are on Windows, you may want to mount
+a [WSL](https://docs.microsoft.com/en-us/windows/wsl/install) folder instead,
+as it will allow you to use Linux permissions for it.
 
 **NOTE**: make sure that you don't leave a model checkpoint file in the
 mounted folder if you start the container again with a different SPARQL

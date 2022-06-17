@@ -27,6 +27,8 @@ endpoint into a GraphQL one.
 # The `-p` option binds port 4000 on the container to port 4000 on the local machine.
 # This is the port which the created GraphQL server will run on.
 # You can add the `-d` option to run the container detached from your terminal.
+# If you are on Windows, you can substitute the '\' characters for '`' (backtick)
+# characters to get a Powershell equivalent command.
 docker run \
     -it --init \
     --name sparqless \
