@@ -2,72 +2,72 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://mff-uk.github.io/sparqless/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mff-uk.github.io/sparqless/configuration/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mff-uk.github.io/sparqless/development/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mff-uk.github.io/sparqless/docker/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mff-uk.github.io/sparqless/editing_documentation/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mff-uk.github.io/sparqless/hot_reloading/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mff-uk.github.io/sparqless/model_checkpointing/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mff-uk.github.io/sparqless/model_parsing/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mff-uk.github.io/sparqless/observation/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mff-uk.github.io/sparqless/overview/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mff-uk.github.io/sparqless/postprocessing/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mff-uk.github.io/sparqless/querying/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mff-uk.github.io/sparqless/schema/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mff-uk.github.io/sparqless/usage/</loc>
-         <lastmod>2022-06-16</lastmod>
+         <lastmod>2022-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
